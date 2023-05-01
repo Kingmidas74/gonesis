@@ -2,12 +2,22 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"go.uber.org/zap"
 )
 
 func main() {
+	logger, err := zap.NewProduction()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	zap.ReplaceGlobals(logger)
+	defer logger.Sync()
+
 	cwd, err := os.Getwd()
 	if err != nil {
 		fmt.Println("Failed to get current working directory:", err)
