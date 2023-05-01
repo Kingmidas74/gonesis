@@ -138,10 +138,7 @@ class Game {
             let lastFrameTime = performance.now();
 
             const loop = () => {
-                const currentTime = performance.now();
-                const deltaTime = (currentTime - lastFrameTime) / 1000;
-                lastFrameTime = currentTime;
-                this.update(deltaTime);
+                this.update();
                 this.draw();
 
                 requestAnimationFrame(loop);
