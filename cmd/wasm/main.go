@@ -18,6 +18,7 @@ func main() {
 	js.Global().Set("generateSideWinderMaze", generateMaze[generator.SidewinderGenerator]())
 	js.Global().Set("generateAldousBroderMaze", generateMaze[generator.AldousBroderGenerator]())
 	js.Global().Set("generateBinaryMaze", generateMaze[generator.BinaryGenerator]())
+	js.Global().Set("updateState", updateState())
 	<-make(chan bool)
 }
 
@@ -34,5 +35,11 @@ func generateMaze[G domain_maze.Generator]() js.Func {
 		} else {
 			return string(r)
 		}
+	})
+}
+
+func updateState() js.Func {
+	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		return js.ValueOf(make([]bool, 0))
 	})
 }

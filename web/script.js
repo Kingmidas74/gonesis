@@ -83,6 +83,10 @@ class Engine {
     generateSideWinderMaze(width, height) {
         return generateSideWinderMaze(width, height)
     }
+
+    update(state) {
+        return updateState(state)
+    }
 }
 
 class Game {
@@ -113,6 +117,7 @@ class Game {
 
         this.walls.splice(0,this.walls.length)
 
+        //TODO: call this.engine.update(state).
         this.maze = JSON.parse(this.engine.generateSideWinderMaze(mazeWidth,mazeHeight));
 
         for (let row = 0; row < mazeHeight; row++) {
