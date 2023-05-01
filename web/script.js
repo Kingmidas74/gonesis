@@ -9,7 +9,7 @@ class Settings {
         this.CellSize = 20;
         this.MazeColor = Colors.BLUE;
 
-        this.Playable = false;
+        this.Playable = true;
         this.Framerate = Math.floor(1000/60);
     }
 
@@ -131,12 +131,22 @@ class Game {
 
     async run() {
         await this.init()
+        const config = this.config.getInstance();
 
-        if(this.config.getInstance().Playable) {
-            setInterval(() => {
-                this.update();
+        if(config.Playable) {
+            let lastFrameTime = performance.now();
+
+            const loop = () => {
+                const currentTime = performance.now();
+                const deltaTime = (currentTime - lastFrameTime) / 1000;
+                lastFrameTime = currentTime;
+                this.update(deltaTime);
                 this.draw();
-            }, this.config.getInstance().Framerate);
+
+                requestAnimationFrame(loop);
+            }
+
+            loop();
             return;
         }
 
