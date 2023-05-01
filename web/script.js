@@ -9,7 +9,7 @@ class Settings {
         this.CellSize = 20;
         this.MazeColor = Colors.BLUE;
 
-        this.Playable = true;
+        this.Playable = false;
         this.Framerate = Math.floor(1000/60);
     }
 
@@ -99,8 +99,20 @@ class Game {
 
     async init() {
         await this.engine.init()
+    }
+
+    draw() {
+        this.canvas.clear();
+        for (let i = 0; i < this.walls.length; i++) {
+            this.walls[i].draw(this.canvas.ctx);
+        }
+    }
+
+    update() {
         let mazeWidth = this.math.floor(this.canvas.canvas.width / this.cellSize);
         let mazeHeight = this.math.floor(this.canvas.canvas.height / this.cellSize);
+
+        this.walls.splice(0,this.walls.length)
 
         this.maze = JSON.parse(this.engine.generateSideWinderMaze(mazeWidth,mazeHeight));
 
@@ -117,16 +129,6 @@ class Game {
                 }
             }
         }
-    }
-
-    draw() {
-        this.canvas.clear();
-        for (let i = 0; i < this.walls.length; i++) {
-            this.walls[i].draw(this.canvas.ctx);
-        }
-    }
-
-    update() {
     }
 
     async run() {
