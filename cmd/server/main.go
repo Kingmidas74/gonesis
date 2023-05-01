@@ -14,7 +14,7 @@ func main() {
 		return
 	}
 
-	assetsDir := filepath.Join(cwd, "assets")
+	assetsDir := filepath.Join(cwd, "web")
 	fmt.Println("Serving files from:", assetsDir)
 
 	err = http.ListenAndServe(":9091", http.FileServer(http.Dir(assetsDir)))
