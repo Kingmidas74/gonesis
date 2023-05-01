@@ -10,7 +10,6 @@ class Settings {
         this.MazeColor = Colors.BLUE;
 
         this.Playable = false;
-        this.Framerate = Math.floor(1000/60);
     }
 
     static getInstance() {
