@@ -1,22 +1,34 @@
 package generator
 
-import "github.com/kingmidas74/gonesis-engine/internal/util"
+import (
+	"github.com/kingmidas74/gonesis-engine/internal/domain/errors"
+	"github.com/kingmidas74/gonesis-engine/internal/util"
+)
 
 type AldousBroderGenerator struct {
+	gridGenerator GridGenerator
 }
 
-func (g AldousBroderGenerator) Generate(width, height int, matrix []bool) []bool {
-
-	for i := range matrix {
-		matrix[i] = false
+func (g AldousBroderGenerator) Generate(width, height int) (maze []bool, err error) {
+	if width <= 0 || height <= 0 {
+		return make([]bool, 0), errors.MAZE_SIZE_INCORRECT
 	}
-	matrix[0] = true
+
+	maze, err = g.gridGenerator.Generate(width, height)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range maze {
+		maze[i] = false
+	}
 
 	actors := make([]int, 0)
 
 	actorsCount := 7
 
 	for i := 0; i < actorsCount; i++ {
+		actors = append(actors, 0)
 		actors = append(actors, 0)
 	}
 
@@ -38,9 +50,9 @@ func (g AldousBroderGenerator) Generate(width, height int, matrix []bool) []bool
 				actors[i*2] += direction[0]
 				actors[i*2+1] += direction[1]
 
-				if matrix[actors[i*2+1]*width+actors[i*2]] == false {
-					matrix[actors[i*2+1]*width+actors[i*2]] = true
-					matrix[(actors[i*2+1]+direction[3])*width+actors[i*2]+direction[2]] = true
+				if maze[actors[i*2+1]*width+actors[i*2]] == false {
+					maze[actors[i*2+1]*width+actors[i*2]] = true
+					maze[(actors[i*2+1]+direction[3])*width+actors[i*2]+direction[2]] = true
 				}
 			}
 		}
@@ -48,10 +60,11 @@ func (g AldousBroderGenerator) Generate(width, height int, matrix []bool) []bool
 		isFinished = true
 		for y := 0; y < height; y = y + 2 {
 			for x := 0; x < width; x = x + 2 {
-				isFinished = isFinished && matrix[y*width+x]
+				isFinished = isFinished && maze[y*width+x]
 			}
 		}
 	}
+	maze[0] = true
 
-	return matrix
+	return maze, nil
 }

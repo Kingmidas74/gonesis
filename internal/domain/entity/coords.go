@@ -1,22 +1,22 @@
 package entity
 
 type Coords struct {
-	X int
-	Y int
+	x int
+	y int
 }
 
-func (this *Coords) GetX() int {
-	return this.X
+func (c *Coords) X() int {
+	return c.x
 }
 
-func (this *Coords) SetX(x int) {
-	this.X = x
+func (c *Coords) SetX(x int) {
+	c.x = x
 }
 
-func (this *Coords) GetY() int {
-	return this.Y
+func (c *Coords) Y() int {
+	return c.y
 }
 
-func (this *Coords) SetY(y int) {
-	this.Y = y
+func (c *Coords) SetY(y int) {
+	c.y = y
 }

@@ -1,49 +1,12 @@
 package maze
 
-import "testing"
+import (
+	"testing"
 
-func TestGenerateGrid_FirstCell(t *testing.T) {
-	width, height := 5, 5
-	type fields struct {
-		FirstFilled bool
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		wantErr bool
-	}{
-		{
-			name: "first filled",
-			fields: fields{
-				FirstFilled: true,
-			},
-			wantErr: false,
-		},
-		{
-			name: "first unfilled",
-			fields: fields{
-				FirstFilled: false,
-			},
-			wantErr: false,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			maze, err := NewMazeBuilder().generateGrid(width, height, tt.fields.FirstFilled)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("given error %v, wantErr %v", err, tt.wantErr)
-			}
-			if maze[0] != tt.fields.FirstFilled {
-				t.Errorf("first cell expected %t, but got %t", tt.fields.FirstFilled, maze[0])
-			}
-		})
-	}
-}
+	"github.com/kingmidas74/gonesis-engine/internal/domain/entity/maze/generator"
+)
 
 func TestGenerateGrid_Size(t *testing.T) {
-	firstFilled := true
-
 	type fields struct {
 		Width  int
 		Height int
@@ -99,12 +62,12 @@ func TestGenerateGrid_Size(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			maze, err := NewMazeBuilder().generateGrid(tt.fields.Width, tt.fields.Height, firstFilled)
+			maze, err := NewMazeBuilder[generator.GridGenerator]().SetWidth(tt.fields.Width).SetHeight(tt.fields.Height).Build()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("given error %v, wantErr %v", err, tt.wantErr)
 			}
-			if len(maze) != tt.fields.Size {
-				t.Errorf("maze size expected %d, but got %d", tt.fields.Size, len(maze))
+			if err == nil && len(maze.Content) != tt.fields.Size {
+				t.Errorf("maze size expected %d, but got %d", tt.fields.Size, len(maze.Content))
 			}
 		})
 	}

@@ -1,12 +1,12 @@
 const Colors = Object.freeze({
     RED:   Symbol("red"),
-    BLUE:  Symbol("blue"),
+    BLUE:  Symbol("#999"),
     GREEN: Symbol("green")
 });
 
 class Settings {
     constructor() {
-        this.CellSize = 20;
+        this.CellSize = 5;
         this.MazeColor = Colors.BLUE;
 
         this.Playable = false;
@@ -81,7 +81,7 @@ class Engine {
     }
 
     generateSideWinderMaze(width, height) {
-        return generateSideWinderMaze(width, height)
+        return generateAldousBroderMaze(width, height)
     }
 
     update(state) {
@@ -114,7 +114,6 @@ class Game {
     update() {
         let mazeWidth = this.math.floor(this.canvas.canvas.width / this.cellSize);
         let mazeHeight = this.math.floor(this.canvas.canvas.height / this.cellSize);
-
         this.walls.splice(0,this.walls.length)
 
         //TODO: call this.engine.update(state).
@@ -122,7 +121,7 @@ class Game {
 
         for (let row = 0; row < mazeHeight; row++) {
             for (let col = 0; col < mazeWidth; col++) {
-                if (this.maze.Content[row*mazeHeight+col] === false) {
+                if (this.maze.Content[row*mazeWidth+col] === false) {
                     const wall = new Wall(
                         col * this.cellSize,
                         row * this.cellSize,

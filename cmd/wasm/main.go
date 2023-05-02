@@ -18,6 +18,7 @@ func main() {
 	js.Global().Set("generateSideWinderMaze", generateMaze[generator.SidewinderGenerator]())
 	js.Global().Set("generateAldousBroderMaze", generateMaze[generator.AldousBroderGenerator]())
 	js.Global().Set("generateBinaryMaze", generateMaze[generator.BinaryGenerator]())
+	js.Global().Set("generateGridMaze", generateMaze[generator.GridGenerator]())
 	js.Global().Set("updateState", updateState())
 	<-make(chan bool)
 }
