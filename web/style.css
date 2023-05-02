@@ -21,5 +21,6 @@ body {
 canvas {
     border: 1px double black;
     flex:1 1 auto;
+    will-change: transform;
 }
 

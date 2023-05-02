@@ -14,9 +14,9 @@ const MazeGenerators = Object.freeze({
 
 class Settings {
     constructor() {
-        this.CellSize = 33;
+        this.CellSize = 20;
         this.MazeColor = Colors.BLUE;
-        this.MazeGenerator = MazeGenerators.Border;
+        this.MazeGenerator = MazeGenerators.SideWinder;
 
         this.Playable = false;
     }
@@ -52,6 +52,8 @@ class Canvas {
 
             this.canvas.width = document.body.clientWidth;
             this.canvas.height = document.body.clientHeight;
+
+            this.canvas.style.transform = 'translate3d(0, 0, 0)';
         }
     }
 
