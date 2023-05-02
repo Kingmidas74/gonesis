@@ -4,10 +4,19 @@ const Colors = Object.freeze({
     GREEN: Symbol("green")
 });
 
+const MazeGenerators = Object.freeze({
+    AldousBroder:   Symbol("AldousBroder"),
+    Binary:  Symbol("Binary"),
+    Grid: Symbol("Grid"),
+    SideWinder: Symbol("SideWinder"),
+    Border: Symbol("Border")
+});
+
 class Settings {
     constructor() {
-        this.CellSize = 5;
+        this.CellSize = 33;
         this.MazeColor = Colors.BLUE;
+        this.MazeGenerator = MazeGenerators.Border;
 
         this.Playable = false;
     }
@@ -81,6 +90,22 @@ class Engine {
     }
 
     generateSideWinderMaze(width, height) {
+        return generateSideWinderMaze(width, height)
+    }
+
+    generateBinaryMaze(width, height) {
+        return generateBinaryMaze(width, height)
+    }
+
+    generateBorder(width, height) {
+        return generateBorder(width, height)
+    }
+
+    generateGridMaze(width, height) {
+        return generateGridMaze(width, height)
+    }
+
+    generateAldousBroderMaze(width, height) {
         return generateAldousBroderMaze(width, height)
     }
 
@@ -102,22 +127,31 @@ class Game {
 
     async init() {
         await this.engine.init()
-    }
 
-    draw() {
-        this.canvas.clear();
-        for (let i = 0; i < this.walls.length; i++) {
-            this.walls[i].draw(this.canvas.ctx);
-        }
-    }
-
-    update() {
         let mazeWidth = this.math.floor(this.canvas.canvas.width / this.cellSize);
         let mazeHeight = this.math.floor(this.canvas.canvas.height / this.cellSize);
-        this.walls.splice(0,this.walls.length)
 
         //TODO: call this.engine.update(state).
-        this.maze = JSON.parse(this.engine.generateSideWinderMaze(mazeWidth,mazeHeight));
+        this.maze = JSON.parse(((alg, width, height) => {
+            switch (alg) {
+                case MazeGenerators.AldousBroder: {
+                    return this.engine.generateAldousBroderMaze(width, height)
+                }
+                case MazeGenerators.SideWinder: {
+                    return this.engine.generateSideWinderMaze(width, height)
+                }
+                case MazeGenerators.Binary: {
+                    return this.engine.generateBinaryMaze(width, height)
+                }
+                case MazeGenerators.Border: {
+                    return this.engine.generateBorder(width, height)
+                }
+                default: {
+                    return this.engine.generateGridMaze(width, height)
+                }
+            }
+        })(this.config.getInstance().MazeGenerator, mazeWidth, mazeHeight))
+        ;
 
         for (let row = 0; row < mazeHeight; row++) {
             for (let col = 0; col < mazeWidth; col++) {
@@ -132,6 +166,17 @@ class Game {
                 }
             }
         }
+    }
+
+    draw() {
+        this.canvas.clear();
+        for (let i = 0; i < this.walls.length; i++) {
+            this.walls[i].draw(this.canvas.ctx);
+        }
+    }
+
+    update() {
+
     }
 
     async run() {
