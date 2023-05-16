@@ -1,18 +1,52 @@
 package agent
 
-import "testing"
+import (
+	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
+	"testing"
 
-type mockCommand struct {
-	handleFunc      func(agent *Agent) int
-	isInterruptFunc func() bool
+	"github.com/kingmidas74/gonesis-engine/internal/contracts"
+)
+
+type mockTerrain struct {
+	GetNeighborFunc func(x, y int, direction int) contracts.Cell
 }
 
-func (c *mockCommand) Handle(agent *Agent) int {
-	return c.handleFunc(agent)
+func (m mockTerrain) GetNeighbors(x, y int) []contracts.Cell {
+	//TODO implement me
+	panic("implement me")
 }
 
-func (c *mockCommand) IsInterrupt() bool {
-	return c.isInterruptFunc()
+func (m mockTerrain) Cell(x, y int) contracts.Cell {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m mockTerrain) Cells() []contracts.Cell {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m mockTerrain) Width() int {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m mockTerrain) Height() int {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m mockTerrain) SetCellType(x, y int, cell enum.CellType) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m mockTerrain) GetNeighbor(x, y int, direction int) contracts.Cell {
+	return m.GetNeighborFunc(x, y, direction)
+}
+
+func (m mockTerrain) EmptyCells() []contracts.Cell {
+	return make([]contracts.Cell, 0)
 }
 
 func TestAgent_NextDay_UndefinedCommand(t *testing.T) {
@@ -21,12 +55,12 @@ func TestAgent_NextDay_UndefinedCommand(t *testing.T) {
 	agent := New(10, commands)
 
 	// Define findCommandPredicate function that always returns nil
-	findCommandPredicate := func(identifier int) Command {
+	findCommandPredicate := func(identifier int) contracts.Command {
 		return nil
 	}
 
 	// Test the case where the agent encounters an undefined command
-	err := agent.NextDay(3, findCommandPredicate)
+	err := agent.NextDay(3, mockTerrain{}, findCommandPredicate)
 
 	// Check results
 	if err != ErrCommandUndefined {

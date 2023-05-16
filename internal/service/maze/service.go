@@ -1,12 +1,13 @@
 package maze
 
 import (
+	"github.com/kingmidas74/gonesis-engine/internal/contracts"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/entity/maze"
 	"go.uber.org/zap"
 	"reflect"
 )
 
-func (s Service[K]) Generate(width, height int) (*maze.Maze, error) {
+func (s Service[K]) Generate(width, height int) (contracts.Maze, error) {
 	l := zap.L().Named("maze.generate").
 		With(zap.Int("width", width)).
 		With(zap.Int("height", height)).

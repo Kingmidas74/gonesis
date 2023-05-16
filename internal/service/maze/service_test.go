@@ -16,7 +16,7 @@ func TestMazeService_Generate(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if res.GetWidth() != 5 || res.GetHeight() != 5 {
+	if res.Width() != 5 || res.Height() != 5 {
 		t.Error("wrong size")
 	}
 }

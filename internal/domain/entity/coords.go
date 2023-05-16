@@ -1,8 +1,17 @@
 package entity
 
+import "github.com/kingmidas74/gonesis-engine/internal/contracts"
+
 type Coords struct {
 	x int
 	y int
+}
+
+func NewCoords(x, y int) contracts.Coords {
+	return &Coords{
+		x: x,
+		y: y,
+	}
 }
 
 func (c *Coords) X() int {

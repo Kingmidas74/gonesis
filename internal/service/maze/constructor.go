@@ -1,9 +1,11 @@
 package maze
 
-import "github.com/kingmidas74/gonesis-engine/internal/domain/entity/maze"
+import (
+	"github.com/kingmidas74/gonesis-engine/internal/contracts"
+)
 
-type Service[K maze.Generator] struct{}
+type Service[K contracts.MazeGenerator] struct{}
 
-func NewMazeService[K maze.Generator]() *Service[K] {
+func NewMazeService[K contracts.MazeGenerator]() *Service[K] {
 	return &Service[K]{}
 }

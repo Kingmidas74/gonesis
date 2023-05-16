@@ -3,18 +3,17 @@ package agent
 import (
 	"errors"
 
+	"github.com/kingmidas74/gonesis-engine/internal/contracts"
+	"github.com/kingmidas74/gonesis-engine/internal/domain/entity"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/entity/brain"
 )
 
 var ErrCommandUndefined = errors.New("command is undefined")
 
-type Command interface {
-	Handle(agent *Agent) (delta int)
-	IsInterrupt() bool
-}
-
 type Agent struct {
 	brain.Brain
+
+	entity.Coords
 
 	energy int
 }
@@ -35,22 +34,23 @@ func (a *Agent) SetEnergy(energy int) {
 }
 
 func (a *Agent) IsAlive() bool {
-	return a.energy > 0
+	return a.Energy() > 0
 }
 
-func (a *Agent) NextDay(maxSteps int, findCommandPredicate func(int) Command) error {
+// TODO: replace findCommandPredicate with []contracts.Command
+func (a *Agent) NextDay(maxSteps int, terra contracts.Terrain, findCommandPredicate func(int) contracts.Command) error {
 	for step := 0; a.IsAlive() && step < maxSteps; step++ {
-		commandIdentifier := a.CurrentCommandIdentifier()
+		commandIdentifier := a.Command(nil)
 		command := findCommandPredicate(commandIdentifier)
 		if command == nil {
 			return ErrCommandUndefined
 		}
-		delta := command.Handle(a)
-		a.MoveAddressOn(delta)
+		delta := command.Handle(a, terra)
+		a.IncreaseAddress(delta)
 		if command.IsInterrupt() {
 			break
 		}
-		a.energy--
+		a.SetEnergy(a.Energy() - 1)
 	}
 
 	return nil

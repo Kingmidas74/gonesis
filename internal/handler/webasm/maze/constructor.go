@@ -1,15 +1,15 @@
 package maze
 
 import (
-	domain_maze "github.com/kingmidas74/gonesis-engine/internal/domain/entity/maze"
+	"github.com/kingmidas74/gonesis-engine/internal/contracts"
 	"github.com/kingmidas74/gonesis-engine/internal/service/maze"
 )
 
-type Handler[G domain_maze.Generator] struct {
+type Handler[G contracts.MazeGenerator] struct {
 	mazeService *maze.Service[G]
 }
 
-func New[G domain_maze.Generator]() *Handler[G] {
+func New[G contracts.MazeGenerator]() *Handler[G] {
 	return &Handler[G]{
 		mazeService: maze.NewMazeService[G](),
 	}

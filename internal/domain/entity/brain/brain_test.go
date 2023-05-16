@@ -13,7 +13,7 @@ func TestNew_CommandsLength(t *testing.T) {
 func TestBrain_Mod(t *testing.T) {
 	commands := make([]int, 64)
 	b := New(commands)
-	if b.currentAddress != 0 {
+	if b.address != 0 {
 		t.Error("initial address is wrong")
 	}
 }
@@ -132,7 +132,7 @@ func TestMod_Valid(t *testing.T) {
 	}
 }
 
-func TestBrain_MoveAddressOn(t *testing.T) {
+func TestBrain_IncreaseAddress(t *testing.T) {
 	commands := make([]int, 3)
 	b := New(commands)
 
@@ -181,9 +181,9 @@ func TestBrain_MoveAddressOn(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b.SetCurrentAddress(tt.fields.currentAddress)
-			b.MoveAddressOn(tt.fields.delta)
-			if got := b.currentAddress; tt.fields.expectedAddress != got {
+			b.SetAddress(tt.fields.currentAddress)
+			b.IncreaseAddress(tt.fields.delta)
+			if got := b.address; tt.fields.expectedAddress != got {
 				t.Errorf("exp addres %d, got address %d", tt.fields.expectedAddress, got)
 			}
 		})

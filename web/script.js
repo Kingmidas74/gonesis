@@ -1,7 +1,7 @@
 const Colors = Object.freeze({
-    RED:   Symbol("red"),
-    BLUE:  Symbol("#999"),
-    GREEN: Symbol("green")
+    RED:   Symbol("#ff0000"),
+    BLUE:  Symbol("#999999"),
+    GREEN: Symbol("#00ff00"),
 });
 
 const MazeGenerators = Object.freeze({
@@ -17,6 +17,9 @@ class Settings {
         this.CellSize = 20;
         this.MazeColor = Colors.BLUE;
         this.MazeGenerator = MazeGenerators.SideWinder;
+
+        this.InitialAgensCount = 100;
+        this.AgentsColor = Colors.RED;
 
         this.Playable = false;
     }
@@ -111,6 +114,10 @@ class Engine {
         return generateAldousBroderMaze(width, height)
     }
 
+    runGame(width, height, agentsCount) {
+        return runGame(width, height, agentsCount)
+    }
+
     update(state) {
         return updateState(state)
     }
@@ -127,14 +134,57 @@ class Game {
         this.walls = [];
     }
 
+    lighter = (color, percent) => {
+        // Remove the "#" symbol from the color
+        color = color.substring(1);
+
+        // Parse the color values
+        const r = parseInt(color.substring(0, 2), 16);
+        const g = parseInt(color.substring(2, 4), 16);
+        const b = parseInt(color.substring(4, 6), 16);
+
+        // Calculate the lighter values
+        const lighterR = Math.round(r + (255 - r) * (percent / 100));
+        const lighterG = Math.round(g + (255 - g) * (percent / 100));
+        const lighterB = Math.round(b + (255 - b) * (percent / 100));
+
+        // Convert the lighter values back to hexadecimal
+        return `#${(lighterR.toString(16)).padStart(2, '0')}${(lighterG.toString(16)).padStart(2, '0')}${(lighterB.toString(16)).padStart(2, '0')}`;
+    }
+
     async init() {
         await this.engine.init()
 
         let mazeWidth = this.math.floor(this.canvas.canvas.width / this.cellSize);
         let mazeHeight = this.math.floor(this.canvas.canvas.height / this.cellSize);
 
+
+        this.world = JSON.parse(this.engine.runGame(mazeWidth, mazeHeight, this.config.getInstance().InitialAgensCount))
+        for (let row = 0; row < mazeHeight; row++) {
+            for (let col = 0; col < mazeWidth; col++) {
+                if (this.world.cells[row*mazeWidth+col].cellType === 3) {
+                    const wall = new Wall(
+                        col * this.cellSize,
+                        row * this.cellSize,
+                        this.cellSize,
+                        this.config.getInstance().MazeColor.description,
+                    );
+                    this.walls.push(wall);
+                }
+            }
+        }
+
+        for (const agent of this.world.agents) {
+            const wall = new Wall(
+                agent.x * this.cellSize,
+                agent.y * this.cellSize,
+                this.cellSize,
+                this.lighter(this.config.getInstance().AgentsColor.description, 100-agent.energy),
+            );
+            this.walls.push(wall);
+        }
         //TODO: call this.engine.update(state).
-        this.maze = JSON.parse(((alg, width, height) => {
+        /*this.maze = JSON.parse(((alg, width, height) => {
             switch (alg) {
                 case MazeGenerators.AldousBroder: {
                     return this.engine.generateAldousBroderMaze(width, height)
@@ -157,7 +207,7 @@ class Game {
 
         for (let row = 0; row < mazeHeight; row++) {
             for (let col = 0; col < mazeWidth; col++) {
-                if (this.maze.Content[row*mazeWidth+col] === false) {
+                if (this.maze.content[row*mazeWidth+col] === false) {
                     const wall = new Wall(
                         col * this.cellSize,
                         row * this.cellSize,
@@ -168,6 +218,7 @@ class Game {
                 }
             }
         }
+         */
     }
 
     draw() {
@@ -202,6 +253,10 @@ class Game {
         this.update();
         this.draw();
     }
+}
+
+function fromGo(data) {
+    console.log(data)
 }
 
 (async (canvasID, wasmFile) => {

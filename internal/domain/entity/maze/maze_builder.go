@@ -1,10 +1,8 @@
 package maze
 
-type Generator interface {
-	Generate(width, height int) (maze []bool, err error)
-}
+import "github.com/kingmidas74/gonesis-engine/internal/contracts"
 
-type Builder[G Generator] struct {
+type Builder[G contracts.MazeGenerator] struct {
 	width       int
 	height      int
 	firstFilled bool
@@ -12,29 +10,29 @@ type Builder[G Generator] struct {
 	maze Maze
 }
 
-func NewMazeBuilder[G Generator]() *Builder[G] {
+func NewMazeBuilder[G contracts.MazeGenerator]() contracts.MazeBuilder[G] {
 	return &Builder[G]{}
 }
 
-func (b *Builder[G]) SetWidth(width int) *Builder[G] {
+func (b *Builder[G]) SetWidth(width int) contracts.MazeBuilder[G] {
 	b.width = width
 
 	return b
 }
 
-func (b *Builder[G]) SetHeight(height int) *Builder[G] {
+func (b *Builder[G]) SetHeight(height int) contracts.MazeBuilder[G] {
 	b.height = height
 
 	return b
 }
 
-func (b *Builder[G]) FirstFilled(flag bool) *Builder[G] {
+func (b *Builder[G]) FirstFilled(flag bool) contracts.MazeBuilder[G] {
 	b.firstFilled = flag
 
 	return b
 }
 
-func (b *Builder[G]) Build() (*Maze, error) {
+func (b *Builder[G]) Build() (contracts.Maze, error) {
 	g := *new(G)
 
 	maze, err := g.Generate(b.width, b.height)

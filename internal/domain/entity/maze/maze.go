@@ -1,23 +1,29 @@
 package maze
 
+import "github.com/kingmidas74/gonesis-engine/internal/contracts"
+
 type Maze struct {
-	Width   int
-	Height  int
-	Content []bool
+	width   int
+	height  int
+	content []bool
 }
 
-func newMaze(width, height int, content []bool) *Maze {
+func newMaze(width, height int, content []bool) contracts.Maze {
 	return &Maze{
-		Width:   width,
-		Height:  height,
-		Content: content,
+		width:   width,
+		height:  height,
+		content: content,
 	}
 }
 
-func (m Maze) GetWidth() int {
-	return m.Width
+func (m Maze) Width() int {
+	return m.width
 }
 
-func (m Maze) GetHeight() int {
-	return m.Height
+func (m Maze) Height() int {
+	return m.height
+}
+
+func (m Maze) Content() []bool {
+	return m.content
 }

@@ -1,7 +1,6 @@
 package entity
 
 import (
-	"github.com/kingmidas74/gonesis-engine/internal/domain/entity/agent"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
 )
 
@@ -9,7 +8,13 @@ type Cell struct {
 	Coords
 
 	cellType enum.CellType
-	agent    *agent.Agent
+}
+
+func NewCell(x, y int, cellType enum.CellType) *Cell {
+	return &Cell{
+		Coords:   Coords{x: x, y: y},
+		cellType: cellType,
+	}
 }
 
 func (c *Cell) CellType() enum.CellType {
@@ -18,12 +23,4 @@ func (c *Cell) CellType() enum.CellType {
 
 func (c *Cell) SetCellType(cellType enum.CellType) {
 	c.cellType = cellType
-}
-
-func (c *Cell) Agent() *agent.Agent {
-	return c.agent
-}
-
-func (c *Cell) SetAgent(a *agent.Agent) {
-	c.agent = a
 }
