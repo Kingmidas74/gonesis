@@ -39,7 +39,7 @@ func (s *Service) InitWorld(width, height int, agentsCount int) (contracts.World
 	}
 
 	for i := 0; i < agentsCount; i++ {
-		agents[i] = agent.New(rand.Intn(20), s.generateCommandsSequence(availableCommands, 20))
+		agents[i] = agent.New(rand.Intn(1), s.generateCommandsSequence(availableCommands, 20))
 	}
 
 	pickedCellIndexes := make([]int, 0)

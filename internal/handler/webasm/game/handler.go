@@ -3,12 +3,15 @@
 package game
 
 import (
+	"encoding/json"
+	"github.com/kingmidas74/gonesis-engine/internal/mapper"
 	"syscall/js"
 
+	"github.com/kingmidas74/gonesis-engine/internal/contracts"
 	"github.com/kingmidas74/gonesis-engine/internal/handler/webasm/model"
 )
 
-func (h *Handler) InitWorld(args []js.Value) (*model.World, error) {
+func (h *Handler) InitWorldAndRun(args []js.Value, callback func(int, string)) (*model.World, error) {
 	width := args[0].Int()
 	height := args[1].Int()
 	agentsCount := args[2].Int()
@@ -18,26 +21,12 @@ func (h *Handler) InitWorld(args []js.Value) (*model.World, error) {
 		return nil, err
 	}
 
-	cells := make([]model.Cell, len(world.Cells()))
-	for i, cell := range world.Cells() {
-		cells[i] = model.Cell{
-			CellType: cell.CellType().Value(),
-		}
-	}
+	result := mapper.NewWorld(world)
 
-	agents := make([]model.Agent, len(world.Agents()))
-	for i, agent := range world.Agents() {
-		agents[i] = model.Agent{
-			X:      agent.X(),
-			Y:      agent.Y(),
-			Energy: agent.Energy(),
+	world.Action(1, func(w contracts.World, currentDay int) {
+		if r, e := json.Marshal(mapper.NewWorld(w)); e == nil {
+			callback(currentDay, string(r))
 		}
-	}
-
-	return &model.World{
-		Width:  world.Width(),
-		Height: world.Height(),
-		Cells:  cells,
-		Agents: agents,
-	}, nil
+	})
+	return &result, nil
 }

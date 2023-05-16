@@ -49,17 +49,21 @@ func updateState() js.Func {
 	})
 }
 
+func dayCallback(day int, jsonData string) {
+	js.Global().Call("fromGo", day, jsonData)
+}
+
 func runGame() js.Func {
 	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		h := game.New()
-		res, err := h.InitWorld(args)
+		//res, err := h.InitWorld(args)
+		res, err := h.InitWorldAndRun(args, dayCallback)
 		if err != nil {
 			return err.Error()
 		}
-		if r, e := json.Marshal(res); e != nil {
-			return e.Error()
-		} else {
+		if r, err := json.Marshal(res); err == nil {
 			return string(r)
 		}
+		return err.Error()
 	})
 }

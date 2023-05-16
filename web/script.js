@@ -18,10 +18,10 @@ class Settings {
         this.MazeColor = Colors.BLUE;
         this.MazeGenerator = MazeGenerators.SideWinder;
 
-        this.InitialAgensCount = 100;
+        this.InitialAgensCount = 1;
         this.AgentsColor = Colors.RED;
 
-        this.Playable = false;
+        this.Playable = true;
     }
 
     static getInstance() {
@@ -124,6 +124,10 @@ class Engine {
 }
 
 class Game {
+
+    #daysQueue
+    #pastDays
+
     constructor(canvas, engine, config, math) {
         this.canvas = canvas;
         this.engine = engine;
@@ -132,6 +136,9 @@ class Game {
 
         this.cellSize = this.config.getInstance().CellSize;
         this.walls = [];
+
+        this.#daysQueue = [];
+        this.#pastDays =[];
     }
 
     lighter = (color, percent) => {
@@ -179,7 +186,7 @@ class Game {
                 agent.x * this.cellSize,
                 agent.y * this.cellSize,
                 this.cellSize,
-                this.lighter(this.config.getInstance().AgentsColor.description, 100-agent.energy),
+                this.config.getInstance().AgentsColor.description,
             );
             this.walls.push(wall);
         }
@@ -229,7 +236,56 @@ class Game {
     }
 
     update() {
+        if(this.#daysQueue.length === 0) {
+            return false;
+        }
+        const newState = this.#daysQueue.shift();
+        if (this.livingAgentsCount(newState) === 0) {
+            return false;
+        }
+        this.walls = [];
+        for (let row = 0; row < newState.height; row++) {
+            for (let col = 0; col < newState.width; col++) {
+                if (newState.cells[row*newState.width+col].cellType === 3) {
+                    const wall = new Wall(
+                        col * this.cellSize,
+                        row * this.cellSize,
+                        this.cellSize,
+                        this.config.getInstance().MazeColor.description,
+                    );
+                    this.walls.push(wall);
+                }
+            }
+        }
 
+        for (const agent of newState.agents) {
+            const wall = new Wall(
+                agent.x * this.cellSize,
+                agent.y * this.cellSize,
+                this.cellSize,
+                this.config.getInstance().AgentsColor.description,
+            );
+            this.walls.push(wall);
+        }
+        this.#pastDays.push(newState);
+        return true;
+    }
+
+    saveState(state) {
+        this.#daysQueue.push(state)
+    }
+
+    /**
+     * @param {World} world
+     * @return {number} count of living agents
+     */
+    livingAgentsCount(world) {
+        let count = 0;
+        for (const a in world.agents) {
+            if (a.energy > 0) {
+                count++;
+            }
+        }
     }
 
     async run() {
@@ -240,10 +296,18 @@ class Game {
             let lastFrameTime = performance.now();
 
             const loop = () => {
-                this.update();
+                const updateResult = this.update();
                 this.draw();
 
-                requestAnimationFrame(loop);
+                if (updateResult) {
+                    requestAnimationFrame(loop);
+                }
+                else {
+                    console.log("Game over");
+                    console.log(this.#pastDays)
+                }
+
+
             }
 
             loop();
@@ -255,8 +319,13 @@ class Game {
     }
 }
 
-function fromGo(data) {
-    console.log(data)
+/**
+ * @type {Game}
+ */
+let game;
+
+function fromGo(day, data) {
+    game.saveState(JSON.parse(data))
 }
 
 (async (canvasID, wasmFile) => {
@@ -267,6 +336,6 @@ function fromGo(data) {
     const canvas = new Canvas(canvasID);
     const engine = new Engine(wasmFile);
 
-    const game = new Game(canvas, engine, settingsProvider, mathProvider);
+    game = new Game(canvas, engine, settingsProvider, mathProvider);
     await game.run()
 })("canvas", "engine.wasm").then(() => console.log("Ready"))
