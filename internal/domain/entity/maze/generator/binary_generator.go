@@ -11,7 +11,7 @@ type BinaryGenerator struct {
 
 func (g BinaryGenerator) Generate(width, height int) (maze []bool, err error) {
 	if width <= 0 || height <= 0 {
-		return make([]bool, 0), errors.MAZE_SIZE_INCORRECT
+		return make([]bool, 0), errors.ErrMazeSizeIncorrect
 	}
 
 	maze, err = g.gridGenerator.Generate(width, height)

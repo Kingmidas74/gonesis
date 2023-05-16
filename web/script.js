@@ -65,7 +65,7 @@ class Canvas {
     }
 }
 
-class Wall {
+class Cell {
     constructor(x, y, size, color) {
         this.x = x;
         this.y = y;
@@ -94,32 +94,19 @@ class Engine {
         this.#go.run(result.instance);
     }
 
-    generateSideWinderMaze(width, height) {
-        return generateSideWinderMaze(width, height)
+    /**
+     *
+     * @param {number} width
+     * @param {number} height
+     * @param {number} agentsCount The value should be less than width * height
+     * @returns {*}
+     */
+    initWorld(width, height, agentsCount) {
+        return initWorld(width, height, agentsCount)
     }
 
-    generateBinaryMaze(width, height) {
-        return generateBinaryMaze(width, height)
-    }
-
-    generateBorder(width, height) {
-        return generateBorder(width, height)
-    }
-
-    generateGridMaze(width, height) {
-        return generateGridMaze(width, height)
-    }
-
-    generateAldousBroderMaze(width, height) {
-        return generateAldousBroderMaze(width, height)
-    }
-
-    runGame(width, height, agentsCount) {
-        return runGame(width, height, agentsCount)
-    }
-
-    update(state) {
-        return updateState(state)
+    step() {
+        return step()
     }
 }
 
@@ -135,28 +122,36 @@ class Game {
         this.math = math;
 
         this.cellSize = this.config.getInstance().CellSize;
-        this.walls = [];
-
-        this.#daysQueue = [];
-        this.#pastDays =[];
+        this.cells = [];
     }
 
-    lighter = (color, percent) => {
-        // Remove the "#" symbol from the color
-        color = color.substring(1);
+    fillCells(worldInstance) {
+        const width = worldInstance.width;
+        const height = worldInstance.height;
 
-        // Parse the color values
-        const r = parseInt(color.substring(0, 2), 16);
-        const g = parseInt(color.substring(2, 4), 16);
-        const b = parseInt(color.substring(4, 6), 16);
+        for (let row = 0; row < height; row++) {
+            for (let col = 0; col < width; col++) {
+                if (worldInstance.cells[row*width+col].cellType === 3) {
+                    const cell = new Cell(
+                        col * this.cellSize,
+                        row * this.cellSize,
+                        this.cellSize,
+                        this.config.getInstance().MazeColor.description,
+                    );
+                    this.cells.push(cell);
+                }
+            }
+        }
 
-        // Calculate the lighter values
-        const lighterR = Math.round(r + (255 - r) * (percent / 100));
-        const lighterG = Math.round(g + (255 - g) * (percent / 100));
-        const lighterB = Math.round(b + (255 - b) * (percent / 100));
-
-        // Convert the lighter values back to hexadecimal
-        return `#${(lighterR.toString(16)).padStart(2, '0')}${(lighterG.toString(16)).padStart(2, '0')}${(lighterB.toString(16)).padStart(2, '0')}`;
+        for (const agent of worldInstance.agents) {
+            const cell = new Cell(
+                agent.x * this.cellSize,
+                agent.y * this.cellSize,
+                this.cellSize,
+                this.config.getInstance().AgentsColor.description,
+            );
+            this.cells.push(cell);
+        }
     }
 
     async init() {
@@ -165,167 +160,73 @@ class Game {
         let mazeWidth = this.math.floor(this.canvas.canvas.width / this.cellSize);
         let mazeHeight = this.math.floor(this.canvas.canvas.height / this.cellSize);
 
+        const world = JSON.parse(this.engine.initWorld(mazeWidth, mazeHeight, this.config.getInstance().InitialAgensCount))
+        this.fillCells(world)
 
-        this.world = JSON.parse(this.engine.runGame(mazeWidth, mazeHeight, this.config.getInstance().InitialAgensCount))
-        for (let row = 0; row < mazeHeight; row++) {
-            for (let col = 0; col < mazeWidth; col++) {
-                if (this.world.cells[row*mazeWidth+col].cellType === 3) {
-                    const wall = new Wall(
-                        col * this.cellSize,
-                        row * this.cellSize,
-                        this.cellSize,
-                        this.config.getInstance().MazeColor.description,
-                    );
-                    this.walls.push(wall);
-                }
-            }
-        }
-
-        for (const agent of this.world.agents) {
-            const wall = new Wall(
-                agent.x * this.cellSize,
-                agent.y * this.cellSize,
-                this.cellSize,
-                this.config.getInstance().AgentsColor.description,
-            );
-            this.walls.push(wall);
-        }
-        //TODO: call this.engine.update(state).
-        /*this.maze = JSON.parse(((alg, width, height) => {
-            switch (alg) {
-                case MazeGenerators.AldousBroder: {
-                    return this.engine.generateAldousBroderMaze(width, height)
-                }
-                case MazeGenerators.SideWinder: {
-                    return this.engine.generateSideWinderMaze(width, height)
-                }
-                case MazeGenerators.Binary: {
-                    return this.engine.generateBinaryMaze(width, height)
-                }
-                case MazeGenerators.Border: {
-                    return this.engine.generateBorder(width, height)
-                }
-                default: {
-                    return this.engine.generateGridMaze(width, height)
-                }
-            }
-        })(this.config.getInstance().MazeGenerator, mazeWidth, mazeHeight))
-        ;
-
-        for (let row = 0; row < mazeHeight; row++) {
-            for (let col = 0; col < mazeWidth; col++) {
-                if (this.maze.content[row*mazeWidth+col] === false) {
-                    const wall = new Wall(
-                        col * this.cellSize,
-                        row * this.cellSize,
-                        this.cellSize,
-                        this.config.getInstance().MazeColor.description,
-                    );
-                    this.walls.push(wall);
-                }
-            }
-        }
-         */
     }
 
     draw() {
         this.canvas.clear();
-        for (let i = 0; i < this.walls.length; i++) {
-            this.walls[i].draw(this.canvas.ctx);
+        for (let i = 0; i < this.cells.length; i++) {
+            this.cells[i].draw(this.canvas.ctx);
         }
     }
 
     update() {
-        if(this.#daysQueue.length === 0) {
+        const world = JSON.parse(this.engine.step())
+        console.log("livingAgentsCount", this.livingAgentsCount(world))
+        if(this.livingAgentsCount(world) === 0) {
+            console.log(world);
             return false;
         }
-        const newState = this.#daysQueue.shift();
-        if (this.livingAgentsCount(newState) === 0) {
-            return false;
-        }
-        this.walls = [];
-        for (let row = 0; row < newState.height; row++) {
-            for (let col = 0; col < newState.width; col++) {
-                if (newState.cells[row*newState.width+col].cellType === 3) {
-                    const wall = new Wall(
-                        col * this.cellSize,
-                        row * this.cellSize,
-                        this.cellSize,
-                        this.config.getInstance().MazeColor.description,
-                    );
-                    this.walls.push(wall);
-                }
-            }
-        }
-
-        for (const agent of newState.agents) {
-            const wall = new Wall(
-                agent.x * this.cellSize,
-                agent.y * this.cellSize,
-                this.cellSize,
-                this.config.getInstance().AgentsColor.description,
-            );
-            this.walls.push(wall);
-        }
-        this.#pastDays.push(newState);
+        this.cells = [];
+        this.fillCells(world)
         return true;
     }
 
-    saveState(state) {
-        this.#daysQueue.push(state)
-    }
-
     /**
-     * @param {World} world
+     * @param {*} world
      * @return {number} count of living agents
      */
     livingAgentsCount(world) {
         let count = 0;
-        for (const a in world.agents) {
+        for (const a of world.agents) {
             if (a.energy > 0) {
                 count++;
             }
         }
+        return count;
     }
 
     async run() {
-        await this.init()
         const config = this.config.getInstance();
 
-        if(config.Playable) {
-            let lastFrameTime = performance.now();
+        await this.init();
+        this.draw();
 
-            const loop = () => {
-                const updateResult = this.update();
-                this.draw();
-
-                if (updateResult) {
-                    requestAnimationFrame(loop);
-                }
-                else {
-                    console.log("Game over");
-                    console.log(this.#pastDays)
-                }
-
-
-            }
-
-            loop();
+        if(!config.Playable) {
+            console.log("Game is not playable");
             return;
         }
 
-        this.update();
-        this.draw();
+        let lastFrameTime = performance.now();
+
+        const loop = () => {
+            const updateResult = this.update();
+            this.draw();
+            console.log("updateResult", updateResult);
+            if (updateResult) {
+                requestAnimationFrame(loop);
+            }
+            else {
+                console.log("Game over");
+            }
+
+
+        }
+
+        loop();
     }
-}
-
-/**
- * @type {Game}
- */
-let game;
-
-function fromGo(day, data) {
-    game.saveState(JSON.parse(data))
 }
 
 (async (canvasID, wasmFile) => {
@@ -336,6 +237,6 @@ function fromGo(day, data) {
     const canvas = new Canvas(canvasID);
     const engine = new Engine(wasmFile);
 
-    game = new Game(canvas, engine, settingsProvider, mathProvider);
+    const game = new Game(canvas, engine, settingsProvider, mathProvider);
     await game.run()
 })("canvas", "engine.wasm").then(() => console.log("Ready"))

@@ -19,6 +19,10 @@ func NewWorld(world contracts.World) model.World {
 			X:      agent.X(),
 			Y:      agent.Y(),
 			Energy: agent.Energy(),
+
+			Brain: model.Brain{
+				Commands: agent.Commands(),
+			},
 		}
 	}
 

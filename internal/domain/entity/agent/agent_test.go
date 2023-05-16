@@ -52,7 +52,7 @@ func (m mockTerrain) EmptyCells() []contracts.Cell {
 func TestAgent_NextDay_UndefinedCommand(t *testing.T) {
 	// Initialize test agent
 	commands := []int{1, 2, 3}
-	agent := New(10, commands)
+	agent := New(10, commands, 20)
 
 	// Define findCommandPredicate function that always returns nil
 	findCommandPredicate := func(identifier int) contracts.Command {
@@ -69,7 +69,7 @@ func TestAgent_NextDay_UndefinedCommand(t *testing.T) {
 }
 
 func TestAgent_IsAlive(t *testing.T) {
-	a := New(0, make([]int, 0))
+	a := New(0, make([]int, 0), 20)
 	type fields struct {
 		energy  int
 		isAlive bool

@@ -12,6 +12,6 @@ type Service struct {
 	world contracts.World
 }
 
-func NewGameService() *Service {
+func New() *Service {
 	return &Service{}
 }

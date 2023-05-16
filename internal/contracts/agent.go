@@ -10,4 +10,5 @@ type Agent interface {
 	IsAlive() bool
 	NextDay(maxSteps int, world Terrain, command func(commandIdentifier int) Command) error
 	Energy() int
+	Commands() []int
 }

@@ -4,7 +4,7 @@ import "testing"
 
 func TestNew_CommandsLength(t *testing.T) {
 	commands := make([]int, 64)
-	b := New(commands)
+	b := New(commands, 64)
 	if len(b.commands) != 64 {
 		t.Error("length of commands")
 	}
@@ -12,7 +12,7 @@ func TestNew_CommandsLength(t *testing.T) {
 
 func TestBrain_Mod(t *testing.T) {
 	commands := make([]int, 64)
-	b := New(commands)
+	b := New(commands, 64)
 	if b.address != 0 {
 		t.Error("initial address is wrong")
 	}
@@ -20,7 +20,7 @@ func TestBrain_Mod(t *testing.T) {
 
 func TestMod_Valid(t *testing.T) {
 	commands := make([]int, 3)
-	b := New(commands)
+	b := New(commands, 3)
 
 	type fields struct {
 		rowAddress      int
@@ -134,7 +134,7 @@ func TestMod_Valid(t *testing.T) {
 
 func TestBrain_IncreaseAddress(t *testing.T) {
 	commands := make([]int, 3)
-	b := New(commands)
+	b := New(commands, 20)
 
 	type fields struct {
 		currentAddress  int

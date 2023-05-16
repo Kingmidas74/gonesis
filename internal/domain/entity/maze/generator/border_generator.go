@@ -10,7 +10,7 @@ type BorderGenerator struct {
 
 func (g BorderGenerator) Generate(width, height int) (maze []bool, err error) {
 	if width <= 0 || height <= 0 {
-		return make([]bool, 0), errors.MAZE_SIZE_INCORRECT
+		return make([]bool, 0), errors.ErrMazeSizeIncorrect
 	}
 
 	maze = make([]bool, width*height)

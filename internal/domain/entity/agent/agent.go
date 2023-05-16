@@ -18,9 +18,9 @@ type Agent struct {
 	energy int
 }
 
-func New(energy int, commands []int) *Agent {
+func New(energy int, availableCommands []int, brainVolume int) *Agent {
 	return &Agent{
-		Brain:  brain.New(commands),
+		Brain:  brain.New(availableCommands, brainVolume),
 		energy: energy,
 	}
 }
@@ -43,7 +43,9 @@ func (a *Agent) NextDay(maxSteps int, terra contracts.Terrain, findCommandPredic
 		commandIdentifier := a.Command(nil)
 		command := findCommandPredicate(commandIdentifier)
 		if command == nil {
-			return ErrCommandUndefined
+			a.SetEnergy(a.Energy() - 1)
+			a.IncreaseAddress(commandIdentifier)
+			return nil
 		}
 		delta := command.Handle(a, terra)
 		a.IncreaseAddress(delta)

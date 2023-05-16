@@ -47,7 +47,14 @@ func (w *World) Height() int {
 }
 
 func (w *World) Command(commandIdentifier int) contracts.Command {
+	if commandIdentifier < 0 || commandIdentifier >= len(w.commands) {
+		return nil
+	}
 	return w.commands[commandIdentifier]
+}
+
+func (w *World) Next() error {
+	return w.runDay(1)
 }
 
 func (w *World) runDay(maxSteps int) error {

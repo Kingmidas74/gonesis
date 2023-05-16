@@ -10,6 +10,6 @@ type Handler struct {
 
 func New() *Handler {
 	return &Handler{
-		gameService: game.NewGameService(),
+		gameService: game.New(),
 	}
 }

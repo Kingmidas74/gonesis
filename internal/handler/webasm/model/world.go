@@ -12,7 +12,12 @@ type Cell struct {
 }
 
 type Agent struct {
+	Brain
 	X      int `json:"x"`
 	Y      int `json:"y"`
 	Energy int `json:"energy"`
+}
+
+type Brain struct {
+	Commands []int `json:"commands"`
 }

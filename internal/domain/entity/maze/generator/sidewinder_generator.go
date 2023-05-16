@@ -11,7 +11,7 @@ type SidewinderGenerator struct {
 
 func (g SidewinderGenerator) Generate(width, height int) (maze []bool, err error) {
 	if width <= 0 || height <= 0 {
-		return nil, errors.MAZE_SIZE_INCORRECT
+		return nil, errors.ErrMazeSizeIncorrect
 	}
 
 	maze, err = g.gridGenerator.Generate(width, height)
