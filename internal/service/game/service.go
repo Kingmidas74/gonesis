@@ -42,9 +42,9 @@ func (s *Service) InitWorld(width, height int, agentsCount int) (contracts.World
 			continue
 		}
 		pickedCellIndexes = append(pickedCellIndexes, targetIndex)
-		_ = emptyCells[targetIndex]
-		agents[i].SetX(12)
-		agents[i].SetY(22)
+		emptyCell := emptyCells[targetIndex]
+		agents[i].SetX(emptyCell.X())
+		agents[i].SetY(emptyCell.Y())
 	}
 
 	s.world = world.New(terra, agents, s.getAvailableCommands())
@@ -53,7 +53,7 @@ func (s *Service) InitWorld(width, height int, agentsCount int) (contracts.World
 
 func (s *Service) generateAgents(agentsCount int) []contracts.Agent {
 	agents := make([]contracts.Agent, agentsCount)
-	availableCommands := []int{0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 3, 3, 3, 3, 2, 2, 2, 2}
+	availableCommands := []int{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3}
 	for i := 0; i < agentsCount; i++ {
 		agents[i] = agent.New(initialEnergy, availableCommands, brainVolume)
 	}

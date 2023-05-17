@@ -47,7 +47,6 @@ func (b *Brain) mod(address int) int {
 }
 
 func generateCommandsSequence(availableCommands []int, sequenceLength int) []int {
-	return []int{0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 3, 0, 2, 0, 2, 2, 0, 2}
 	result := make([]int, sequenceLength)
 	for i := 0; i < sequenceLength; i++ {
 		index := rand.Intn(len(availableCommands))

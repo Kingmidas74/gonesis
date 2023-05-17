@@ -4,10 +4,12 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/kingmidas74/gonesis-engine/internal/mapper"
+	"math/rand"
 	"syscall/js"
+	"time"
 
 	"github.com/kingmidas74/gonesis-engine/internal/contracts"
+	"github.com/kingmidas74/gonesis-engine/internal/mapper"
 	"github.com/kingmidas74/gonesis-engine/internal/service/game"
 )
 
@@ -35,6 +37,8 @@ func initWorld() js.Func {
 		width := args[0].Int()
 		height := args[1].Int()
 		agentsCount := args[2].Int()
+
+		rand.Seed(time.Now().UnixNano())
 
 		gameService := game.New()
 		world, err := gameService.InitWorld(width, height, agentsCount)
