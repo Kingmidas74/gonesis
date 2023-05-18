@@ -10,19 +10,26 @@ type MoveCommand struct {
 }
 
 func NewMoveCommand() *MoveCommand {
-	return &MoveCommand{}
+	return &MoveCommand{
+		isInterrupt: true,
+	}
 }
 
 func (c *MoveCommand) Handle(agent contracts.Agent, terra contracts.Terrain) int {
 	whereAddress := agent.Address() + 1
 	direction := agent.Command(&whereAddress)
 	neighborCell := terra.GetNeighbor(agent.X(), agent.Y(), direction)
-	switch neighborCell.CellType() {
-	case enum.CellTypeEmpty:
+	if neighborCell == nil {
+		return 0
+	}
+	if neighborCell.CellType() == enum.CellTypeEmpty {
 		agent.SetX(neighborCell.X())
 		agent.SetY(neighborCell.Y())
 	}
-	return 1
+	localDelta := neighborCell.CellType().Value() + 1
+	deltaAddress := agent.Address() + localDelta
+	delta := agent.Command(&deltaAddress)
+	return delta
 }
 
 func (c *MoveCommand) IsInterrupt() bool {

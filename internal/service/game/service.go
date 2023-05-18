@@ -16,12 +16,12 @@ import (
 )
 
 const (
-	initialEnergy = 2000
+	initialEnergy = 20
 	brainVolume   = 20
 )
 
 func (s *Service) InitWorld(width, height int, agentsCount int) (contracts.World, error) {
-	mazeBuilder := maze.NewMazeBuilder[generator.SidewinderGenerator]()
+	mazeBuilder := maze.NewMazeBuilder[generator.BorderGenerator]()
 	m, err := mazeBuilder.SetWidth(width).
 		SetHeight(height).
 		SetRequiredEmptyCells(agentsCount).
@@ -53,9 +53,8 @@ func (s *Service) InitWorld(width, height int, agentsCount int) (contracts.World
 
 func (s *Service) generateAgents(agentsCount int) []contracts.Agent {
 	agents := make([]contracts.Agent, agentsCount)
-	availableCommands := []int{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3}
 	for i := 0; i < agentsCount; i++ {
-		agents[i] = agent.New(initialEnergy, availableCommands, brainVolume)
+		agents[i] = agent.New(initialEnergy, brainVolume)
 	}
 	return agents
 }

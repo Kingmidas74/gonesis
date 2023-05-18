@@ -134,19 +134,27 @@ class Game {
             console.log("Game is not playable");
             return;
         }
+        const desiredFPS = 30;
+        const timeStep = 1000 / desiredFPS;
+        let lastTime = this.#windowProvider.performance.now();
 
-        const loop = () => {
-            const updateResult = this.#update();
-            this.#renderer.draw(this.#cells);
-            if (updateResult) {
-                this.#windowProvider.requestAnimationFrame(loop);
+        const loop = (currentTime) => {
+            const deltaTime = currentTime - lastTime;
+
+            if(deltaTime >= timeStep) {
+                lastTime = currentTime - (deltaTime % timeStep);
+                const updateResult = this.#update();
+                this.#renderer.draw(this.#cells);
+                if (!updateResult) {
+                    console.log("Game over");
+                    return;
+                }
             }
-            else {
-                console.log("Game over");
-            }
+
+            this.#windowProvider.requestAnimationFrame(loop);
         }
 
-        loop();
+        this.#windowProvider.requestAnimationFrame(loop);
     }
 }
 

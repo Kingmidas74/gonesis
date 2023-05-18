@@ -24,7 +24,7 @@ type NeumannTopology struct {
 
 func (t NeumannTopology) GetNeighbor(x, y int, direction int) contracts.Coords {
 	multiples := t.getCoordsMultiples()
-	neumannDirection := NeumannDirection(util.ModLikePython(direction, len(t.getCoordsMultiples())))
+	neumannDirection := NeumannDirection(util.ModLikePython(direction, len(multiples)))
 
 	return entity.NewCoords(x+multiples[neumannDirection][0], y+multiples[neumannDirection][1])
 }

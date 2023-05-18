@@ -9,6 +9,6 @@ const (
 	CellTypeObstacle
 )
 
-func (t CellType) Value() uint8 {
-	return uint8(t)
+func (t CellType) Value() int {
+	return int(t)
 }

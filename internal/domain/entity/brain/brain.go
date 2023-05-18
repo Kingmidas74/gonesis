@@ -1,9 +1,8 @@
 package brain
 
 import (
-	"math/rand"
-
 	"github.com/kingmidas74/gonesis-engine/internal/util"
+	"math/rand"
 )
 
 type Brain struct {
@@ -11,10 +10,10 @@ type Brain struct {
 	address  int
 }
 
-func New(availableCommands []int, volume int) Brain {
+func New(volume int) Brain {
 	return Brain{
 		address:  0,
-		commands: generateCommandsSequence(availableCommands, volume),
+		commands: generateCommandsSequence(volume),
 	}
 }
 
@@ -46,11 +45,15 @@ func (b *Brain) mod(address int) int {
 	return util.ModLikePython(address, len(b.commands))
 }
 
-func generateCommandsSequence(availableCommands []int, sequenceLength int) []int {
+func generateCommandsSequence(sequenceLength int) []int {
 	result := make([]int, sequenceLength)
+
+	result[0] = 0
+	result[1] = 0
+	result[2] = 0
+
 	for i := 0; i < sequenceLength; i++ {
-		index := rand.Intn(len(availableCommands))
-		result[i] = availableCommands[index]
+		result[i] = rand.Intn(sequenceLength)
 	}
 	return result
 }

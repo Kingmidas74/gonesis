@@ -18,9 +18,9 @@ type Agent struct {
 	energy int
 }
 
-func New(energy int, availableCommands []int, brainVolume int) *Agent {
+func New(energy int, brainVolume int) *Agent {
 	return &Agent{
-		Brain:  brain.New(availableCommands, brainVolume),
+		Brain:  brain.New(brainVolume),
 		energy: energy,
 	}
 }

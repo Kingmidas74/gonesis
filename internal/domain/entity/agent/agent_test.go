@@ -1,6 +1,8 @@
 package agent
 
 import (
+	"github.com/kingmidas74/gonesis-engine/internal/domain/commands"
+	"github.com/kingmidas74/gonesis-engine/internal/domain/entity"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
 	"testing"
 
@@ -51,8 +53,7 @@ func (m mockTerrain) EmptyCells() []contracts.Cell {
 
 func TestAgent_NextDay_UndefinedCommand(t *testing.T) {
 	// Initialize test agent
-	commands := []int{1, 2, 3}
-	agent := New(10, commands, 20)
+	agent := New(10, 20)
 
 	// Define findCommandPredicate function that always returns nil
 	findCommandPredicate := func(identifier int) contracts.Command {
@@ -69,7 +70,7 @@ func TestAgent_NextDay_UndefinedCommand(t *testing.T) {
 }
 
 func TestAgent_IsAlive(t *testing.T) {
-	a := New(0, make([]int, 0), 20)
+	a := New(0, 20)
 	type fields struct {
 		energy  int
 		isAlive bool
@@ -108,5 +109,30 @@ func TestAgent_IsAlive(t *testing.T) {
 				t.Errorf("exp state %t, got state %t", tt.fields.isAlive, got)
 			}
 		})
+	}
+}
+
+func TestAgent_BrainCorrection(t *testing.T) {
+	a := New(10, 20)
+	for {
+		err := a.NextDay(11, mockTerrain{
+			GetNeighborFunc: func(x, y int, direction int) contracts.Cell {
+				return entity.NewCell(a.X(), a.Y()-1, enum.CellTypeEmpty)
+			},
+		}, func(identifier int) contracts.Command {
+			if identifier == 0 {
+				return commands.NewMoveCommand()
+			}
+			return nil
+		})
+		if err != nil {
+			t.Errorf("there should be no error, got %v", err)
+		}
+		if !a.IsAlive() {
+			break
+		}
+	}
+	if a.Energy() != 0 {
+		t.Errorf("exp energy 0, got %d", a.Energy())
 	}
 }

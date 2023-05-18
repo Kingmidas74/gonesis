@@ -8,7 +8,7 @@ type World struct {
 }
 
 type Cell struct {
-	CellType uint8 `json:"cellType"`
+	CellType int `json:"cellType"`
 }
 
 type Agent struct {

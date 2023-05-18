@@ -34,7 +34,7 @@ class Configuration {
          * The initial number of agents in the game.
          * @type {number}
          */
-        this.InitialAgentsCount = 2;
+        this.InitialAgentsCount = 100;
 
         /**
          * The color of the agents.
@@ -48,6 +48,8 @@ class Configuration {
          * @type {boolean}
          */
         this.Playable = true;
+
+        this.RenderDebounceTime = 100;
     }
 }
 

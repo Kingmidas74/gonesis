@@ -54,7 +54,12 @@ func (w *World) Command(commandIdentifier int) contracts.Command {
 }
 
 func (w *World) Next() error {
-	return w.runDay(1)
+	err := w.runDay(1)
+	if err != nil {
+		return err
+	}
+	w.updateCells()
+	return nil
 }
 
 func (w *World) runDay(maxSteps int) error {
