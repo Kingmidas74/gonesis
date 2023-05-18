@@ -9,45 +9,54 @@ class Configuration {
     /**
      * Creates an instance of Settings.
      */
-    constructor() {
+    constructor({
+                    cellSize = 20,
+                    mazeColor = Colors.DARK,
+                    mazeGenerator = MazeGenerators.SideWinder,
+                    initialAgentsCount = 100,
+                    agentsColor = Colors.BLUE,
+                    isPlayable = true,
+                    foodColor = Colors.GREEN,
+                    poisonColor = Colors.RED,
+                } = {}) {
         /**
          * The size of each cell in the maze.
          * @type {number}
          */
-        this.CellSize = 20;
+        this.CellSize = cellSize;
 
         /**
          * The color of the maze.
          * @type {string}
          * @see Colors
          */
-        this.MazeColor = Colors.BLUE;
+        this.MazeColor = mazeColor;
 
         /**
          * The maze generator algorithm to use.
          * @type {string}
          * @see MazeGenerators
          */
-        this.MazeGenerator = MazeGenerators.SideWinder;
+        this.MazeGenerator = mazeGenerator;
 
         /**
          * The initial number of agents in the game.
          * @type {number}
          */
-        this.InitialAgentsCount = 100;
+        this.InitialAgentsCount = initialAgentsCount;
 
         /**
          * The color of the agents.
          * @type {string}
          * @see Colors
          */
-        this.AgentsColor = Colors.RED;
+        this.AgentsColor = agentsColor;
 
         /**
          * Indicates if the game is playable.
          * @type {boolean}
          */
-        this.Playable = true;
+        this.Playable = isPlayable;
 
         this.RenderDebounceTime = 100;
     }
@@ -79,6 +88,14 @@ class ConfigurationProvider {
      */
     getInstance() {
         return ConfigurationProvider.#instance;
+    }
+
+    /**
+     * Updates the game settings.
+     * @param {Configuration} newConfig
+     */
+    updateConfiguration(newConfig) {
+        Object.assign(ConfigurationProvider.#instance, newConfig);
     }
 }
 

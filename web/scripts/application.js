@@ -21,19 +21,19 @@ export default class Application {
      * @returns {Promise<void>} A promise that resolves when the application is configured.
      */
     async configure(window, document, canvasElement, wasmFile) {
-        const configuration = new ConfigurationProvider().getInstance();
+        const configurationProvider = new ConfigurationProvider();
 
         const mathProvider = new MathProvider();
 
         const canvas = new CanvasWrapper(canvasElement);
         const engine = new Engine(wasmFile, window);
-        const worldManager = new WorldManager(engine, configuration, mathProvider, window.JSON);
+        const worldManager = new WorldManager(engine, configurationProvider, mathProvider, window.JSON);
         const renderer = new Renderer(canvas);
 
         this.#game = new Game({
             canvas: canvas,
             worldManager: worldManager,
-            configuration: configuration,
+            configurationProvider: configurationProvider,
             windowProvider: window,
             renderer: renderer
         });
@@ -41,9 +41,13 @@ export default class Application {
 
     /**
      * Runs the game.
+     * @param {Configuration} config The configuration of the game.
      * @returns {Promise<void>} A promise that resolves when the game is running.
      */
-    async run(){
+    async run(config){
+        const configurationProvider = new ConfigurationProvider();
+        configurationProvider.updateConfiguration(config);
+
         await this.#game.run();
         console.log("Ready");
     }

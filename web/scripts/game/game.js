@@ -7,7 +7,7 @@ class Game {
      */
     #windowProvider
     /**
-     * @type {Configuration}
+     * @type {ConfigurationProvider} The configuration of the game.
      */
     #configuration
     /**
@@ -32,17 +32,17 @@ class Game {
      * Constructs a new instance of Game.
      * @param {CanvasWrapper} canvas - The canvas for drawing.
      * @param {WorldManager} worldManager - The manager of the world.
-     * @param {Configuration} configuration - The configuration of the game.
+     * @param {ConfigurationProvider} configurationProvider - The configuration of the game.
      * @param {Window} windowProvider - The provider for window operations.
      * @param {Renderer} renderer - The renderer for drawing.
      */
-    constructor({canvas, worldManager, configuration, windowProvider, renderer}) {
+    constructor({canvas, worldManager, configurationProvider, windowProvider, renderer}) {
         this.#windowProvider = windowProvider;
 
         this.#renderer = renderer;
 
         this.#canvas = canvas;
-        this.#configuration = configuration;
+        this.#configuration = configurationProvider;
 
         this.#worldManager = worldManager;
         this.#cells = [];
@@ -61,10 +61,10 @@ class Game {
             for (let col = 0; col < width; col++) {
                 if (worldInstance.cells[row*width+col].cellType === 3) {
                     const cell = new Cell(
-                        col * this.#configuration.CellSize,
-                        row * this.#configuration.CellSize,
-                        this.#configuration.CellSize,
-                        this.#configuration.MazeColor,
+                        col * this.#configuration.getInstance().CellSize,
+                        row * this.#configuration.getInstance().CellSize,
+                        this.#configuration.getInstance().CellSize,
+                        this.#configuration.getInstance().MazeColor,
                     );
                     this.#cells.push(cell);
                 }
@@ -73,10 +73,10 @@ class Game {
 
         for (const agent of worldInstance.agents) {
             const cell = new Cell(
-                agent.x * this.#configuration.CellSize,
-                agent.y * this.#configuration.CellSize,
-                this.#configuration.CellSize,
-                this.#configuration.AgentsColor,
+                agent.x * this.#configuration.getInstance().CellSize,
+                agent.y * this.#configuration.getInstance().CellSize,
+                this.#configuration.getInstance().CellSize,
+                this.#configuration.getInstance().AgentsColor,
             );
             this.#cells.push(cell);
         }
@@ -130,7 +130,7 @@ class Game {
         await this.#init();
         this.#renderer.draw(this.#cells);
 
-        if(!this.#configuration.Playable) {
+        if(!this.#configuration.getInstance().Playable) {
             console.log("Game is not playable");
             return;
         }

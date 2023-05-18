@@ -1,7 +1,5 @@
 import {MathProvider} from "../providers/math.provider.js";
 import {Engine} from "../engine/engine.js";
-import {Configuration} from "./configuration.js";
-
 
 /**
  * Manages the world in the game.
@@ -24,7 +22,7 @@ export default class WorldManager {
      */
     #engine
     /**
-     * @type {Configuration}
+     * @type {ConfigurationProvider}
      * @private
      */
     #config
@@ -32,13 +30,13 @@ export default class WorldManager {
     /**
      * Constructs a new instance of WorldManager.
      * @param {Engine} engine - The engine for work with WebAssembly.
-     * @param {Configuration} configuration - The configuration of the game.
+     * @param {ConfigurationProvider} configurationProvider - The configuration of the game.
      * @param {MathProvider} mathProvider - The provider for math operations.
      * @param {JSON} jsonProvider - The provider for JSON operations.
      */
-    constructor(engine, configuration, mathProvider, jsonProvider) {
+    constructor(engine, configurationProvider, mathProvider, jsonProvider) {
         this.#engine = engine;
-        this.#config = configuration;
+        this.#config = configurationProvider;
         this.#mathProvider = mathProvider;
         this.#jsonProvider = jsonProvider;
     }
@@ -58,9 +56,9 @@ export default class WorldManager {
      */
     async initWorld(canvas) {
         await this.#initEngine();
-        const width = this.#mathProvider.floor(canvas.width / this.#config.CellSize);
-        const height = this.#mathProvider.floor(canvas.height / this.#config.CellSize);
-        const worldData = this.#engine.initWorld(width, height, this.#config.InitialAgentsCount);
+        const width = this.#mathProvider.floor(canvas.width / this.#config.getInstance().CellSize);
+        const height = this.#mathProvider.floor(canvas.height / this.#config.getInstance().CellSize);
+        const worldData = this.#engine.initWorld(width, height, this.#config.getInstance().InitialAgentsCount);
         return this.#parseWorldData(worldData);
     }
 
