@@ -5,6 +5,8 @@ const newConfig = new Configuration({
     cellSize: 30,
     mazeColor: "#111111",
     agentsColor:"#000099",
+    initialAgentsCount:10,
+    isPlayable: true,
 });
 
 const application = new Application();

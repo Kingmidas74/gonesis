@@ -1,6 +1,6 @@
-import CanvasWrapper from "./canvas-wrapper.js";
+import { CanvasWrapper2D, CanvasWrapperWebGL } from "./canvas-wrapper.js";
 import Renderer from "./renderer.js";
-import Cell from "./cell.js";
+import {Wall, Agent, Empty} from "./cell.js";
 import { Colors } from "./colors.js";
 
-export { CanvasWrapper, Cell, Renderer, Colors }
+export { CanvasWrapperWebGL as CanvasWrapper, Wall, Agent, Empty, Renderer, Colors }

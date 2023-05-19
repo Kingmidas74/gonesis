@@ -13,11 +13,13 @@ type World struct {
 }
 
 func New(terrain contracts.Terrain, agents []contracts.Agent, commands []contracts.Command) contracts.World {
-	return &World{
+	result := &World{
 		Terrain:  terrain,
 		agents:   agents,
 		commands: commands,
 	}
+	result.updateCells()
+	return result
 }
 
 func (w *World) Action(maxSteps int, callback func(contracts.World, int)) error {

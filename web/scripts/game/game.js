@@ -1,32 +1,42 @@
-import Cell from "../render/cell.js";
-
 class Game {
 
     /**
      * @type {Window} implementation of window
+     * @private
      */
     #windowProvider
     /**
      * @type {ConfigurationProvider} The configuration of the game.
+     * @private
      */
     #configuration
     /**
      * @type {CanvasWrapper} Object for work with canvas
+     * @private
      */
     #canvas
     /**
      * @type {Array<Cell>} Array of cells
+     * @private
      */
     #cells
 
     /**
      * @type {Renderer} Size of cell
+     * @private
      */
     #renderer
     /**
      * @type {WorldManager} Manager of the world
+     * @private
      */
     #worldManager
+
+    /**
+     * @type {CellFactory} Factory for creating cells
+     * @private
+     */
+    #cellFactory
 
     /**
      * Constructs a new instance of Game.
@@ -35,8 +45,9 @@ class Game {
      * @param {ConfigurationProvider} configurationProvider - The configuration of the game.
      * @param {Window} windowProvider - The provider for window operations.
      * @param {Renderer} renderer - The renderer for drawing.
+     * @param {CellFactory} cellFactory - The factory for creating cells.
      */
-    constructor({canvas, worldManager, configurationProvider, windowProvider, renderer}) {
+    constructor({canvas, worldManager, configurationProvider, windowProvider, renderer, cellFactory}) {
         this.#windowProvider = windowProvider;
 
         this.#renderer = renderer;
@@ -45,6 +56,7 @@ class Game {
         this.#configuration = configurationProvider;
 
         this.#worldManager = worldManager;
+        this.#cellFactory = cellFactory;
         this.#cells = [];
     }
 
@@ -60,25 +72,16 @@ class Game {
         for (let row = 0; row < height; row++) {
             for (let col = 0; col < width; col++) {
                 if (worldInstance.cells[row*width+col].cellType === 3) {
-                    const cell = new Cell(
-                        col * this.#configuration.getInstance().CellSize,
-                        row * this.#configuration.getInstance().CellSize,
-                        this.#configuration.getInstance().CellSize,
-                        this.#configuration.getInstance().MazeColor,
-                    );
-                    this.#cells.push(cell);
+                    this.#cells[row*width+col] = this.#cellFactory.createWall(col, row);
+                }
+                if (worldInstance.cells[row*width+col].cellType === 0) {
+                    this.#cells[row*width+col] = this.#cellFactory.createEmpty(col, row);
                 }
             }
         }
 
         for (const agent of worldInstance.agents) {
-            const cell = new Cell(
-                agent.x * this.#configuration.getInstance().CellSize,
-                agent.y * this.#configuration.getInstance().CellSize,
-                this.#configuration.getInstance().CellSize,
-                this.#configuration.getInstance().AgentsColor,
-            );
-            this.#cells.push(cell);
+            this.#cells[agent.y*width+agent.x] = this.#cellFactory.createAgent(agent.x, agent.y, agent.energy);
         }
     }
 
@@ -89,6 +92,7 @@ class Game {
      */
     async #init() {
         const world = await this.#worldManager.initWorld(this.#canvas);
+        this.#cells = Array(world.width * world.height);
         this.#fillCells(world)
     }
 
@@ -102,7 +106,6 @@ class Game {
         if(this.#livingAgentsCount(world) === 0) {
             return false;
         }
-        this.#cells = [];
         this.#fillCells(world);
         return true;
     }
@@ -134,7 +137,7 @@ class Game {
             console.log("Game is not playable");
             return;
         }
-        const desiredFPS = 30;
+        const desiredFPS = 40;
         const timeStep = 1000 / desiredFPS;
         let lastTime = this.#windowProvider.performance.now();
 

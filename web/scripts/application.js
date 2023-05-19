@@ -3,7 +3,7 @@ import { MathProvider } from "./providers/math.provider.js";
 import { Engine } from "./engine/engine.js";
 
 import { CanvasWrapper, Renderer } from "./render/index.js";
-import { WorldManager, ConfigurationProvider, Game } from "./game/index.js";
+import { WorldManager, ConfigurationProvider, CellFactory, Game } from "./game/index.js";
 
 /** Startup class for the application. */
 export default class Application {
@@ -28,14 +28,16 @@ export default class Application {
         const canvas = new CanvasWrapper(canvasElement);
         const engine = new Engine(wasmFile, window);
         const worldManager = new WorldManager(engine, configurationProvider, mathProvider, window.JSON);
-        const renderer = new Renderer(canvas);
+        const cellFactory = new CellFactory(configurationProvider);
+        const renderer = new Renderer(canvas, configurationProvider);
 
         this.#game = new Game({
             canvas: canvas,
             worldManager: worldManager,
             configurationProvider: configurationProvider,
             windowProvider: window,
-            renderer: renderer
+            renderer: renderer,
+            cellFactory: cellFactory,
         });
     }
 

@@ -7,10 +7,17 @@ export default class Renderer {
     #canvas
 
     /**
-     * @param {CanvasWrapper} canvas   - The canvas wrapper.
+     * @type {ConfigurationProvider} The configuration of the game.
      */
-    constructor(canvas) {
+    #configurationProvider
+
+    /**
+     * @param {CanvasWrapper} canvas   - The canvas wrapper.
+     * @param {ConfigurationProvider} configurationProvider - The configuration of the game.
+     */
+    constructor(canvas, configurationProvider) {
         this.#canvas = canvas;
+        this.#configurationProvider = configurationProvider;
     }
 
     /** Clear canvas */
@@ -23,10 +30,10 @@ export default class Renderer {
      * @param {Array<Cell>} cellSets - The cell sets.
      */
     draw(...cellSets) {
-        this.clear()
+        //this.clear()
         for (let cellSet of cellSets) {
             for (let i = 0; i < cellSet.length; i++) {
-                cellSet[i].draw(this.#canvas);
+                cellSet[i].draw(this.#canvas, this.#configurationProvider.getInstance().CellSize);
             }
         }
     }
