@@ -54,4 +54,19 @@ class Agent extends Cell {
     // Additional methods or properties for Agent cell
 }
 
-export {Wall, Agent, Empty};
+
+// Agent cell
+class Organic extends Cell {
+    constructor(x, y, color, energy) {
+        super(x, y, color);
+        this.energy = energy;
+    }
+
+    draw(canvasWrapper, size) {
+        super.draw(canvasWrapper, size);
+        // Additional drawing for energy if needed
+    }
+    // Additional methods or properties for Agent cell
+}
+
+export {Wall, Agent, Empty, Organic};

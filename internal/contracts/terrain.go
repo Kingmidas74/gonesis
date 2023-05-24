@@ -4,6 +4,7 @@ import "github.com/kingmidas74/gonesis-engine/internal/domain/enum"
 
 type Terrain interface {
 	GetNeighbor(x, y int, direction int) Cell
+	GetNeighbors(x, y int) []Cell
 	Cell(x, y int) Cell
 	Cells() []Cell
 	Width() int

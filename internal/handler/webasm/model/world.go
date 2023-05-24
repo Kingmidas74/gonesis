@@ -8,14 +8,16 @@ type World struct {
 }
 
 type Cell struct {
-	CellType int `json:"cellType"`
+	CellType string `json:"cellType"`
+	Energy   int    `json:"energy"`
 }
 
 type Agent struct {
 	Brain
-	X      int `json:"x"`
-	Y      int `json:"y"`
-	Energy int `json:"energy"`
+	X         int    `json:"x"`
+	Y         int    `json:"y"`
+	Energy    int    `json:"energy"`
+	AgentType string `json:"agentType"`
 }
 
 type Brain struct {

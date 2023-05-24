@@ -1,4 +1,4 @@
-package brain
+package agent
 
 import (
 	"github.com/kingmidas74/gonesis-engine/internal/util"
@@ -10,10 +10,17 @@ type Brain struct {
 	address  int
 }
 
-func New(volume int) Brain {
+func NewBrain(volume int) Brain {
 	return Brain{
 		address:  0,
 		commands: generateCommandsSequence(volume),
+	}
+}
+
+func NewBrainWithCommands(commands []int) Brain {
+	return Brain{
+		commands: commands,
+		address:  0,
 	}
 }
 
@@ -45,10 +52,31 @@ func (b *Brain) mod(address int) int {
 	return util.ModLikePython(address, len(b.commands))
 }
 
-func generateCommandsSequence(sequenceLength int) []int {
+func generatePSOnly(sequenceLength int) []int {
 	result := make([]int, sequenceLength)
 	for i := 0; i < sequenceLength; i++ {
-		result[i] = rand.Intn(sequenceLength)
+		result[i] = 2
 	}
 	return result
+}
+
+func generateCommandsSequence(sequenceLength int) []int {
+	// Create weighted buckets
+	buckets := make([]int, 0)
+	for i := 0; i < sequenceLength; i++ {
+		weight := sequenceLength - i // calculate the weight for each number
+		for j := 0; j < weight; j++ {
+			buckets = append(buckets, i)
+		}
+	}
+
+	// Shuffle the bucket to randomize the order
+	rand.Shuffle(len(buckets), func(i, j int) {
+		buckets[i], buckets[j] = buckets[j], buckets[i]
+	})
+
+	// Trim the buckets to the required sequence length
+	buckets = buckets[:sequenceLength]
+
+	return buckets
 }

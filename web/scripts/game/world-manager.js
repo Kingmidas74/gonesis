@@ -32,13 +32,11 @@ export default class WorldManager {
      * @param {Engine} engine - The engine for work with WebAssembly.
      * @param {ConfigurationProvider} configurationProvider - The configuration of the game.
      * @param {MathProvider} mathProvider - The provider for math operations.
-     * @param {JSON} jsonProvider - The provider for JSON operations.
      */
-    constructor(engine, configurationProvider, mathProvider, jsonProvider) {
+    constructor(engine, configurationProvider, mathProvider) {
         this.#engine = engine;
         this.#config = configurationProvider;
         this.#mathProvider = mathProvider;
-        this.#jsonProvider = jsonProvider;
     }
 
     /**
@@ -52,30 +50,20 @@ export default class WorldManager {
     /**
      * Initialize world
      * @param {CanvasWrapper} canvas - The canvas for drawing.
-     * @returns {Promise<any>} The world data in object format.
+     * @returns {Promise<World>} The world data in object format.
      */
     async initWorld(canvas) {
         await this.#initEngine();
         const width = this.#mathProvider.floor(canvas.width / this.#config.getInstance().CellSize);
         const height = this.#mathProvider.floor(canvas.height / this.#config.getInstance().CellSize);
-        const worldData = this.#engine.initWorld(width, height, this.#config.getInstance().InitialAgentsCount);
-        return this.#parseWorldData(worldData);
-    }
-
-    /**
-     * Parse world data from JSON to object.
-     * @param {any} worldData - The world data in JSON format.
-     * @returns {any} The world data in object format.
-     */
-    #parseWorldData(worldData) {
-        return this.#jsonProvider.parse(worldData);
+        return  this.#engine.initWorld(width, height, this.#config.getInstance());
     }
 
     /**
      * Update world
-     * @returns {any} The world data in object format.
+     * @returns {World} The world data in object format.
      */
     updateWorld() {
-        return this.#parseWorldData(this.#engine.step());
+        return this.#engine.step();
     }
 }

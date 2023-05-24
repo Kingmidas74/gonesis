@@ -25,8 +25,9 @@ func NewTerrain[T contracts.Topology](maze contracts.Maze) contracts.Terrain {
 			cellIndex := terra.getCellIndex(x, y)
 			if maze.Content()[cellIndex] {
 				terra.cells[cellIndex] = entity.NewCell(x, y, enum.CellTypeEmpty)
+				terra.cells[cellIndex].IncreaseEnergy(maze.Height() - y)
 			} else {
-				terra.cells[cellIndex] = entity.NewCell(x, y, enum.CellTypeObstacle)
+				terra.cells[cellIndex] = entity.NewCell(x, y, enum.CellTypeWall)
 			}
 		}
 	}
@@ -69,6 +70,15 @@ func (t *Terrain[T]) GetNeighbor(x, y int, direction int) contracts.Cell {
 	return t.Cell(coords.X(), coords.Y())
 }
 
+func (t *Terrain[T]) GetNeighbors(x, y int) []contracts.Cell {
+	coords := (*new(T)).GetNeighbors(x, y)
+	result := make([]contracts.Cell, 0)
+	for _, c := range coords {
+		result = append(result, t.Cell(c.X(), c.Y()))
+	}
+	return result
+}
+
 func (t *Terrain[T]) SetCellType(x, y int, cellType enum.CellType) {
 	t.cells[t.getCellIndex(x, y)].SetCellType(cellType)
 }
@@ -76,7 +86,7 @@ func (t *Terrain[T]) SetCellType(x, y int, cellType enum.CellType) {
 func (t *Terrain[T]) EmptyCells() []contracts.Cell {
 	result := make([]contracts.Cell, 0)
 	for _, c := range t.Cells() {
-		if c.CellType() == enum.CellTypeEmpty {
+		if c.IsEmpty() {
 			result = append(result, c)
 		}
 	}

@@ -17,6 +17,22 @@ class CanvasWrapper {
      */
     drawRect(x, y, width, height, color) {
     }
+
+    /**
+     * Gets the width of the canvas element.
+     * @returns {number} The width of the canvas.
+     */
+    get width() {
+        return 0;
+    }
+
+    /**
+     * Gets the height of the canvas element.
+     * @returns {number} The height of the canvas.
+     */
+    get height() {
+        return 0;
+    }
 }
 
 
@@ -41,6 +57,10 @@ class CanvasWrapper2D extends CanvasWrapper{
 
             this.#canvas.width = document.body.clientWidth;
             this.#canvas.height = document.body.clientHeight;
+            const actualCanvasWidth = canvas.offsetWidth;
+            const actualCanvasHeight = canvas.offsetHeight;
+            this.#canvas.width = actualCanvasWidth;
+            this.#canvas.height = actualCanvasHeight;
 
             this.#canvas.style.transform = 'translate3d(0, 0, 0)';
         }
@@ -88,6 +108,56 @@ class CanvasWrapper2D extends CanvasWrapper{
     drawRect(x, y, width, height, color) {
         this.ctx.fillStyle = color;
         this.ctx.fillRect(x, y, width, height);
+    }
+}
+
+class CanvasWrapperCached extends CanvasWrapper2D {
+    #previousFrame
+
+    /**
+     *
+     * @param {HTMLCanvasElement} canvasElement
+     */
+    constructor(canvasElement) {
+        super(canvasElement);
+        this.#previousFrame = new Map();
+    }
+
+    /**
+     * Draw a rectangle.
+     * @param {number} x - The x position.
+     * @param {number} y - The y position.
+     * @param {number} width - The width of the rectangle.
+     * @param {number} height - The height of the rectangle.
+     * @param {string} color - The color of the rectangle in RGBA format.
+     */
+    drawRect(x, y, width, height, color) {
+        let key = `${x},${y}`;
+
+        // Only draw the rectangle if the color has changed or it's a new rectangle
+        if(!this.#previousFrame.has(key) || this.#previousFrame.get(key) !== color) {
+            this.ctx.fillStyle = color;
+            this.ctx.fillRect(x, y, width, height);
+            this.#previousFrame.set(key, color);
+        }
+    }
+
+    /**
+     * Clears the entire canvas by erasing the contents.
+     */
+    clear() {
+        // Instead of clearing the whole canvas, we will clear only those cells whose color changed
+        // or are no longer present.
+
+        for(let [key, color] of this.#previousFrame) {
+            let [x, y] = key.split(',').map(Number);
+            if(this.ctx.fillStyle !== color) {
+                this.ctx.fillStyle = color;
+                this.ctx.clearRect(x, y, this.width, this.height);
+            }
+        }
+
+        this.#previousFrame.clear();
     }
 }
 
@@ -273,4 +343,4 @@ class CanvasWrapperWebGL extends CanvasWrapper{
         gl.drawArrays(gl.TRIANGLES, 0, positions.length / 2);
     }
 }
-export {CanvasWrapper2D, CanvasWrapperWebGL};
+export {CanvasWrapper2D, CanvasWrapperCached, CanvasWrapperWebGL};

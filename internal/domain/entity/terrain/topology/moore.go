@@ -34,10 +34,11 @@ func (t MooreTopology) GetNeighbor(x, y int, direction int) contracts.Coords {
 }
 
 func (t MooreTopology) GetNeighbors(x, y int) []contracts.Coords {
-	result := make([]contracts.Coords, 0)
+	coordsMultiples := t.getCoordsMultiples()
+	result := make([]contracts.Coords, len(coordsMultiples))
 
-	for _, coords := range t.getCoordsMultiples() {
-		result = append(result, entity.NewCoords(x+coords[0], y+coords[1]))
+	for i, coords := range coordsMultiples {
+		result[i] = entity.NewCoords(x+coords[0], y+coords[1])
 	}
 
 	return result

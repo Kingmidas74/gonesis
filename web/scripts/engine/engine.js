@@ -1,3 +1,5 @@
+import {JsonProvider} from "./json.provider.js";
+
 /** WebAssembly Go instance */
 class Engine {
     /**
@@ -15,6 +17,11 @@ class Engine {
     #windowProvider
 
     /**
+     * @type {JsonProvider} Json provider
+     */
+    #jsonProvider
+
+    /**
      * Creates an instance of Engine.
      * @param {string} wasmFile Name of wasm file
      * @param {Window} windowProvider Object implements window interface
@@ -23,6 +30,7 @@ class Engine {
         this.#wasmFile = new URL(wasmFile, new URL(import.meta.url)).href;
         this.#go = new Go();
         this.#windowProvider = windowProvider;
+        this.#jsonProvider = new JsonProvider();
     }
 
     /**
@@ -36,17 +44,21 @@ class Engine {
 
     /**
      * Initialize world
-     * @param {number} width
-     * @param {number} height
-     * @param {number} agentsCount The value should be less than width * height
-     * @returns {*}
+     * @param {number} width Width of the world
+     * @param {number} height Height of the world
+     * @param {Configuration} configuration Configuration of the world
+     * @returns {World} World instance
      */
-    initWorld(width, height, agentsCount) {
-        return this.#windowProvider.initWorld(width, height, agentsCount)
+    initWorld(width, height, configuration) {
+        return this.#jsonProvider.parse(this.#windowProvider.initWorld(width, height, this.#jsonProvider.stringify(configuration)))
     }
 
+    /**
+     * Step of the game
+     * @returns {World} World instance
+     */
     step() {
-        return this.#windowProvider.step()
+        return this.#jsonProvider.parse(this.#windowProvider.step())
     }
 }
 

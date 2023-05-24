@@ -2,13 +2,91 @@
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Gonesis</title>
         <link rel="stylesheet" href="./style.css">
     </head>
     <body>
-    <canvas id="canvas"></canvas>
+    <header class="header">
+        <h1 class="header--title">Gonesis</h1>
+        <menu class="header--action-list">
+            <li class="action-list-item">
+                <button class="action-list-item--button" data-title="Settings" id="settingsBtn">S</button>
+            </li>
+            <li class="action-list-item">
+                <button class="action-list-item--button" data-title="Generate" id="generateBtn">G</button>
+            </li>
+            <li class="action-list-item">
+                <button class="action-list-item--button" data-title="Step"  id="nextStepBtn">+1</button>
+            </li>
+            <li class="action-list-item">
+                <button class="action-list-item--button" data-title="Play"  id="playBtn"> -> </button>
+            </li>
+        </menu>
+    </header>
+    <main class="main">
+        <canvas id="canvas"></canvas>
+
+        <aside class="aside" id="settings">
+            <h2 class="aside--title">Settings</h2>
+            <form class="aside--form" id="settingsForm">
+                <fieldset class="aside--form__fieldset world">
+                    <legend>World</legend>
+
+                    <fieldset class="form__group field">
+                        <input type="number" class="form__field" placeholder="Cell size" name="cellSize" id="cellSize" value="30" min="0" max="1000" />
+                        <label for="cellSize" class="form__label">Cell size</label>
+                    </fieldset>
+
+                    <fieldset class="form__group field">
+                        <input type="number" class="form__field" placeholder="Width" name="worldWidth" id="worldWidth" value="30" min="0" max="1000" />
+                        <label for="worldWidth" class="form__label">Width</label>
+                    </fieldset>
+
+                    <fieldset class="form__group field">
+                        <input type="number" class="form__field" placeholder="Height" name="worldWidth" id="worldHeight" value="30" min="0" max="1000" />
+                        <label for="worldHeight" class="form__label">Height</label>
+                    </fieldset>
+                </fieldset>
+                <fieldset class="aside--form__fieldset">
+                    <legend>Agents</legend>
+                    <fieldset class="range-slider">
+                        <legend>Plant</legend>
+                        <label>
+                            Count
+                            <input class="range-slider__range" type="range" value="100" min="0" max="500">
+                            <span class="range-slider__value">0</span>
+                        </label>
+                    </fieldset>
+                    <fieldset class="range-slider">
+                        <legend>Herbivore</legend>
+                        <label>
+                            Count
+                            <input class="range-slider__range" type="range" value="100" min="0" max="500">
+                            <span class="range-slider__value">0</span>
+                        </label>
+                    </fieldset>
+                    <fieldset class="range-slider">
+                        <legend>Carnivore</legend>
+                        <label>
+                            Count
+                            <input class="range-slider__range" type="range" value="100" min="0" max="500">
+                            <span class="range-slider__value">0</span>
+                        </label>
+                    </fieldset>
+                    <fieldset class="range-slider">
+                        <legend>Omnivore</legend>
+                        <input class="range-slider__range" type="range" value="100" min="0" max="500">
+                        <span class="range-slider__value">0</span>
+                    </fieldset>
+                </fieldset>
+            </form>
+        </aside>
+    </main>
 
     <script defer src="scripts/engine/wasm_exec.js"></script>
     <script defer async src="script.js" type="module"></script>
+
     </body>
 </html>

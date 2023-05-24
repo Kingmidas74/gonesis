@@ -1,43 +1,33 @@
 package world
 
 import (
+	"errors"
+	"fmt"
 	"github.com/kingmidas74/gonesis-engine/internal/contracts"
-	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
 )
 
 type World struct {
 	contracts.Terrain
-
-	agents   []contracts.Agent
-	commands []contracts.Command
+	commands             []contracts.Command
+	maxDailyCommandCount int
 }
 
-func New(terrain contracts.Terrain, agents []contracts.Agent, commands []contracts.Command) contracts.World {
-	result := &World{
-		Terrain:  terrain,
-		agents:   agents,
-		commands: commands,
+func New(terrain contracts.Terrain, commands []contracts.Command, maxDailyCommandCount int) *World {
+	return &World{
+		Terrain:              terrain,
+		commands:             commands,
+		maxDailyCommandCount: maxDailyCommandCount,
 	}
-	result.updateCells()
-	return result
-}
-
-func (w *World) Action(maxSteps int, callback func(contracts.World, int)) error {
-	callback(w, 0)
-	w.updateCells()
-	for currentDay, livingAgentsCount := 1, w.countLivingAgents(); livingAgentsCount > 0; currentDay, livingAgentsCount = currentDay+1, w.countLivingAgents() {
-		err := w.runDay(maxSteps)
-		if err != nil {
-			return err
-		}
-		w.updateCells()
-		callback(w, currentDay)
-	}
-	return nil
 }
 
 func (w *World) Agents() []contracts.Agent {
-	return w.agents
+	agents := make([]contracts.Agent, 0, len(w.Cells()))
+	for _, cell := range w.Cells() {
+		if cell.IsAgent() {
+			agents = append(agents, cell.Agent())
+		}
+	}
+	return agents
 }
 
 func (w *World) Width() int {
@@ -56,43 +46,63 @@ func (w *World) Command(commandIdentifier int) contracts.Command {
 }
 
 func (w *World) Next() error {
-	err := w.runDay(1)
-	if err != nil {
-		return err
-	}
-	w.updateCells()
-	return nil
+	return w.runDay(w.maxDailyCommandCount)
 }
 
 func (w *World) runDay(maxSteps int) error {
-	for _, a := range w.Agents() {
-		if err := a.NextDay(maxSteps, w, w.Command); err != nil {
+	for _, cell := range w.Cells() {
+		if !cell.IsAgent() {
+			continue
+		}
+		agent := cell.Agent()
+		if err := agent.NextDay(maxSteps, w, w.Command); err != nil {
 			return err
 		}
+	}
+
+	w.removeDeathAgents()
+	w.genesis()
+
+	livingAgentsCount := 0
+	for _, cell := range w.Cells() {
+		if cell.IsAgent() {
+			livingAgentsCount++
+		}
+	}
+	if livingAgentsCount > len(w.Cells()) {
+		fmt.Println(livingAgentsCount, w.Width()*w.Height())
+		return errors.New("too many agents")
 	}
 	return nil
 }
 
-func (w *World) countLivingAgents() int {
-	result := 0
-	for _, a := range w.Agents() {
-		if a.IsAlive() {
-			result++
+func (w *World) removeDeathAgents() {
+	for _, cell := range w.Cells() {
+		if !cell.IsAgent() {
+			continue
+		}
+		agent := cell.Agent()
+		if !agent.IsAlive() {
+			cell.RemoveAgent()
 		}
 	}
-	return result
 }
 
-func (w *World) updateCells() {
-	for _, c := range w.Cells() {
-		if c.CellType() != enum.CellTypeObstacle {
-			c.SetCellType(enum.CellTypeEmpty)
+func (w *World) genesis() {
+	for _, cell := range w.Cells() {
+		if !cell.IsAgent() {
+			continue
 		}
-	}
+		agent := cell.Agent()
+		if !agent.IsAlive() {
+			continue
+		}
 
-	for _, a := range w.Agents() {
-		if a.IsAlive() {
-			w.SetCellType(a.X(), a.Y(), enum.CellTypeOrganic)
+		if child := agent.CreateChild(w); child != nil {
+			childCell := w.Cell(child.X(), child.Y())
+			if childCell.IsEmpty() {
+				childCell.SetAgent(child)
+			}
 		}
 	}
 }
