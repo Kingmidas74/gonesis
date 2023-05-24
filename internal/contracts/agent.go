@@ -1,6 +1,7 @@
 package contracts
 
 import (
+	"github.com/kingmidas74/gonesis-engine/internal/domain/configuration"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
 )
 
@@ -13,8 +14,8 @@ type Agent interface {
 	Commands() []int
 	AgentType() enum.AgentType
 
-	NextDay(maxSteps int, world Terrain, command func(commandIdentifier int) Command) error
+	NextDay(world Terrain, command func(commandIdentifier int) Command, config *configuration.AgentConfiguration) error
 	Kill(world Terrain)
 	IsAlive() bool
-	CreateChild(world Terrain) Agent
+	CreateChildren(world Terrain, config *configuration.AgentConfiguration) []Agent
 }

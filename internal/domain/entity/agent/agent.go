@@ -1,6 +1,7 @@
 package agent
 
 import (
+	"github.com/kingmidas74/gonesis-engine/internal/domain/configuration"
 	"math/rand"
 
 	"github.com/kingmidas74/gonesis-engine/internal/contracts"
@@ -42,8 +43,8 @@ func (a *Agent[N]) IsAlive() bool {
 }
 
 // TODO: replace findCommandPredicate with []contracts.Command
-func (a *Agent[N]) NextDay(maxSteps int, terra contracts.Terrain, findCommandPredicate func(int) contracts.Command) error {
-	for step := 0; a.IsAlive() && step < maxSteps; step++ {
+func (a *Agent[N]) NextDay(terra contracts.Terrain, findCommandPredicate func(int) contracts.Command, config *configuration.AgentConfiguration) error {
+	for step := 0; a.IsAlive() && step < config.MaxSteps; step++ {
 		commandIdentifier := a.Command(nil)
 		command := findCommandPredicate(commandIdentifier)
 		if command == nil {
@@ -68,7 +69,7 @@ func (a *Agent[N]) DecreaseEnergy(delta int) {
 	a.energy -= delta
 }
 
-func (a *Agent[N]) CreateChild(terra contracts.Terrain) contracts.Agent {
+func (a *Agent[N]) CreateChildren(terra contracts.Terrain, config *configuration.AgentConfiguration) []contracts.Agent {
 	emptyCells := make([]contracts.Cell, 0)
 	for _, cell := range terra.GetNeighbors(a.X(), a.Y()) {
 		if cell.IsEmpty() {
@@ -84,12 +85,15 @@ func (a *Agent[N]) CreateChild(terra contracts.Terrain) contracts.Agent {
 		return nil
 	}
 
-	if child := a.Genesis(a); child != nil {
+	if children := a.Genesis(a, config); children != nil && len(children) > 0 {
+		if children[0] == nil {
+			return nil
+		}
 		if !targetCell.IsEmpty() {
 			return nil
 		}
-		targetCell.SetAgent(child)
-		return child
+		targetCell.SetAgent(children[0])
+		return children
 	}
 
 	return nil

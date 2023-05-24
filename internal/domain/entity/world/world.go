@@ -4,19 +4,18 @@ import (
 	"errors"
 	"fmt"
 	"github.com/kingmidas74/gonesis-engine/internal/contracts"
+	"github.com/kingmidas74/gonesis-engine/internal/domain/configuration"
 )
 
 type World struct {
 	contracts.Terrain
-	commands             []contracts.Command
-	maxDailyCommandCount int
+	commands []contracts.Command
 }
 
-func New(terrain contracts.Terrain, commands []contracts.Command, maxDailyCommandCount int) *World {
+func New(terrain contracts.Terrain, commands []contracts.Command) *World {
 	return &World{
-		Terrain:              terrain,
-		commands:             commands,
-		maxDailyCommandCount: maxDailyCommandCount,
+		Terrain:  terrain,
+		commands: commands,
 	}
 }
 
@@ -45,23 +44,23 @@ func (w *World) Command(commandIdentifier int) contracts.Command {
 	return w.commands[commandIdentifier]
 }
 
-func (w *World) Next() error {
-	return w.runDay(w.maxDailyCommandCount)
+func (w *World) Next(config *configuration.Configuration) error {
+	return w.runDay(config)
 }
 
-func (w *World) runDay(maxSteps int) error {
+func (w *World) runDay(config *configuration.Configuration) error {
 	for _, cell := range w.Cells() {
 		if !cell.IsAgent() {
 			continue
 		}
 		agent := cell.Agent()
-		if err := agent.NextDay(maxSteps, w, w.Command); err != nil {
+		if err := agent.NextDay(w, w.Command, &config.AgentConfiguration); err != nil {
 			return err
 		}
 	}
 
 	w.removeDeathAgents()
-	w.genesis()
+	w.genesis(&config.AgentConfiguration)
 
 	livingAgentsCount := 0
 	for _, cell := range w.Cells() {
@@ -88,7 +87,7 @@ func (w *World) removeDeathAgents() {
 	}
 }
 
-func (w *World) genesis() {
+func (w *World) genesis(config *configuration.AgentConfiguration) {
 	for _, cell := range w.Cells() {
 		if !cell.IsAgent() {
 			continue
@@ -98,10 +97,12 @@ func (w *World) genesis() {
 			continue
 		}
 
-		if child := agent.CreateChild(w); child != nil {
-			childCell := w.Cell(child.X(), child.Y())
-			if childCell.IsEmpty() {
-				childCell.SetAgent(child)
+		if children := agent.CreateChildren(w, config); children != nil {
+			for _, child := range children {
+				childCell := w.Cell(child.X(), child.Y())
+				if childCell.IsEmpty() {
+					childCell.SetAgent(child)
+				}
 			}
 		}
 	}

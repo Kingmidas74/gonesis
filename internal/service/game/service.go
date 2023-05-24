@@ -45,7 +45,7 @@ func (s *Service) InitWorld(width, height int) (contracts.World, error) {
 		emptyCell.SetAgent(agents[i])
 	}
 
-	s.world = world.New(terra, s.getAvailableCommands(), s.config.AgentConfiguration.MaxDailyCommandCount)
+	s.world = world.New(terra, s.getAvailableCommands())
 	return s.world, nil
 }
 

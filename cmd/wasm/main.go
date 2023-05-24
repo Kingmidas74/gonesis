@@ -51,7 +51,7 @@ func initWorld() js.Func {
 
 func step() js.Func {
 	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		err := GameWorld.Next()
+		err := GameWorld.Next(configuration.Instance())
 		if err != nil {
 			return err.Error()
 		}
