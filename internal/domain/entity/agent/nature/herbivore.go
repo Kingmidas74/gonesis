@@ -22,7 +22,7 @@ func (a Herbivore) Genesis(parent contracts.Agent, config *configuration.AgentCo
 	if rand.Intn(100) > 80 {
 		return nil
 	}
-	parent.IncreaseEnergy(-parent.Energy() / 2)
+	parent.DecreaseEnergy(parent.Energy() / 2)
 	brain := agent.NewBrainWithCommands(parent.Commands())
 	child := agent.NewAgentWithBrain[Herbivore](parent.Energy()/2, brain)
 	return []contracts.Agent{child}

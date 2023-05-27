@@ -22,6 +22,6 @@ func (a Carnivore) Genesis(parent contracts.Agent, config *configuration.AgentCo
 	if rand.Intn(100) > 80 {
 		return nil
 	}
-	parent.IncreaseEnergy(-parent.Energy() / 2)
+	parent.DecreaseEnergy(parent.Energy() / 2)
 	return []contracts.Agent{agent.NewAgent[Carnivore](parent.Energy()/2, len(parent.Commands()))}
 }

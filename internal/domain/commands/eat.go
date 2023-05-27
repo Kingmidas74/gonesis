@@ -97,7 +97,7 @@ func (c *EatCommand) handleOmnivore(agent contracts.Agent, terra contracts.Terra
 		return 1
 	}
 
-	if !slices.Contains([]enum.AgentType{enum.AgentTypeHerbivore, enum.AgentTypeOmnivore, enum.AgentTypePlant}, targetCell.Agent().AgentType()) {
+	if !slices.Contains([]enum.AgentType{enum.AgentTypeHerbivore, enum.AgentTypeOmnivore, enum.AgentTypePlant, enum.AgentTypeCarnivore}, targetCell.Agent().AgentType()) {
 		return 1
 	}
 

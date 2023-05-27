@@ -1,0 +1,47 @@
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 1rem;
+
+    background-color: var(--primary-color);
+    color: var(--primary-font-color);
+    flex: none;
+}
+
+.header--action-list {
+    display: flex;
+    gap:1rem;
+}
+
+.action-list-item {
+    width: 3rem;
+    aspect-ratio: 1;
+
+    display: flex;
+    justify-content: stretch;
+    align-items: stretch;
+
+    cursor: pointer;
+}
+
+.action-list-item--button {
+    flex:1;
+    background: none;
+    border: none;
+    outline: none;
+    user-select: none;
+    cursor: inherit;
+    color: inherit;
+}
+
+.action-list-item--button > .icon {
+    width: 100%;
+    height: 100%;
+    color: inherit;
+}
+
+.hidden {
+    display: none;
+}

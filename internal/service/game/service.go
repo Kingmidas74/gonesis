@@ -88,14 +88,9 @@ func (s *Service) getAvailableCommands() []contracts.Command {
 		commands.NewEatCommand(),
 		commands.NewMoveCommand(),
 		commands.NewEatCommand(),
-		commands.NewPhotosynthesisCommand(),
-		commands.NewPhotosynthesisCommand(),
 		commands.NewMoveCommand(),
 		commands.NewEatCommand(),
 		commands.NewMoveCommand(),
 		commands.NewEatCommand(),
-		commands.NewPhotosynthesisCommand(),
-		commands.NewPhotosynthesisCommand(),
-		commands.NewPhotosynthesisCommand(),
 	}
 }

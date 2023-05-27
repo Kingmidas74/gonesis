@@ -55,12 +55,8 @@ class CanvasWrapper2D extends CanvasWrapper{
         {
             this.ctx = this.#canvas.getContext("2d");
 
-            this.#canvas.width = document.body.clientWidth;
-            this.#canvas.height = document.body.clientHeight;
-            const actualCanvasWidth = canvas.offsetWidth;
-            const actualCanvasHeight = canvas.offsetHeight;
-            this.#canvas.width = actualCanvasWidth;
-            this.#canvas.height = actualCanvasHeight;
+            this.#canvas.width = canvasElement.offsetWidth;
+            this.#canvas.height = canvasElement.offsetHeight;
 
             this.#canvas.style.transform = 'translate3d(0, 0, 0)';
         }
