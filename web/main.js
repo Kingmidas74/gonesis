@@ -22,50 +22,34 @@ const settingsBtn = document.getElementById("settingsBtn")
 
 const sideBar = document.getElementById("settings")
 
-let tabs = document.querySelector('.settings--tabs');
-let tabFieldsets = document.querySelectorAll('.settings--form > *[data-tab="true"]');
+const handleTabClick = (e) => {
+    const clickedTab = e.target.closest('[data-target]');
+    if (!clickedTab) return;
 
-tabs.addEventListener('click', (e) => {
-    if (!e.target.matches('.tab')) return;
+    const container = clickedTab.parentNode;
+    const sidebar = container.closest('.settings');
 
-    for (let tab of tabs.children) {
+    Array.from(container.children).forEach(tab => {
         tab.classList.remove('active');
+    });
+
+    clickedTab.classList.add('active');
+
+    const siblingFieldsets = Array.from(container.nextElementSibling.children);
+    siblingFieldsets.forEach(fieldset => fieldset.classList.remove('active'));
+
+    const parentFieldset = container.closest('.form__fieldset');
+    if (parentFieldset) {
+        const allNestedFieldsets = parentFieldset.querySelectorAll('.form__fieldset');
+        allNestedFieldsets.forEach(fieldset => fieldset.classList.remove('active'));
     }
 
-    e.target.classList.add('active');
+    const targetFieldset = sidebar.querySelector(`#${clickedTab.getAttribute('data-target')}`);
+    if (targetFieldset) targetFieldset.classList.add('active');
 
-    let target = e.target.getAttribute('data-target');
-    tabFieldsets.forEach(fieldset => {
-        if (fieldset.getAttribute('id') === target) {
-            fieldset.classList.add('active');
-        } else {
-            fieldset.classList.remove('active');
-        }
-    });
-});
+};
 
-
-let agentTabs = document.querySelector('.agent--tabs');
-let agentTabFieldsets = document.querySelectorAll('#agents > *[data-tab="true"]');
-
-agentTabs.addEventListener('click', (e) => {
-    if (!e.target.matches('.tab')) return;
-
-    for (let tab of agentTabs.children) {
-        tab.classList.remove('active');
-    }
-
-    e.target.classList.add('active');
-
-    let target = e.target.getAttribute('data-target');
-    agentTabFieldsets.forEach(fieldset => {
-        if (fieldset.getAttribute('id') === target) {
-            fieldset.classList.add('active');
-        } else {
-            fieldset.classList.remove('active');
-        }
-    });
-});
+sideBar.addEventListener('click', handleTabClick);
 
 nextStepBtn.addEventListener("click", async (e) => {
     await game.step()

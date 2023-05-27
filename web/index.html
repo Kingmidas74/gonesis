@@ -54,25 +54,47 @@
     <main class="main">
         <canvas id="canvas"></canvas>
 
-        <aside class="aside" id="settings">
+        <aside class="settings" id="settings">
             <h2 class="settings--title">Settings</h2>
 
-            <ul class="settings--tabs">
-                <li class="tab" data-target="world">World</li>
-                <li class="tab" data-target="agents">Agents</li>
+            <ul class="tab-container">
+                <li class="tab" data-target="world">
+                    <svg class="icon">
+                        <use href="./assets/sprite.svg#worldSettings"></use>
+                    </svg>
+                </li>
+                <li class="tab" data-target="agents">
+                    <svg class="icon">
+                        <use href="./assets/sprite.svg#worldSettings"></use>
+                    </svg>
+                </li>
             </ul>
 
             <form class="settings--form" id="settingsForm">
 
                 <fieldset class="form__fieldset" data-tab="true" id="world">
                     <legend class="form__fieldset--legend">World</legend>
-                    <!--CONTENT-->
+
+                    <fieldset class="form__group field">
+                        <input type="number" class="form__field" placeholder="Cell size" name="cellSize" id="cellSize" value="30" min="0" max="1000" />
+                        <label for="cellSize" class="form__label">Cell size</label>
+                    </fieldset>
+
+                    <fieldset class="form__group field">
+                        <input type="number" class="form__field" placeholder="Width" name="worldWidth" id="worldWidth" value="30" min="0" max="1000" />
+                        <label for="worldWidth" class="form__label">Width</label>
+                    </fieldset>
+
+                    <fieldset class="form__group field">
+                        <input type="number" class="form__field" placeholder="Height" name="worldWidth" id="worldHeight" value="30" min="0" max="1000" />
+                        <label for="worldHeight" class="form__label">Height</label>
+                    </fieldset>
                 </fieldset>
 
                 <fieldset class="form__fieldset" data-tab="true" id="agents">
                     <legend class="form__fieldset--legend">Agents</legend>
 
-                    <ul class="agent--tabs">
+                    <ul class="tab-container">
                         <li class="tab" data-target="plant">Plants</li>
                         <li class="tab" data-target="herbivore">Herbivores</li>
                         <li class="tab" data-target="carnivore">Carnivores</li>
@@ -81,19 +103,35 @@
 
                     <fieldset class="form__fieldset" data-tab="true" id="plant">
                         <legend class="form__fieldset--legend">Plant</legend>
-                        <!--CONTENT-->
+                        <label>
+                            Count
+                            <input class="range-slider__range" type="range" value="100" min="0" max="500">
+                            <span class="range-slider__value">0</span>
+                        </label>
                     </fieldset>
                     <fieldset class="form__fieldset"  data-tab="true" id="herbivore">
                         <legend class="form__fieldset--legend">Herbivore</legend>
-                        <!--CONTENT-->
+                        <label>
+                            Count
+                            <input class="range-slider__range" type="range" value="100" min="0" max="500">
+                            <span class="range-slider__value">0</span>
+                        </label>
                     </fieldset>
                     <fieldset class="form__fieldset" data-tab="true" id="carnivore">
                         <legend class="form__fieldset--legend">Carnivore</legend>
-                        <!--CONTENT-->
+                        <label>
+                            Count
+                            <input class="range-slider__range" type="range" value="100" min="0" max="500">
+                            <span class="range-slider__value">0</span>
+                        </label>
                     </fieldset>
                     <fieldset class="form__fieldset" data-tab="true" id="omnivore">
                         <legend class="form__fieldset--legend">Omnivore</legend>
-                        <!--CONTENT-->
+                        <label>
+                            Count
+                            <input class="range-slider__range" type="range" value="100" min="0" max="500">
+                            <span class="range-slider__value">0</span>
+                        </label>
                     </fieldset>
                 </fieldset>
             </form>

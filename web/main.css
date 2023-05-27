@@ -6,6 +6,16 @@
 @import "./styles/settings-form.css";
 
 
+.icon {
+    width: 100%;
+    height: 100%;
+    color: inherit;
+}
+
+.hidden {
+    display: none;
+}
+
 html {
     height: 100vh;
     font-size: 16px;
@@ -37,7 +47,7 @@ canvas {
     height: 100%;
 }
 
-.aside {
+.settings {
     width: clamp(20vw,80%,40ch);
     height: 100%;
     padding: 1em;
@@ -54,6 +64,6 @@ canvas {
     overflow-y: auto;
 }
 
-.aside.active {
+.settings.active {
     translate:0;
 }

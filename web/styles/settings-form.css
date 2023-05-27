@@ -1,3 +1,23 @@
+.tab-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.tab {
+    cursor: pointer;
+}
+
+.tab .icon {
+    max-width: 50px;
+    aspect-ratio: 1;
+}
+
+.tab.active .icon {
+    background-color: var(--secondary-color);
+    color: var(--secondary-font-color);
+    border-radius: 50%;
+}
+
 .settings--form {
     width: 100%;
     display: flex;
@@ -21,22 +41,6 @@
     opacity: 1;
 }
 
-.settings--tabs, .agent--tabs {
-    display: flex;
-}
-
-.tab {
-    cursor: pointer;
-    padding: 10px;
-    background: #f0f0f0;
-    border-radius: 5px;
-}
-
-.tab.active {
-    background-color: var(--secondary-color);
-    color: var(--secondary-font-color);
-}
-
 .form__fieldset--legend {
     font-size: 1.5rem;
     margin-block-start: 1rem;
@@ -49,12 +53,6 @@
 
 .form__fieldset[data-tab="true"] > .form__fieldset--legend {
     display: none;
-}
-
-.form__fieldset[data-collapse="true"] {
-    display: block;
-    opacity: 1;
-    flex: 1;
 }
 
 /********/
