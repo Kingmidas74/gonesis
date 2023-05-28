@@ -57,13 +57,16 @@ canvas {
     translate: 100%;
     background-color: var(--primary-color);
     color: var(--primary-font-color);
-    transition: translate 0.45s ease-in-out;
     display: flex;
     flex-direction: column;
     gap: var(--gap);
     overflow-y: auto;
+    transition: translate 0.45s ease-in-out;
+
 }
 
 .settings.active {
     translate:0;
+    transition: translate 0.45s ease-in-out;
+
 }

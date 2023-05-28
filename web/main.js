@@ -2,11 +2,7 @@ import {Application, Configuration} from "./scripts/application/application.js";
 import {GameController, UIController } from './scripts/controllers/index.js';
 
 const config = new Configuration({
-    cellSize: 30,
     isPlayable: false,
-    herbivoreConfiguration: {
-        InitialCount: 30,
-    }
 });
 
 const application = new Application();

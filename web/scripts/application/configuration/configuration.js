@@ -47,7 +47,7 @@ class Configuration {
      * Creates an instance of Settings.
      */
     constructor({
-                    cellSize = 20,
+                    cellSize = 30,
                     mazeColor = Colors.DARK,
                     mazeGenerator = MazeGenerators.SideWinder,
                     isPlayable = true,

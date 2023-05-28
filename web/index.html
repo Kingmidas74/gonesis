@@ -77,7 +77,7 @@
                     <legend class="form__fieldset--legend">World</legend>
 
                     <fieldset class="form__group field">
-                        <input class="form__field" id="cellSize" max="1000" min="0" name="cellSize"
+                        <input class="form__field" id="cellSize" max="50" min="2" name="cellSize"
                                placeholder="Cell size" type="number" value="30"/>
                         <label class="form__label" for="cellSize">Cell size</label>
                     </fieldset>
@@ -114,32 +114,32 @@
                         <legend class="form__fieldset--legend">Plant</legend>
                         <label class="range-slider">
                             <span>Count</span>
-                            <input class="range-slider__range" max="500" min="0" type="range" value="100">
-                            <span class="range-slider__value">0</span>
+                            <input class="range-slider__range" max="1000" min="0" type="range" value="10" id="plantInitialCount">
+                            <span class="range-slider__value">10</span>
                         </label>
                     </fieldset>
                     <fieldset class="form__fieldset" data-tab="true" id="herbivore">
                         <legend class="form__fieldset--legend">Herbivore</legend>
                         <label class="range-slider">
                             <span>Count</span>
-                            <input class="range-slider__range" max="500" min="0" type="range" value="100">
-                            <span class="range-slider__value">0</span>
+                            <input class="range-slider__range" max="1000" min="0" type="range" value="10" id="herbivoreInitialCount">
+                            <span class="range-slider__value">10</span>
                         </label>
                     </fieldset>
                     <fieldset class="form__fieldset" data-tab="true" id="carnivore">
                         <legend class="form__fieldset--legend">Carnivore</legend>
                         <label class="range-slider">
                             <span>Count</span>
-                            <input class="range-slider__range" max="500" min="0" type="range" value="100">
-                            <span class="range-slider__value">0</span>
+                            <input class="range-slider__range" max="1000" min="0" type="range" value="10" id="carnivoreInitialCount">
+                            <span class="range-slider__value">10</span>
                         </label>
                     </fieldset>
                     <fieldset class="form__fieldset" data-tab="true" id="omnivore">
                         <legend class="form__fieldset--legend">Omnivore</legend>
                         <label class="range-slider">
                             <span>Count</span>
-                            <input class="range-slider__range" max="500" min="0" type="range" value="100">
-                            <span class="range-slider__value">0</span>
+                            <input class="range-slider__range" max="1000" min="0" type="range" value="10" id="omnivoreInitialCount">
+                            <span class="range-slider__value">10</span>
                         </label>
                     </fieldset>
                 </fieldset>

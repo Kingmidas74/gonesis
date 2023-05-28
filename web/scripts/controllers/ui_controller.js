@@ -78,13 +78,31 @@ export default class UIController {
         this.#elements.sideBar.addEventListener('click', this.#handleTabClick);
         this.#window.addEventListener('resize', this.#handleResize);
         this.setFirstTabsActive();
+
+        this.#elements.sideBar.querySelectorAll('.range-slider__range').forEach(range => {
+            range.addEventListener('input', this.#handleSettingsUpdate);
+        })
+
+        this.#document.addEventListener('click', (event) => {
+            const isClickInside = this.#elements.sideBar.contains(event.target);
+            const isSettingsBtn = this.#elements.settingsBtn.contains(event.target);
+
+            if (!isClickInside && !isSettingsBtn) {
+                this.#elements.sideBar.classList.remove('active');
+            }
+        });
     }
 
     togglePlayPause(isPlaying) {
+        this.#elements.settingsBtn.disabled = isPlaying;
         this.#elements.nextStepBtn.disabled = isPlaying;
         this.#elements.generateBtn.disabled = isPlaying;
         this.#elements.playBtn.parentElement.classList.toggle("hidden", isPlaying);
         this.#elements.pauseBtn.parentElement.classList.toggle("hidden", !isPlaying);
+
+        if(isPlaying && this.#elements.sideBar.classList.contains("active")) {
+            this.#elements.sideBar.classList.remove("active");
+        }
     }
 
     /**
@@ -94,12 +112,27 @@ export default class UIController {
     collectAllSettings() {
         return new Configuration({
             cellSize: this.#document.getElementById('cellSize').value,
+            herbivoreConfiguration: {
+                InitialCount: this.#window.parseInt(this.#document.getElementById('herbivoreInitialCount').value),
+            },
+            carnivoreConfiguration: {
+                InitialCount: this.#window.parseInt(this.#document.getElementById('carnivoreInitialCount').value),
+            },
+            plantConfiguration: {
+                InitialCount: this.#window.parseInt(this.#document.getElementById('plantInitialCount').value),
+            },
+            omnivoreConfiguration: {
+                InitialCount: this.#window.parseInt(this.#document.getElementById('omnivoreInitialCount').value),
+            }
         })
     }
 
-    #handleSettingsUpdate = () => {
+    #handleSettingsUpdate = (e) => {
         this.#window.clearTimeout(this.#settingsUpdateTimeout);
         this.#settingsUpdateTimeout = this.#window.setTimeout(() => {
+            if(e.target.classList.contains('range-slider__range')) {
+                e.target.parentNode.querySelector('.range-slider__value').innerHTML = e.target.value;
+            }
             const settings = this.collectAllSettings();
             this.OnSettingsUpdateListener?.(settings);
         }, 250);

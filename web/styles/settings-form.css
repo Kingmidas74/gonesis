@@ -32,9 +32,10 @@
     width: 100%;
     display: flex;
     flex-direction: column;
+    flex:1;
 }
 
-.settings--form .settings2 {
+.settings--form .settings--form--content {
     flex:1;
     width: 100%;
     display: flex;
@@ -128,7 +129,7 @@ input[type=number] {
 
 .settings--form--controls {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     padding: 1rem 0;
 }

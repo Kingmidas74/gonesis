@@ -63,6 +63,9 @@ func (a *Agent[N]) NextDay(terra contracts.Terrain, findCommandPredicate func(in
 
 func (a *Agent[N]) IncreaseEnergy(delta int) {
 	a.energy += delta
+	if a.energy > 500 {
+		a.energy = 500
+	}
 }
 
 func (a *Agent[N]) DecreaseEnergy(delta int) {
