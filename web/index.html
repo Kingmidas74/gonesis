@@ -1,60 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8"/>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Gonesis</title>
-        <link rel="stylesheet" href="./main.css">
-    </head>
-    <body>
-    <!-- HEADER -->
-    <header class="header">
-        <h1 class="header--title">Gonesis</h1>
-        <menu class="header--action-list">
-            <li class="action-list-item">
-                <button class="action-list-item--button" data-title="Settings" id="settingsBtn">
-                    <svg class="icon">
-                        <use href="./assets/sprite.svg#settingsIcon"></use>
-                    </svg>
-                </button>
-            </li>
-            <li class="action-list-item">
-                <button class="action-list-item--button" data-title="Generate" id="generateBtn">
-                    <svg class="icon">
-                        <use href="./assets/sprite.svg#generateIcon"></use>
-                    </svg>
-                </button>
-            </li>
-            <li class="action-list-item">
-                <button class="action-list-item--button" data-title="Step"  id="nextStepBtn">
-                    <svg class="icon">
-                        <use href="./assets/sprite.svg#nextStepIcon"></use>
-                    </svg>
-                </button>
-            </li>
-            <li class="action-list-item">
-                <button class="action-list-item--button" data-title="Play"  id="playBtn">
-                    <svg class="icon">
-                        <use href="./assets/sprite.svg#playIcon"></use>
-                    </svg>
-                </button>
-            </li>
-            <li class="action-list-item hidden">
-                <button class="action-list-item--button" data-title="Pause"  id="pauseBtn">
-                    <svg class="icon">
-                        <use href="./assets/sprite.svg#pauseIcon"></use>
-                    </svg>
-                </button>
-            </li>
-        </menu>
-    </header>
-    <!-- END HEADER -->
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <title>Gonesis</title>
+    <link href="./main.css" rel="stylesheet">
+</head>
+<body>
+<!-- HEADER -->
+<header class="header">
+    <h1 class="header--title">Gonesis</h1>
+    <menu class="header--action-list">
+        <li class="action-list-item">
+            <button class="action-list-item--button" data-title="Settings" id="settingsBtn">
+                <svg class="icon">
+                    <use href="./assets/sprite.svg#settingsIcon"></use>
+                </svg>
+            </button>
+        </li>
+        <li class="action-list-item">
+            <button class="action-list-item--button" data-title="Generate" id="generateBtn">
+                <svg class="icon">
+                    <use href="./assets/sprite.svg#generateIcon"></use>
+                </svg>
+            </button>
+        </li>
+        <li class="action-list-item">
+            <button class="action-list-item--button" data-title="Step" id="nextStepBtn">
+                <svg class="icon">
+                    <use href="./assets/sprite.svg#nextStepIcon"></use>
+                </svg>
+            </button>
+        </li>
+        <li class="action-list-item">
+            <button class="action-list-item--button" data-title="Play" id="playBtn">
+                <svg class="icon">
+                    <use href="./assets/sprite.svg#playIcon"></use>
+                </svg>
+            </button>
+        </li>
+        <li class="action-list-item hidden">
+            <button class="action-list-item--button" data-title="Pause" id="pauseBtn">
+                <svg class="icon">
+                    <use href="./assets/sprite.svg#pauseIcon"></use>
+                </svg>
+            </button>
+        </li>
+    </menu>
+</header>
+<!-- END HEADER -->
 
-    <main class="main">
-        <canvas id="canvas"></canvas>
+<main class="main">
+    <canvas id="canvas"></canvas>
 
-        <aside class="settings" id="settings">
+    <aside class="settings" id="settings">
+        <header class="settings-header">
             <h2 class="settings--title">Settings</h2>
 
             <ul class="tab-container">
@@ -65,81 +66,97 @@
                 </li>
                 <li class="tab" data-target="agents">
                     <svg class="icon">
-                        <use href="./assets/sprite.svg#worldSettings"></use>
+                        <use href="./assets/sprite.svg#agentsSettings"></use>
                     </svg>
                 </li>
             </ul>
-
-            <form class="settings--form" id="settingsForm">
-
+        </header>
+        <form class="settings--form" id="settingsForm">
+            <fieldset class="settings--form--content">
                 <fieldset class="form__fieldset" data-tab="true" id="world">
                     <legend class="form__fieldset--legend">World</legend>
 
                     <fieldset class="form__group field">
-                        <input type="number" class="form__field" placeholder="Cell size" name="cellSize" id="cellSize" value="30" min="0" max="1000" />
-                        <label for="cellSize" class="form__label">Cell size</label>
+                        <input class="form__field" id="cellSize" max="1000" min="0" name="cellSize"
+                               placeholder="Cell size" type="number" value="30"/>
+                        <label class="form__label" for="cellSize">Cell size</label>
                     </fieldset>
 
-                    <fieldset class="form__group field">
-                        <input type="number" class="form__field" placeholder="Width" name="worldWidth" id="worldWidth" value="30" min="0" max="1000" />
-                        <label for="worldWidth" class="form__label">Width</label>
-                    </fieldset>
-
-                    <fieldset class="form__group field">
-                        <input type="number" class="form__field" placeholder="Height" name="worldWidth" id="worldHeight" value="30" min="0" max="1000" />
-                        <label for="worldHeight" class="form__label">Height</label>
-                    </fieldset>
                 </fieldset>
 
                 <fieldset class="form__fieldset" data-tab="true" id="agents">
                     <legend class="form__fieldset--legend">Agents</legend>
 
                     <ul class="tab-container">
-                        <li class="tab" data-target="plant">Plants</li>
-                        <li class="tab" data-target="herbivore">Herbivores</li>
-                        <li class="tab" data-target="carnivore">Carnivores</li>
-                        <li class="tab" data-target="omnivore">Omnivores</li>
+                        <li class="tab" data-target="plant">
+                            <svg class="icon">
+                                <use href="./assets/sprite.svg#plantIcon"></use>
+                            </svg>
+                        </li>
+                        <li class="tab" data-target="herbivore">
+                            <svg class="icon">
+                                <use href="./assets/sprite.svg#herbivoreIcon"></use>
+                            </svg>
+                        </li>
+                        <li class="tab" data-target="carnivore">
+                            <svg class="icon">
+                                <use href="./assets/sprite.svg#carnivoreIcon"></use>
+                            </svg>
+                        </li>
+                        <li class="tab" data-target="omnivore">
+                            <svg class="icon">
+                                <use href="./assets/sprite.svg#omnivoreIcon"></use>
+                            </svg>
+                        </li>
                     </ul>
 
                     <fieldset class="form__fieldset" data-tab="true" id="plant">
                         <legend class="form__fieldset--legend">Plant</legend>
-                        <label>
-                            Count
-                            <input class="range-slider__range" type="range" value="100" min="0" max="500">
+                        <label class="range-slider">
+                            <span>Count</span>
+                            <input class="range-slider__range" max="500" min="0" type="range" value="100">
                             <span class="range-slider__value">0</span>
                         </label>
                     </fieldset>
-                    <fieldset class="form__fieldset"  data-tab="true" id="herbivore">
+                    <fieldset class="form__fieldset" data-tab="true" id="herbivore">
                         <legend class="form__fieldset--legend">Herbivore</legend>
-                        <label>
-                            Count
-                            <input class="range-slider__range" type="range" value="100" min="0" max="500">
+                        <label class="range-slider">
+                            <span>Count</span>
+                            <input class="range-slider__range" max="500" min="0" type="range" value="100">
                             <span class="range-slider__value">0</span>
                         </label>
                     </fieldset>
                     <fieldset class="form__fieldset" data-tab="true" id="carnivore">
                         <legend class="form__fieldset--legend">Carnivore</legend>
-                        <label>
-                            Count
-                            <input class="range-slider__range" type="range" value="100" min="0" max="500">
+                        <label class="range-slider">
+                            <span>Count</span>
+                            <input class="range-slider__range" max="500" min="0" type="range" value="100">
                             <span class="range-slider__value">0</span>
                         </label>
                     </fieldset>
                     <fieldset class="form__fieldset" data-tab="true" id="omnivore">
                         <legend class="form__fieldset--legend">Omnivore</legend>
-                        <label>
-                            Count
-                            <input class="range-slider__range" type="range" value="100" min="0" max="500">
+                        <label class="range-slider">
+                            <span>Count</span>
+                            <input class="range-slider__range" max="500" min="0" type="range" value="100">
                             <span class="range-slider__value">0</span>
                         </label>
                     </fieldset>
                 </fieldset>
-            </form>
-        </aside>
-    </main>
+            </fieldset>
+            <fieldset class="settings--form--controls">
+                <button type="button" class="save-btn" data-title="Save" id="saveBtn">
+                    <svg class="icon">
+                        <use href="./assets/sprite.svg#saveIcon"></use>
+                    </svg>
+                </button>
+            </fieldset>
+        </form>
+    </aside>
+</main>
 
-    <script src="scripts/application/engine/wasm_exec.js"></script>
-    <script defer async src="main.js" type="module"></script>
+<script src="scripts/application/engine/wasm_exec.js"></script>
+<script async defer src="main.js" type="module"></script>
 
-    </body>
+</body>
 </html>

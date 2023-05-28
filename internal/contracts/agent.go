@@ -14,8 +14,8 @@ type Agent interface {
 	Commands() []int
 	AgentType() enum.AgentType
 
-	NextDay(world Terrain, command func(commandIdentifier int) Command, config *configuration.AgentConfiguration) error
+	NextDay(world Terrain, command func(commandIdentifier int) Command, config *configuration.Configuration) error
 	Kill(world Terrain)
 	IsAlive() bool
-	CreateChildren(world Terrain, config *configuration.AgentConfiguration) []Agent
+	CreateChildren(world Terrain, config *configuration.Configuration) []Agent
 }

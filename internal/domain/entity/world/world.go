@@ -54,13 +54,13 @@ func (w *World) runDay(config *configuration.Configuration) error {
 			continue
 		}
 		agent := cell.Agent()
-		if err := agent.NextDay(w, w.Command, &config.AgentConfiguration); err != nil {
+		if err := agent.NextDay(w, w.Command, config); err != nil {
 			return err
 		}
 	}
 
 	w.removeDeathAgents()
-	w.genesis(&config.AgentConfiguration)
+	w.genesis(config)
 
 	livingAgentsCount := 0
 	for _, cell := range w.Cells() {
@@ -87,7 +87,7 @@ func (w *World) removeDeathAgents() {
 	}
 }
 
-func (w *World) genesis(config *configuration.AgentConfiguration) {
+func (w *World) genesis(config *configuration.Configuration) {
 	for _, cell := range w.Cells() {
 		if !cell.IsAgent() {
 			continue

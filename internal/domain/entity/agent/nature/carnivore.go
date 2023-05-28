@@ -15,8 +15,8 @@ func (a Carnivore) AgentType() enum.AgentType {
 	return enum.AgentTypeCarnivore
 }
 
-func (a Carnivore) Genesis(parent contracts.Agent, config *configuration.AgentConfiguration) []contracts.Agent {
-	if parent.Energy() < config.MaxEnergy {
+func (a Carnivore) Genesis(parent contracts.Agent, config *configuration.Configuration) []contracts.Agent {
+	if parent.Energy() < config.CarnivoreConfiguration.MaxEnergy {
 		return nil
 	}
 	if rand.Intn(100) > 80 {
@@ -24,4 +24,8 @@ func (a Carnivore) Genesis(parent contracts.Agent, config *configuration.AgentCo
 	}
 	parent.DecreaseEnergy(parent.Energy() / 2)
 	return []contracts.Agent{agent.NewAgent[Carnivore](parent.Energy()/2, len(parent.Commands()))}
+}
+
+func (a Carnivore) MaxEnergy(config *configuration.Configuration) int {
+	return config.CarnivoreConfiguration.MaxEnergy
 }

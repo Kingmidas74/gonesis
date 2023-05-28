@@ -61,3 +61,11 @@ fieldset {
     pointer-events: none;
     opacity: 0.5;
 }
+
+button {
+    cursor: pointer;
+}
+
+button:focus {
+    outline: none;
+}

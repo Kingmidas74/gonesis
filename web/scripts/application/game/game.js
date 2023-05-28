@@ -112,9 +112,8 @@ class Game {
      */
     #update() {
         const world = this.#worldManager.updateWorld();
-        //console.log(world);
         this.#fillCells(world);
-        return this.#livingAgentsCount(world) > 0// && this.#emptyCellsCount(world) > 0;
+        return this.#livingAgentsCount(world) > 0
 
     }
 

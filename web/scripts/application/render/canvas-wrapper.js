@@ -7,6 +7,20 @@ class CanvasWrapper {
     clear() {
     }
 
+    init() {
+    }
+
+    /**
+     * Draws a circle.
+     * @param x
+     * @param y
+     * @param radius
+     * @param color
+     */
+    drawCircle(x, y, radius, color) {
+
+    }
+
     /**
      * Draw a rectangle.
      * @param {number} x - The x position.
@@ -54,12 +68,14 @@ class CanvasWrapper2D extends CanvasWrapper{
         if(this.#canvas.getContext)
         {
             this.ctx = this.#canvas.getContext("2d");
-
-            this.#canvas.width = canvasElement.offsetWidth;
-            this.#canvas.height = canvasElement.offsetHeight;
-
             this.#canvas.style.transform = 'translate3d(0, 0, 0)';
         }
+        this.init();
+    }
+
+    init() {
+        this.#canvas.width = this.#canvas.offsetWidth;
+        this.#canvas.height = this.#canvas.offsetHeight;
     }
 
     /**
@@ -130,7 +146,6 @@ class CanvasWrapperCached extends CanvasWrapper2D {
     drawRect(x, y, width, height, color) {
         let key = `${x},${y}`;
 
-        // Only draw the rectangle if the color has changed or it's a new rectangle
         if(!this.#previousFrame.has(key) || this.#previousFrame.get(key) !== color) {
             this.ctx.fillStyle = color;
             this.ctx.fillRect(x, y, width, height);
@@ -139,12 +154,27 @@ class CanvasWrapperCached extends CanvasWrapper2D {
     }
 
     /**
+     * Draws a circle.
+     * @param x
+     * @param y
+     * @param radius
+     * @param color
+     */
+    drawCircle(x, y, radius, color) {
+        let key = `${x},${y}`;
+        if(!this.#previousFrame.has(key) || this.#previousFrame.get(key) !== color) {
+            this.ctx.beginPath();
+            this.ctx.arc(x + radius, y + radius, radius, 0, 2 * Math.PI, false);
+            this.ctx.fillStyle = color;
+            this.ctx.fill();
+            this.#previousFrame.set(key, color);
+        }
+    }
+
+    /**
      * Clears the entire canvas by erasing the contents.
      */
     clear() {
-        // Instead of clearing the whole canvas, we will clear only those cells whose color changed
-        // or are no longer present.
-
         for(let [key, color] of this.#previousFrame) {
             let [x, y] = key.split(',').map(Number);
             if(this.ctx.fillStyle !== color) {
@@ -283,7 +313,7 @@ class CanvasWrapperWebGL extends CanvasWrapper{
      * Clear the canvas.
      */
     clear() {
-        this.#context.clearColor(0.0, 0.0, 0.0, 0.0); // Set clear color to black, fully transparent
+        this.#context.clearColor(0.0, 0.0, 0.0, 0.0);
         this.#context.clear(this.#context.COLOR_BUFFER_BIT);
     }
 

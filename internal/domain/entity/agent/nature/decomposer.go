@@ -15,8 +15,8 @@ func (a Decomposer) AgentType() enum.AgentType {
 	return enum.AgentTypeDecomposer
 }
 
-func (a Decomposer) Genesis(parent contracts.Agent, config *configuration.AgentConfiguration) []contracts.Agent {
-	if parent.Energy() < config.MaxEnergy {
+func (a Decomposer) Genesis(parent contracts.Agent, config *configuration.Configuration) []contracts.Agent {
+	if parent.Energy() < config.DecomposerConfiguration.MaxEnergy {
 		return nil
 	}
 	if rand.Intn(100) > 80 {
@@ -26,4 +26,8 @@ func (a Decomposer) Genesis(parent contracts.Agent, config *configuration.AgentC
 	brain := agent.NewBrainWithCommands(parent.Commands())
 	child := agent.NewAgentWithBrain[Decomposer](parent.Energy()/2, brain)
 	return []contracts.Agent{child}
+}
+
+func (a Decomposer) MaxEnergy(config *configuration.Configuration) int {
+	return config.DecomposerConfiguration.MaxEnergy
 }

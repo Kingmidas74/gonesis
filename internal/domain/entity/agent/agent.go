@@ -43,8 +43,8 @@ func (a *Agent[N]) IsAlive() bool {
 }
 
 // TODO: replace findCommandPredicate with []contracts.Command
-func (a *Agent[N]) NextDay(terra contracts.Terrain, findCommandPredicate func(int) contracts.Command, config *configuration.AgentConfiguration) error {
-	for step := 0; a.IsAlive() && step < config.MaxSteps; step++ {
+func (a *Agent[N]) NextDay(terra contracts.Terrain, findCommandPredicate func(int) contracts.Command, config *configuration.Configuration) error {
+	for step := 0; a.IsAlive() && step < a.MaxEnergy(config); step++ {
 		commandIdentifier := a.Command(nil)
 		command := findCommandPredicate(commandIdentifier)
 		if command == nil {
@@ -69,7 +69,7 @@ func (a *Agent[N]) DecreaseEnergy(delta int) {
 	a.energy -= delta
 }
 
-func (a *Agent[N]) CreateChildren(terra contracts.Terrain, config *configuration.AgentConfiguration) []contracts.Agent {
+func (a *Agent[N]) CreateChildren(terra contracts.Terrain, config *configuration.Configuration) []contracts.Agent {
 	emptyCells := make([]contracts.Cell, 0)
 	for _, cell := range terra.GetNeighbors(a.X(), a.Y()) {
 		if cell.IsEmpty() {

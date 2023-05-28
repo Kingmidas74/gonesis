@@ -1,6 +1,8 @@
 .tab-container {
     display: flex;
+    gap: var(--gap);
     flex-wrap: wrap;
+    justify-content: space-between;
 }
 
 .tab {
@@ -8,7 +10,7 @@
 }
 
 .tab .icon {
-    max-width: 50px;
+    max-width: 3rem;
     aspect-ratio: 1;
 }
 
@@ -18,7 +20,22 @@
     border-radius: 50%;
 }
 
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px double;
+}
+
 .settings--form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.settings--form .settings2 {
+    flex:1;
     width: 100%;
     display: flex;
     flex-wrap: nowrap;
@@ -39,6 +56,7 @@
     display: flex;
     flex-direction: column;
     opacity: 1;
+    gap:var(--gap);
 }
 
 .form__fieldset--legend {
@@ -108,14 +126,27 @@ input[type=number] {
     -moz-appearance: textfield;
 }
 
+.settings--form--controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+}
+
+.settings--form--controls > * {
+    flex: 0 1 50px;
+    aspect-ratio: 1;
+    background: transparent;
+}
+
 /***************/
 
 .range-slider {
-    margin: 60px 0 0 0;
-}
-
-.range-slider {
     width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gap);
 }
 
 .range-slider__range {

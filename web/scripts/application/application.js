@@ -5,8 +5,10 @@ import { Engine } from "./engine/engine.js";
 import { CanvasWrapper, Renderer } from "./render/index.js";
 import { WorldManager, ConfigurationProvider, CellFactory, Game } from "./game/index.js";
 
+import {Configuration} from "./configuration/configuration.js";
+
 /** Startup class for the application. */
-export default class Application {
+class Application {
     /**
      * @type {Game} The game instance
      */
@@ -63,3 +65,5 @@ export default class Application {
         return this.#game
     }
 }
+
+export { Application, Configuration}

@@ -7,5 +7,6 @@ import (
 
 type AgentNature interface {
 	AgentType() enum.AgentType
-	Genesis(a Agent, config *configuration.AgentConfiguration) []Agent
+	Genesis(a Agent, config *configuration.Configuration) []Agent
+	MaxEnergy(config *configuration.Configuration) int
 }

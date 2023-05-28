@@ -16,3 +16,7 @@ func (a Ground) AgentType() enum.AgentType {
 func (a Ground) Genesis(contracts.Agent, *configuration.AgentConfiguration) []contracts.Agent {
 	return make([]contracts.Agent, 0)
 }
+
+func (a Ground) MaxEnergy(*configuration.AgentConfiguration) int {
+	return 0
+}

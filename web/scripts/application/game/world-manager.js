@@ -54,6 +54,7 @@ export default class WorldManager {
      */
     async initWorld(canvas) {
         await this.#initEngine();
+        canvas.init();
         const width = this.#mathProvider.floor(canvas.width / this.#config.getInstance().CellSize);
         const height = this.#mathProvider.floor(canvas.height / this.#config.getInstance().CellSize);
         return  this.#engine.initWorld(width, height, this.#config.getInstance());

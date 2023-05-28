@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"fmt"
 	"github.com/kingmidas74/gonesis-engine/internal/contracts"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
 	"golang.org/x/exp/slices"
@@ -71,7 +70,6 @@ func (c *EatCommand) handleCarnivore(agent contracts.Agent, terra contracts.Terr
 	}
 
 	if targetCell.Agent().AgentType() == enum.AgentTypeHerbivore {
-		fmt.Println("EAT CARN")
 		agent.IncreaseEnergy(targetCell.Agent().Energy())
 		targetCell.Agent().Kill(terra)
 		terra.Cell(agent.X(), agent.Y()).RemoveAgent()

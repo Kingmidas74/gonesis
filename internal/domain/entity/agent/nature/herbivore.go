@@ -15,8 +15,8 @@ func (a Herbivore) AgentType() enum.AgentType {
 	return enum.AgentTypeHerbivore
 }
 
-func (a Herbivore) Genesis(parent contracts.Agent, config *configuration.AgentConfiguration) []contracts.Agent {
-	if parent.Energy() < config.MaxEnergy {
+func (a Herbivore) Genesis(parent contracts.Agent, config *configuration.Configuration) []contracts.Agent {
+	if parent.Energy() < config.HerbivoreConfiguration.MaxEnergy {
 		return nil
 	}
 	if rand.Intn(100) > 80 {
@@ -26,4 +26,8 @@ func (a Herbivore) Genesis(parent contracts.Agent, config *configuration.AgentCo
 	brain := agent.NewBrainWithCommands(parent.Commands())
 	child := agent.NewAgentWithBrain[Herbivore](parent.Energy()/2, brain)
 	return []contracts.Agent{child}
+}
+
+func (a Herbivore) MaxEnergy(config *configuration.Configuration) int {
+	return config.HerbivoreConfiguration.MaxEnergy
 }

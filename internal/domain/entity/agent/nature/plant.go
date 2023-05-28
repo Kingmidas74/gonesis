@@ -15,14 +15,14 @@ func (a Plant) AgentType() enum.AgentType {
 	return enum.AgentTypePlant
 }
 
-func (a Plant) Genesis(parent contracts.Agent, config *configuration.AgentConfiguration) []contracts.Agent {
+func (a Plant) Genesis(parent contracts.Agent, config *configuration.Configuration) []contracts.Agent {
 	if rand.Intn(100) > 90 {
 		return nil
 	}
 
 	childEnergy := parent.Energy() / 10
 
-	if parent.Energy() < config.MaxEnergy {
+	if parent.Energy() < config.PlantConfiguration.MaxEnergy {
 		parent.DecreaseEnergy(childEnergy)
 		return nil
 	}
@@ -31,4 +31,8 @@ func (a Plant) Genesis(parent contracts.Agent, config *configuration.AgentConfig
 	brain := agent.NewBrainWithCommands(parent.Commands())
 	child := agent.NewAgentWithBrain[Plant](childEnergy, brain)
 	return []contracts.Agent{child}
+}
+
+func (a Plant) MaxEnergy(config *configuration.Configuration) int {
+	return config.PlantConfiguration.MaxEnergy
 }

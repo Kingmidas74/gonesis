@@ -1,6 +1,6 @@
 .PHONY: wasm
 wasm:
-	GOOS=js GOARCH=wasm go build -o ./web/scripts/engine/engine.wasm -tags js -tags wasm ./cmd/wasm/main.go
+	GOOS=js GOARCH=wasm go build -o ./web/scripts/application/engine/engine.wasm -tags js -tags wasm ./cmd/wasm/main.go
 
 .PHONY: server
 server:

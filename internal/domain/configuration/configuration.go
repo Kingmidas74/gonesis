@@ -14,9 +14,11 @@ type AgentConfiguration struct {
 }
 
 type Configuration struct {
-	Width              int                `json:"width"`
-	Height             int                `json:"height"`
-	AgentConfiguration AgentConfiguration `json:"AgentConfiguration"`
+	PlantConfiguration      AgentConfiguration `json:"PlantConfiguration"`
+	HerbivoreConfiguration  AgentConfiguration `json:"HerbivoreConfiguration"`
+	CarnivoreConfiguration  AgentConfiguration `json:"CarnivoreConfiguration"`
+	DecomposerConfiguration AgentConfiguration `json:"DecomposerConfiguration"`
+	OmnivoreConfiguration   AgentConfiguration `json:"OmnivoreConfiguration"`
 }
 
 var (
@@ -25,7 +27,39 @@ var (
 
 func Instance() *Configuration {
 	instance = &Configuration{
-		AgentConfiguration: AgentConfiguration{
+		PlantConfiguration: AgentConfiguration{
+			MaxEnergy:            100,
+			InitialCount:         0,
+			MaxDailyCommandCount: 1,
+			InitialEnergy:        75,
+			BrainVolume:          20,
+			MaxSteps:             1,
+		},
+		HerbivoreConfiguration: AgentConfiguration{
+			MaxEnergy:            100,
+			InitialCount:         0,
+			MaxDailyCommandCount: 1,
+			InitialEnergy:        75,
+			BrainVolume:          20,
+			MaxSteps:             1,
+		},
+		CarnivoreConfiguration: AgentConfiguration{
+			MaxEnergy:            100,
+			InitialCount:         0,
+			MaxDailyCommandCount: 1,
+			InitialEnergy:        75,
+			BrainVolume:          20,
+			MaxSteps:             1,
+		},
+		DecomposerConfiguration: AgentConfiguration{
+			MaxEnergy:            100,
+			InitialCount:         0,
+			MaxDailyCommandCount: 1,
+			InitialEnergy:        75,
+			BrainVolume:          20,
+			MaxSteps:             1,
+		},
+		OmnivoreConfiguration: AgentConfiguration{
 			MaxEnergy:            100,
 			InitialCount:         0,
 			MaxDailyCommandCount: 1,

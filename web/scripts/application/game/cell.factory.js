@@ -1,4 +1,4 @@
-import {Wall, Agent, Empty, Organic} from "../render/cell.js";
+import {Wall, Agent, Empty} from "../render/cell.js";
 import {AgentType} from "../engine/domain.js";
 
 class CellFactory {
@@ -20,27 +20,14 @@ class CellFactory {
     #calculateColor(initialColor, light) {
         // Extract HSL values using regular expressions
         let [_, hue, saturation, lightness, alpha] = initialColor.match(/hsla\((\d+),\s*([\d.]+)%,\s*([\d.]+)%,\s*([\d.]+)\)/i);
-
-        // Convert the lightness to a number
-        lightness = Number(lightness);
-
-        // Increase the lightness by the amount specified by `light`, ensuring it doesn't exceed 100
-        lightness = Math.min(lightness + light, 100);
-
-        // Construct the new color
-        let newColor = `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
-
-        return newColor;
+        lightness = Math.min(Number(lightness) + light, 100);
+        return `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
     }
 
     #changeAlpha(initialColor, newAlpha) {
         // Extract HSLA values using regular expressions
         let [_, hue, saturation, lightness] = initialColor.match(/hsla\((\d+),\s*([\d.]+)%,\s*([\d.]+)%,\s*([\d.]+)\)/i);
-
-        // Construct the new color with the new alpha value
-        let newColor = `hsla(${hue}, ${saturation}%, ${lightness}%, ${newAlpha})`;
-
-        return newColor;
+        return `hsla(${hue}, ${saturation}%, ${lightness}%, ${newAlpha})`;
     }
 
     createWall(x, y) {
@@ -52,34 +39,28 @@ class CellFactory {
     }
 
     createAgent(x, y, energy, agentType) {
-        let agentColor = this.#configuration.getInstance().AgentConfiguration.HerbivoreColor;
+        let agentColor = null;
         switch (agentType) {
             case AgentType.CARNIVORE:
-                agentColor = this.#configuration.getInstance().AgentConfiguration.CarnivoreColor;
+                agentColor = this.#configuration.getInstance().CarnivoreConfiguration.Color
                 break;
             case AgentType.HERBIVORE:
-                agentColor = this.#configuration.getInstance().AgentConfiguration.HerbivoreColor;
+                agentColor = this.#configuration.getInstance().HerbivoreConfiguration.Color
                 break;
             case AgentType.DECOMPOSER:
-                agentColor = this.#configuration.getInstance().AgentConfiguration.DecomposerColor;
+                agentColor = this.#configuration.getInstance().DecomposerConfiguration.Color
                 break;
             case AgentType.PLANT:
-                agentColor = this.#configuration.getInstance().AgentConfiguration.PlantColor;
+                agentColor = this.#configuration.getInstance().PlantConfiguration.Color
                 break;
             case AgentType.OMNIVORE:
-                agentColor = this.#configuration.getInstance().AgentConfiguration.OmnivoreColor;
+                agentColor = this.#configuration.getInstance().OmnivoreConfiguration.Color
                 break;
+            default:
+                throw "Unknown agent type: " + agentType;
         }
 
-        //let initialColor = this.#changeAlpha(agentColor, .5)
-        //const energyPercent = (energy / (this.#configuration.getInstance().AgentConfiguration.MaxEnergy));
-        //initialColor = this.#changeAlpha(initialColor, energyPercent);
-
         return new Agent(x, y, agentColor, energy);
-    }
-
-    createOrganic(x, y) {
-        return new Organic(x, y, this.#configuration.getInstance().AgentConfiguration.PlantColor);
     }
 }
 

@@ -25,22 +25,18 @@ class Cell {
     }
 }
 
-// Wall cell
 class Wall extends Cell {
     constructor(x, y, color) {
         super(x, y, color);
     }
-    // Additional methods or properties for Wall cell if required
 }
 
 class Empty extends Cell {
     constructor(x, y, color) {
         super(x, y, color);
     }
-    // Additional methods or properties for Wall cell if required
 }
 
-// Agent cell
 class Agent extends Cell {
     constructor(x, y, color, energy) {
         super(x, y, color);
@@ -48,25 +44,8 @@ class Agent extends Cell {
     }
 
     draw(canvasWrapper, size) {
-        super.draw(canvasWrapper, size);
-        // Additional drawing for energy if needed
+        canvasWrapper.drawCircle(this.x * size, this.y * size, size / 2, this.color);
     }
-    // Additional methods or properties for Agent cell
 }
 
-
-// Agent cell
-class Organic extends Cell {
-    constructor(x, y, color, energy) {
-        super(x, y, color);
-        this.energy = energy;
-    }
-
-    draw(canvasWrapper, size) {
-        super.draw(canvasWrapper, size);
-        // Additional drawing for energy if needed
-    }
-    // Additional methods or properties for Agent cell
-}
-
-export {Wall, Agent, Empty, Organic};
+export {Wall, Agent, Empty};
