@@ -94,9 +94,9 @@ export default class UIController {
     }
 
     togglePlayPause(isPlaying) {
-        this.#elements.settingsBtn.disabled = isPlaying;
-        this.#elements.nextStepBtn.disabled = isPlaying;
-        this.#elements.generateBtn.disabled = isPlaying;
+        this.#elements.settingsBtn.parentElement.classList.toggle("hidden", isPlaying);
+        this.#elements.generateBtn.parentElement.classList.toggle("hidden", isPlaying);
+        this.#elements.nextStepBtn.parentElement.classList.toggle("hidden", isPlaying);
         this.#elements.playBtn.parentElement.classList.toggle("hidden", isPlaying);
         this.#elements.pauseBtn.parentElement.classList.toggle("hidden", !isPlaying);
 
@@ -128,11 +128,13 @@ export default class UIController {
     }
 
     #handleSettingsUpdate = (e) => {
+        if(e.target.classList.contains('range-slider__range')) {
+            e.target.parentNode.querySelector('.range-slider__value').innerHTML = e.target.value;
+            return
+        }
+
         this.#window.clearTimeout(this.#settingsUpdateTimeout);
         this.#settingsUpdateTimeout = this.#window.setTimeout(() => {
-            if(e.target.classList.contains('range-slider__range')) {
-                e.target.parentNode.querySelector('.range-slider__value').innerHTML = e.target.value;
-            }
             const settings = this.collectAllSettings();
             this.OnSettingsUpdateListener?.(settings);
         }, 250);

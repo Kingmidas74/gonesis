@@ -10,6 +10,7 @@ import (
 
 	"github.com/kingmidas74/gonesis-engine/internal/contracts"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/configuration"
+	"github.com/kingmidas74/gonesis-engine/internal/handler/webasm/model"
 	"github.com/kingmidas74/gonesis-engine/internal/mapper"
 	"github.com/kingmidas74/gonesis-engine/internal/service/game"
 )
@@ -32,7 +33,7 @@ func initWorld() js.Func {
 
 		err := cfg.FromJson(configJson)
 		if err != nil {
-			return err.Error()
+			return serializeError(err)
 		}
 
 		rand.Seed(time.Now().UnixNano())
@@ -40,7 +41,7 @@ func initWorld() js.Func {
 		gameService := game.New(cfg)
 		world, err := gameService.InitWorld(width, height)
 		if err != nil {
-			return err.Error()
+			return serializeError(err)
 		}
 
 		GameWorld = world
@@ -53,7 +54,7 @@ func step() js.Func {
 	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		err := GameWorld.Next(configuration.Instance())
 		if err != nil {
-			return err.Error()
+			return serializeError(err)
 		}
 
 		return serializeWorld(GameWorld)
@@ -64,8 +65,30 @@ func serializeWorld(w contracts.World) string {
 	res := mapper.NewWorld(w)
 
 	if r, e := json.Marshal(res); e != nil {
-		return e.Error()
+		return serializeError(e)
 	} else {
-		return string(r)
+		return serializeResponse(string(r))
 	}
+}
+
+func serializeError(e error) string {
+	r, err := json.Marshal(model.Response{
+		Code:    1,
+		Message: e.Error(),
+	})
+	if err != nil {
+		return err.Error()
+	}
+	return string(r)
+}
+
+func serializeResponse(message string) string {
+	r, err := json.Marshal(model.Response{
+		Code:    0,
+		Message: message,
+	})
+	if err != nil {
+		return err.Error()
+	}
+	return string(r)
 }

@@ -1,4 +1,5 @@
 import {CellType} from "../engine/domain.js";
+import {Either} from "../monads/index.js";
 
 class Game {
 
@@ -40,6 +41,20 @@ class Game {
      */
     #cellFactory
 
+    onGameOverListeners = [];
+
+    addOnGameOverListener(listener) {
+        this.onGameOverListeners.push(listener);
+    }
+
+    removeOnGameOverListener(listener) {
+        this.onGameOverListeners = this.onGameOverListeners.filter(l => l !== listener);
+    }
+
+    #raiseOnGameOverEvent(...args) {
+        this.onGameOverListeners.forEach(listener => listener(...args));
+    }
+
     /**
      * Constructs a new instance of Game.
      * @param {CanvasWrapper} canvas - The canvas for drawing.
@@ -66,14 +81,14 @@ class Game {
      * Fill cells array based on world data.
      * @param {World} worldInstance - The world data in object format.
      * @private
+     * @returns {Either<null, Error>} null if world is filled successfully, error otherwise
      */
     #fillCells(worldInstance) {
         const width = worldInstance.width;
         const height = worldInstance.height;
 
         if(worldInstance.cells.length < worldInstance.agents.length) {
-            console.log(worldInstance)
-            throw "TOO MANY AGENTS!"
+            return Either.exception(new Error("World is corrupted"));
         }
 
         for (let row = 0; row < height; row++) {
@@ -91,30 +106,36 @@ class Game {
         for (const agent of worldInstance.agents) {
             this.#cells[agent.y*width+agent.x] = this.#cellFactory.createAgent(agent.x, agent.y, agent.energy, agent.agentType);
         }
+
+        return Either.value()
     }
 
     /**
      * Initialize game's world
-     * @returns {Promise<void>}
+     * @returns {Promise<Either<null, Error>>} null if world is initialized successfully, error otherwise
      */
     async init() {
-        const world = await this.#worldManager.initWorld(this.#canvas);
-        console.log(world);
-        this.#cells = Array(world.cells.length);
-        this.#fillCells(world)
-        this.#renderer.draw(this.#cells);
+        const eitherWorld = await this.#worldManager.initWorld(this.#canvas);
+        return eitherWorld
+            .map((world) => {
+                this.#cells = Array(world.cells.length);
+                return this.#fillCells(world).map(() => {
+                    this.#renderer.draw(this.#cells);
+                    return  world
+                })
+            })
     }
 
     /**
      * Update game's world
-     * @returns {boolean} true if game is not over, false otherwise
+     * @returns {Either<boolean, Error>} true if game is not over, false otherwise
      * @private
      */
-    #update() {
-        const world = this.#worldManager.updateWorld();
-        this.#fillCells(world);
-        return this.#livingAgentsCount(world) > 0
-
+    async #update() {
+        return this.#worldManager.updateWorld().map(world => {
+            this.#fillCells(world);
+            return this.#livingAgentsCount(world) > 0
+        });
     }
 
     /**
@@ -147,9 +168,15 @@ class Game {
         return count;
     }
 
-    step() {
-        const updateResult = this.#update();
-        this.#renderer.draw(this.#cells);
+    /**
+     * Step game
+     * @returns {Either<boolean, Error>}
+     */
+    async step() {
+        return (await this.#update()).map((shouldContinue) => {
+            this.#renderer.draw(this.#cells);
+            return shouldContinue;
+        });
     }
 
     /**
@@ -161,7 +188,7 @@ class Game {
         const timeStep = 1000 / desiredFPS;
         let lastTime = this.#windowProvider.performance.now();
 
-        const loop = (currentTime) => {
+        const loop = async (currentTime) => {
             const deltaTime = currentTime - lastTime;
 
             if(deltaTime >= timeStep) {
@@ -169,13 +196,15 @@ class Game {
                     return;
                 }
                 lastTime = currentTime - (deltaTime % timeStep);
-                const updateResult = this.#update();
-                this.#renderer.draw(this.#cells);
-                if (!updateResult) {
-                    console.log(this.#cells);
-                    console.log("Game over");
-                    return;
-                }
+                const stepResult = await this.step();
+                stepResult.map(shouldContinue => {
+                    if(!shouldContinue) {
+                        this.#renderer.draw(this.#cells);
+                        this.#raiseOnGameOverEvent(stepResult)
+                    }
+                }).orElse(err => {
+                    this.#raiseOnGameOverEvent(stepResult)
+                });
             }
 
             this.#windowProvider.requestAnimationFrame(loop);

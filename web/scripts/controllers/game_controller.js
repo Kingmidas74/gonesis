@@ -18,7 +18,12 @@ export default class GameController {
      */
     constructor(game, configurationProvider) {
         this.#game = game;
+        this.#game.addOnGameOverListener(this.#onGameOverHandler);
         this.#configurationProvider = configurationProvider;
+    }
+
+    #onGameOverHandler = (e) => {
+        this.#configurationProvider.getInstance().Playable = false
     }
 
     /**
@@ -40,6 +45,7 @@ export default class GameController {
     async playGame() {
         this.#configurationProvider.getInstance().Playable = true;
         try {
+            console.log("Play", this.#game)
             await this.#game.run();
         } catch (error) {
             console.error(error);
@@ -62,7 +68,13 @@ export default class GameController {
         console.log("Generate");
         try {
             await this.pauseGame();
-            await this.#game.init();
+            (await this.#game.init())
+                .map((_)=> {
+                    console.log("Generated");
+                })
+                .orElse((err) => {
+                    throw err
+                });
         } catch (error) {
             console.error(error);
         }

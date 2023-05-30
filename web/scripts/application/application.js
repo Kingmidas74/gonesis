@@ -19,6 +19,14 @@ class Application {
      */
     configurationProvider
 
+    /**
+     * Gets the game instance.
+     * @returns {Game}
+     */
+    get game() {
+        return this.#game;
+    }
+
 
     /**
      * Configures the application.
@@ -54,15 +62,14 @@ class Application {
     /**
      * Runs the game.
      * @param {Configuration} config The configuration of the game.
-     * @returns {Promise<Game>} A promise that resolves when the game is running.
+     * @returns {Promise<Either<Game, Error>>} A promise that resolves when the game is running.
      */
     async run(config){
         const configurationProvider = new ConfigurationProvider();
         configurationProvider.updateConfiguration(config);
-        await this.#game.init()
-        console.log("Ready");
-        await this.#game.run()
-        return this.#game
+        return (await this.#game.init()).map((world) => {
+            return this.#game
+        })
     }
 }
 

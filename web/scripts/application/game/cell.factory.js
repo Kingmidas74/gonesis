@@ -1,4 +1,4 @@
-import {Wall, Agent, Empty} from "../render/cell.js";
+import {Wall, Agent, Empty, Colors } from "../render/index.js";
 import {AgentType} from "../engine/domain.js";
 
 class CellFactory {
@@ -19,12 +19,14 @@ class CellFactory {
 
     #calculateColor(initialColor, light) {
         // Extract HSL values using regular expressions
+        return initialColor
         let [_, hue, saturation, lightness, alpha] = initialColor.match(/hsla\((\d+),\s*([\d.]+)%,\s*([\d.]+)%,\s*([\d.]+)\)/i);
         lightness = Math.min(Number(lightness) + light, 100);
         return `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
     }
 
     #changeAlpha(initialColor, newAlpha) {
+        return initialColor
         // Extract HSLA values using regular expressions
         let [_, hue, saturation, lightness] = initialColor.match(/hsla\((\d+),\s*([\d.]+)%,\s*([\d.]+)%,\s*([\d.]+)\)/i);
         return `hsla(${hue}, ${saturation}%, ${lightness}%, ${newAlpha})`;
@@ -35,7 +37,7 @@ class CellFactory {
     }
 
     createEmpty(x, y, energyPercent) {
-        return new Empty(x, y, this.#changeAlpha("hsla(60, 100%, 50%, 1.0)", energyPercent));
+        return new Empty(x, y, Colors.YELLOW);
     }
 
     createAgent(x, y, energy, agentType) {

@@ -50,7 +50,7 @@ export default class WorldManager {
     /**
      * Initialize world
      * @param {CanvasWrapper} canvas - The canvas for drawing.
-     * @returns {Promise<World>} The world data in object format.
+     * @returns {Promise<Either<World, Error>>} The world data in object format.
      */
     async initWorld(canvas) {
         await this.#initEngine();
@@ -62,7 +62,7 @@ export default class WorldManager {
 
     /**
      * Update world
-     * @returns {World} The world data in object format.
+     * @returns {Either<World, Error>} The world data in object format.
      */
     updateWorld() {
         return this.#engine.step();

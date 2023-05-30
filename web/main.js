@@ -7,14 +7,12 @@ const config = new Configuration({
 
 const application = new Application();
 await application.configure(window, document, document.getElementById("canvas"), "engine.wasm")
-const game = await application.run(config);
 
-const gameController = new GameController(game, application.configurationProvider);
-
+const gameController = new GameController(application.game, application.configurationProvider);
 const uiController = new UIController(window, document, gameController);
 uiController.OnWindowResizeListener = async () => {
-    await gameController.generateGame();
     uiController.togglePlayPause(false);
+    await gameController.generateGame();
 }
 
 uiController.OnSettingsUpdateListener = async (config) => {
@@ -24,4 +22,15 @@ uiController.OnSettingsUpdateListener = async (config) => {
     await gameController.generateGame();
 }
 
-uiController.init();
+application.game.addOnGameOverListener((e) => {
+    uiController.togglePlayPause(false)
+    e.map((_) => {
+        console.log("Game over");
+    }).orElse((err) => {
+        console.error(err);
+    });
+})
+
+
+uiController.init()
+await gameController.generateGame();
