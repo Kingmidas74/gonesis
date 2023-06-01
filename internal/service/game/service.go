@@ -1,6 +1,8 @@
 package game
 
 import (
+	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
+	"github.com/kingmidas74/gonesis-engine/internal/domain/errors"
 	"math/rand"
 
 	"golang.org/x/exp/slices"
@@ -17,7 +19,11 @@ import (
 )
 
 func (s *Service) InitWorld(width, height int) (contracts.World, error) {
-	mazeBuilder := maze.NewMazeBuilder[generator.BorderGenerator]()
+	mazeBuilder, err := s.getMazeBuilder()
+	if err != nil {
+		return nil, err
+	}
+
 	requiredEmptyCells := s.config.PlantConfiguration.InitialCount +
 		s.config.HerbivoreConfiguration.InitialCount +
 		s.config.CarnivoreConfiguration.InitialCount +
@@ -32,7 +38,11 @@ func (s *Service) InitWorld(width, height int) (contracts.World, error) {
 		return nil, err
 	}
 
-	terra := terrain.NewTerrain[topology.MooreTopology](m)
+	terra, err := s.getTerrain(m)
+	if err != nil {
+		return nil, err
+	}
+
 	agents := s.generateAgents(requiredEmptyCells)
 
 	emptyCells := terra.EmptyCells()
@@ -55,42 +65,81 @@ func (s *Service) InitWorld(width, height int) (contracts.World, error) {
 	return s.world, nil
 }
 
+func (s *Service) getMazeBuilder() (contracts.MazeBuilder, error) {
+	switch s.config.WorldConfiguration.MazeType {
+	case enum.MazeTypeBorder:
+		return maze.NewMazeBuilder[generator.BorderGenerator](), nil
+	case enum.MazeTypeBinary:
+		return maze.NewMazeBuilder[generator.BinaryGenerator](), nil
+	case enum.MazeTypeGrid:
+		return maze.NewMazeBuilder[generator.GridGenerator](), nil
+	case enum.MazeTypeAldousBroder:
+		return maze.NewMazeBuilder[generator.AldousBroderGenerator](), nil
+	case enum.MazeTypeSideWinder:
+		return maze.NewMazeBuilder[generator.SidewinderGenerator](), nil
+	case enum.MazeTypeEmpty:
+		return maze.NewMazeBuilder[generator.EmptyGenerator](), nil
+	default:
+		return nil, errors.ErrMazeTypeNotSupported
+	}
+}
+func (s *Service) getTerrain(m contracts.Maze) (contracts.Terrain, error) {
+	switch s.config.WorldConfiguration.Topology {
+	case enum.TopologyTypeMoore:
+		return terrain.NewTerrain[topology.MooreTopology](m), nil
+	case enum.TopologyTypeNeumann:
+		return terrain.NewTerrain[topology.NeumannTopology](m), nil
+	default:
+		return nil, errors.ErrTopologyTypeNotSupported
+	}
+}
+
 func (s *Service) generatePlants() []contracts.Agent {
 	plants := make([]contracts.Agent, s.config.PlantConfiguration.InitialCount)
+	plantNature := &nature.Plant{}
+	plantNature.Configure(s.config)
 	for i := 0; i < s.config.PlantConfiguration.InitialCount; i++ {
-		plants[i] = agent.NewAgent[nature.Plant](s.config.PlantConfiguration.InitialEnergy/2, s.config.PlantConfiguration.BrainVolume)
+		plants[i] = agent.NewAgent(plantNature)
 	}
 	return plants
 }
 
 func (s *Service) generateHerbivores() []contracts.Agent {
 	herbivores := make([]contracts.Agent, s.config.HerbivoreConfiguration.InitialCount)
+	herbivoreNature := &nature.Herbivore{}
+	herbivoreNature.Configure(s.config)
 	for i := 0; i < s.config.HerbivoreConfiguration.InitialCount; i++ {
-		herbivores[i] = agent.NewAgent[nature.Herbivore](s.config.HerbivoreConfiguration.InitialEnergy, s.config.HerbivoreConfiguration.BrainVolume)
+		herbivores[i] = agent.NewAgent(herbivoreNature)
 	}
 	return herbivores
 }
 
 func (s *Service) generateCarnivores() []contracts.Agent {
 	carnivores := make([]contracts.Agent, s.config.CarnivoreConfiguration.InitialCount)
+	carnivoreNature := &nature.Carnivore{}
+	carnivoreNature.Configure(s.config)
 	for i := 0; i < s.config.CarnivoreConfiguration.InitialCount; i++ {
-		carnivores[i] = agent.NewAgent[nature.Carnivore](s.config.CarnivoreConfiguration.InitialEnergy, s.config.CarnivoreConfiguration.BrainVolume)
+		carnivores[i] = agent.NewAgent(carnivoreNature)
 	}
 	return carnivores
 }
 
 func (s *Service) generateDecomposers() []contracts.Agent {
 	decomposers := make([]contracts.Agent, s.config.DecomposerConfiguration.InitialCount)
+	decomposerNature := &nature.Decomposer{}
+	decomposerNature.Configure(s.config)
 	for i := 0; i < s.config.DecomposerConfiguration.InitialCount; i++ {
-		decomposers[i] = agent.NewAgent[nature.Decomposer](s.config.DecomposerConfiguration.InitialEnergy, s.config.DecomposerConfiguration.BrainVolume)
+		decomposers[i] = agent.NewAgent(decomposerNature)
 	}
 	return decomposers
 }
 
 func (s *Service) generateOmnivores() []contracts.Agent {
 	omnivores := make([]contracts.Agent, s.config.OmnivoreConfiguration.InitialCount)
+	omnivoreNature := &nature.Omnivore{}
+	omnivoreNature.Configure(s.config)
 	for i := 0; i < s.config.OmnivoreConfiguration.InitialCount; i++ {
-		omnivores[i] = agent.NewAgent[nature.Omnivore](s.config.OmnivoreConfiguration.InitialEnergy, s.config.OmnivoreConfiguration.BrainVolume)
+		omnivores[i] = agent.NewAgent(omnivoreNature)
 	}
 	return omnivores
 }

@@ -41,20 +41,6 @@ class Game {
      */
     #cellFactory
 
-    onGameOverListeners = [];
-
-    addOnGameOverListener(listener) {
-        this.onGameOverListeners.push(listener);
-    }
-
-    removeOnGameOverListener(listener) {
-        this.onGameOverListeners = this.onGameOverListeners.filter(l => l !== listener);
-    }
-
-    #raiseOnGameOverEvent(...args) {
-        this.onGameOverListeners.forEach(listener => listener(...args));
-    }
-
     /**
      * Constructs a new instance of Game.
      * @param {CanvasWrapper} canvas - The canvas for drawing.
@@ -81,15 +67,20 @@ class Game {
      * Fill cells array based on world data.
      * @param {World} worldInstance - The world data in object format.
      * @private
-     * @returns {Either<null, Error>} null if world is filled successfully, error otherwise
+     * @returns {Either<void, Error>} void if world is filled successfully, error otherwise
      */
-    #fillCells(worldInstance) {
+    #fillCells = (worldInstance) => {
         const width = worldInstance.width;
         const height = worldInstance.height;
 
         if(worldInstance.cells.length < worldInstance.agents.length) {
             return Either.exception(new Error("World is corrupted"));
         }
+
+        if(this.#cells?.length === 0) {
+            this.#cells = Array(worldInstance.cells.length);
+        }
+
 
         for (let row = 0; row < height; row++) {
             for (let col = 0; col < width; col++) {
@@ -112,17 +103,14 @@ class Game {
 
     /**
      * Initialize game's world
-     * @returns {Promise<Either<null, Error>>} null if world is initialized successfully, error otherwise
+     * @returns {Promise<Either<null, Error>>} void if world is initialized successfully, error otherwise
      */
     async init() {
-        const eitherWorld = await this.#worldManager.initWorld(this.#canvas);
-        return eitherWorld
-            .map((world) => {
-                this.#cells = Array(world.cells.length);
-                return this.#fillCells(world).map(() => {
-                    this.#renderer.draw(this.#cells);
-                    return  world
-                })
+        return (await this.#worldManager.initWorld(this.#canvas))
+            .map(this.#fillCells)
+            .map(_ => {
+                this.#renderer.draw(this.#cells);
+                return Either.value();
             })
     }
 
@@ -177,40 +165,6 @@ class Game {
             this.#renderer.draw(this.#cells);
             return shouldContinue;
         });
-    }
-
-    /**
-     * Run game
-     * @returns {Promise<void>}
-     */
-    async run() {
-        const desiredFPS = 10;
-        const timeStep = 1000 / desiredFPS;
-        let lastTime = this.#windowProvider.performance.now();
-
-        const loop = async (currentTime) => {
-            const deltaTime = currentTime - lastTime;
-
-            if(deltaTime >= timeStep) {
-                if(!this.#configuration.getInstance().Playable) {
-                    return;
-                }
-                lastTime = currentTime - (deltaTime % timeStep);
-                const stepResult = await this.step();
-                stepResult.map(shouldContinue => {
-                    if(!shouldContinue) {
-                        this.#renderer.draw(this.#cells);
-                        this.#raiseOnGameOverEvent(stepResult)
-                    }
-                }).orElse(err => {
-                    this.#raiseOnGameOverEvent(stepResult)
-                });
-            }
-
-            this.#windowProvider.requestAnimationFrame(loop);
-        }
-
-        this.#windowProvider.requestAnimationFrame(loop);
     }
 }
 

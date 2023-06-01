@@ -33,7 +33,7 @@ export default class Renderer {
         this.clear()
         for (let cellSet of cellSets) {
             for (let i = 0; i < cellSet.length; i++) {
-                cellSet[i].draw(this.#canvas, this.#configurationProvider.getInstance().CellSize);
+                cellSet[i].draw(this.#canvas, this.#configurationProvider.getInstance().WorldConfiguration.CellSize);
             }
         }
     }

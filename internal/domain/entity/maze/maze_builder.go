@@ -13,29 +13,29 @@ type Builder[G contracts.MazeGenerator] struct {
 	requiredEmptyCells int
 }
 
-func NewMazeBuilder[G contracts.MazeGenerator]() contracts.MazeBuilder[G] {
+func NewMazeBuilder[G contracts.MazeGenerator]() contracts.MazeBuilder {
 	return &Builder[G]{}
 }
 
-func (b *Builder[G]) SetWidth(width int) contracts.MazeBuilder[G] {
+func (b *Builder[G]) SetWidth(width int) contracts.MazeBuilder {
 	b.width = width
 
 	return b
 }
 
-func (b *Builder[G]) SetHeight(height int) contracts.MazeBuilder[G] {
+func (b *Builder[G]) SetHeight(height int) contracts.MazeBuilder {
 	b.height = height
 
 	return b
 }
 
-func (b *Builder[G]) FirstFilled(flag bool) contracts.MazeBuilder[G] {
+func (b *Builder[G]) FirstFilled(flag bool) contracts.MazeBuilder {
 	b.firstFilled = flag
 
 	return b
 }
 
-func (b *Builder[G]) SetRequiredEmptyCells(requiredEmptyCells int) contracts.MazeBuilder[G] {
+func (b *Builder[G]) SetRequiredEmptyCells(requiredEmptyCells int) contracts.MazeBuilder {
 	b.requiredEmptyCells = requiredEmptyCells
 
 	return b

@@ -1,5 +1,57 @@
-import {Colors} from "../render/colors.js";
-import {MazeGenerators} from "../enums/maze-generator-types.js";
+const MazeGenerators = Object.freeze({
+    AldousBroder:   "aldous_broder",
+    Binary:  "binary",
+    Grid: "grid",
+    SideWinder: "side_winder",
+    Border: "border",
+    Empty: "empty",
+})
+
+const Topologies = Object.freeze({
+    Moore:   "moore",
+    Neumann: "neumann",
+})
+
+const Colors = Object.freeze({
+    RED:    "hsla(0, 60%, 60%, 1.0)",
+    BLUE:   "hsla(240, 60%, 60%, 1.0)",
+    GREEN:  "hsla(120, 60%, 60%, 1.0)",
+    BROWN:  "hsla(30, 60%, 60%, 1.0)",
+    PURPLE: "hsla(279, 60%, 60%, 1.0)",
+    DARK:   "hsla(0, 0%, 0%, 1.0)",
+    YELLOW: "hsla(60, 0%, 100%, 1.0)"
+});
+
+class WorldConfiguration {
+    constructor({
+                    MazeType = MazeGenerators.Empty,
+                    Topology = Topologies.Moore,
+                    CellSize = 10,
+                    MazeColor = Colors.DARK,
+                } = {}) {
+        /**
+         * The type of maze to generate.
+         */
+        this.MazeType = MazeType;
+
+        /**
+         * The topology of the world.
+         */
+        this.Topology = Topology;
+
+
+        /**
+         * The size of each cell in the maze.
+         * @type {number}
+         */
+        this.CellSize = CellSize;
+
+        /**
+         * The color of the maze.
+         */
+        this.MazeColor = MazeColor;
+    }
+}
 
 class AgentConfiguration {
     constructor({
@@ -33,24 +85,16 @@ class AgentConfiguration {
 class Configuration {
 
     /**
-     * The width of the world
-     * @type {number}
-     */
-    Width
-    /**
-     * The height of the world
-     * @type {number}
-     */
-    Height
-
-    /**
      * Creates an instance of Settings.
      */
     constructor({
-                    cellSize = 30,
-                    mazeColor = Colors.DARK,
-                    mazeGenerator = MazeGenerators.SideWinder,
                     isPlayable = true,
+                    worldConfiguration = new WorldConfiguration({
+                        MazeType: MazeGenerators.Border,
+                        Topology: Topologies.Moore,
+                        CellSize: 10,
+                        MazeColor: Colors.DARK,
+                    }),
                     plantConfiguration = new AgentConfiguration({
                         InitialCount: 10,
                         Color: Colors.GREEN,
@@ -72,31 +116,17 @@ class Configuration {
                         Color: Colors.PURPLE,
                     }),
                 } = {}) {
-        /**
-         * The size of each cell in the maze.
-         * @type {number}
-         */
-        this.CellSize = cellSize;
-
-        /**
-         * The color of the maze.
-         * @type {string}
-         * @see Colors
-         */
-        this.MazeColor = mazeColor;
-
-        /**
-         * The maze generator algorithm to use.
-         * @type {string}
-         * @see MazeGenerators
-         */
-        this.MazeGenerator = mazeGenerator;
 
         /**
          * Indicates if the game is playable.
          * @type {boolean}
          */
         this.Playable = isPlayable;
+
+        /**
+         * The configuration for the world.
+         */
+        this.WorldConfiguration = worldConfiguration;
 
         /**
          * The configuration for the agents of type 'plant'
@@ -168,6 +198,10 @@ class ConfigurationProvider {
      * @param {Configuration} newConfig
      */
     updateConfiguration(newConfig) {
+        if(newConfig.WorldConfiguration) {
+            Object.assign(ConfigurationProvider.#instance.WorldConfiguration, newConfig.WorldConfiguration);
+            delete newConfig.WorldConfiguration;
+        }
 
         if(newConfig.PlantConfiguration) {
             Object.assign(ConfigurationProvider.#instance.PlantConfiguration, newConfig.PlantConfiguration);
@@ -198,4 +232,4 @@ class ConfigurationProvider {
     }
 }
 
-export {Configuration, ConfigurationProvider};
+export {Configuration, ConfigurationProvider, MazeGenerators, Topologies, Colors};

@@ -44,20 +44,20 @@ export default class WorldManager {
      * @returns {Promise<void>}
      */
     async #initEngine() {
-        await this.#engine.init();
+        return this.#engine.init();
     }
 
     /**
      * Initialize world
      * @param {CanvasWrapper} canvas - The canvas for drawing.
-     * @returns {Promise<Either<World, Error>>} The world data in object format.
+     * @returns {Either<World, Error>} The world data in object format.
      */
     async initWorld(canvas) {
         await this.#initEngine();
         canvas.init();
-        const width = this.#mathProvider.floor(canvas.width / this.#config.getInstance().CellSize);
-        const height = this.#mathProvider.floor(canvas.height / this.#config.getInstance().CellSize);
-        return  this.#engine.initWorld(width, height, this.#config.getInstance());
+        const width = this.#mathProvider.floor(canvas.width / this.#config.getInstance().WorldConfiguration.CellSize);
+        const height = this.#mathProvider.floor(canvas.height / this.#config.getInstance().WorldConfiguration.CellSize);
+        return this.#engine.initWorld(width, height, this.#config.getInstance());
     }
 
     /**

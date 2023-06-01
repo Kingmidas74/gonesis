@@ -1,4 +1,4 @@
-import {Wall, Agent, Empty, Colors } from "../render/index.js";
+import {Wall, Agent, Empty } from "../render/index.js";
 import {AgentType} from "../engine/domain.js";
 
 class CellFactory {
@@ -33,11 +33,11 @@ class CellFactory {
     }
 
     createWall(x, y) {
-        return new Wall(x, y, this.#configuration.getInstance().MazeColor);
+        return new Wall(x, y, this.#configuration.getInstance().WorldConfiguration.MazeColor);
     }
 
     createEmpty(x, y, energyPercent) {
-        return new Empty(x, y, Colors.YELLOW);
+        return new Empty(x, y, "#ffffff");
     }
 
     createAgent(x, y, energy, agentType) {

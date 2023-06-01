@@ -34,6 +34,10 @@ class Either {
     orElse(fn) {
         return this;
     }
+
+    chain(fn) {
+        return this;
+    }
 }
 
 class Exception extends Either {

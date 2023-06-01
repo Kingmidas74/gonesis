@@ -17,7 +17,11 @@ class Application {
     /**
      * @type {ConfigurationProvider}
      */
-    configurationProvider
+    #configurationProvider
+
+    get configurationProvider() {
+        return this.#configurationProvider;
+    }
 
     /**
      * Gets the game instance.
@@ -56,7 +60,17 @@ class Application {
             cellFactory: cellFactory,
         });
 
-        this.configurationProvider = configurationProvider
+        this.#configurationProvider = configurationProvider
+    }
+
+
+
+    /**
+     * Updates the game settings.
+     * @param {Configuration} newConfig
+     */
+    updateConfiguration(newConfig) {
+        this.#configurationProvider.updateConfiguration(newConfig)
     }
 
     /**
@@ -64,13 +78,14 @@ class Application {
      * @param {Configuration} config The configuration of the game.
      * @returns {Promise<Either<Game, Error>>} A promise that resolves when the game is running.
      */
-    async run(config){
-        const configurationProvider = new ConfigurationProvider();
-        configurationProvider.updateConfiguration(config);
-        return (await this.#game.init()).map((world) => {
-            return this.#game
-        })
-    }
+    /*    async run(config){
+            const configurationProvider = new ConfigurationProvider();
+            configurationProvider.updateConfiguration(config);
+            return (await this.#game.init()).map((world) => {
+                return this.#game
+            })
+        }
+        */
 }
 
 export { Application, Configuration}

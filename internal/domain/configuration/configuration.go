@@ -2,7 +2,21 @@ package configuration
 
 import (
 	"encoding/json"
+	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
 )
+
+const (
+	defaultMaxEnergy     = 100
+	defaultBrainSize     = 20
+	defaultEnergy        = 75
+	defaultCount         = 0
+	defaultDailyCommands = 1
+)
+
+type WorldConfiguration struct {
+	MazeType enum.MazeType     `json:"MazeType"`
+	Topology enum.TopologyType `json:"Topology"`
+}
 
 type AgentConfiguration struct {
 	MaxEnergy            int `json:"MaxEnergy"`
@@ -10,10 +24,10 @@ type AgentConfiguration struct {
 	MaxDailyCommandCount int `json:"MaxDailyCommandCount"`
 	InitialEnergy        int `json:"InitialEnergy"`
 	BrainVolume          int `json:"BrainVolume"`
-	MaxSteps             int `json:"MaxSteps"`
 }
 
 type Configuration struct {
+	WorldConfiguration      WorldConfiguration `json:"WorldConfiguration"`
 	PlantConfiguration      AgentConfiguration `json:"PlantConfiguration"`
 	HerbivoreConfiguration  AgentConfiguration `json:"HerbivoreConfiguration"`
 	CarnivoreConfiguration  AgentConfiguration `json:"CarnivoreConfiguration"`
@@ -27,45 +41,44 @@ var (
 
 func Instance() *Configuration {
 	instance = &Configuration{
+		WorldConfiguration: WorldConfiguration{
+			MazeType: enum.MazeTypeEmpty,
+			Topology: enum.TopologyTypeNeumann,
+		},
 		PlantConfiguration: AgentConfiguration{
-			MaxEnergy:            100,
-			InitialCount:         0,
-			MaxDailyCommandCount: 1,
-			InitialEnergy:        75,
-			BrainVolume:          20,
-			MaxSteps:             1,
+			MaxEnergy:            defaultMaxEnergy,
+			InitialCount:         defaultCount,
+			MaxDailyCommandCount: defaultDailyCommands,
+			InitialEnergy:        defaultEnergy,
+			BrainVolume:          defaultBrainSize,
 		},
 		HerbivoreConfiguration: AgentConfiguration{
-			MaxEnergy:            100,
-			InitialCount:         0,
-			MaxDailyCommandCount: 1,
-			InitialEnergy:        75,
-			BrainVolume:          20,
-			MaxSteps:             1,
+			MaxEnergy:            defaultMaxEnergy,
+			InitialCount:         defaultCount,
+			MaxDailyCommandCount: defaultDailyCommands,
+			InitialEnergy:        defaultEnergy,
+			BrainVolume:          defaultBrainSize,
 		},
 		CarnivoreConfiguration: AgentConfiguration{
-			MaxEnergy:            100,
-			InitialCount:         0,
-			MaxDailyCommandCount: 1,
-			InitialEnergy:        75,
-			BrainVolume:          20,
-			MaxSteps:             1,
+			MaxEnergy:            defaultMaxEnergy,
+			InitialCount:         defaultCount,
+			MaxDailyCommandCount: defaultDailyCommands,
+			InitialEnergy:        defaultEnergy,
+			BrainVolume:          defaultBrainSize,
 		},
 		DecomposerConfiguration: AgentConfiguration{
-			MaxEnergy:            100,
-			InitialCount:         0,
-			MaxDailyCommandCount: 1,
-			InitialEnergy:        75,
-			BrainVolume:          20,
-			MaxSteps:             1,
+			MaxEnergy:            defaultMaxEnergy,
+			InitialCount:         defaultCount,
+			MaxDailyCommandCount: defaultDailyCommands,
+			InitialEnergy:        defaultEnergy,
+			BrainVolume:          defaultBrainSize,
 		},
 		OmnivoreConfiguration: AgentConfiguration{
-			MaxEnergy:            100,
-			InitialCount:         0,
-			MaxDailyCommandCount: 1,
-			InitialEnergy:        75,
-			BrainVolume:          20,
-			MaxSteps:             1,
+			MaxEnergy:            defaultMaxEnergy,
+			InitialCount:         defaultCount,
+			MaxDailyCommandCount: defaultDailyCommands,
+			InitialEnergy:        defaultEnergy,
+			BrainVolume:          defaultBrainSize,
 		},
 	}
 	return instance

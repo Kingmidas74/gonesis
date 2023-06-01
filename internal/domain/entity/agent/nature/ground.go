@@ -7,16 +7,33 @@ import (
 )
 
 type Ground struct {
+	config *configuration.Configuration
 }
 
-func (a Ground) AgentType() enum.AgentType {
+func (a *Ground) Configure(config *configuration.Configuration) {
+	a.config = config
+}
+
+func (a *Ground) AgentType() enum.AgentType {
 	return enum.AgentTypeGround
 }
 
-func (a Ground) Genesis(contracts.Agent, *configuration.AgentConfiguration) []contracts.Agent {
+func (a *Ground) Genesis(contracts.Agent) []contracts.Agent {
 	return make([]contracts.Agent, 0)
 }
 
-func (a Ground) MaxEnergy(*configuration.AgentConfiguration) int {
+func (a *Ground) MaxEnergy() int {
+	return 0
+}
+
+func (a *Ground) BrainVolume() int {
+	return 0
+}
+
+func (a *Ground) MaxDailyCommandCount() int {
+	return 0
+}
+
+func (a *Ground) InitialEnergy() int {
 	return 0
 }

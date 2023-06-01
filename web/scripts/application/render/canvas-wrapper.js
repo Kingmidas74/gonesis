@@ -163,6 +163,10 @@ class CanvasWrapperCached extends CanvasWrapper2D {
     drawCircle(x, y, radius, color) {
         let key = `${x},${y}`;
         if(!this.#previousFrame.has(key) || this.#previousFrame.get(key) !== color) {
+
+            this.ctx.fillStyle = "#ffffff";
+            this.ctx.fillRect(x, y, 2 * radius, 2 * radius);
+
             this.ctx.beginPath();
             this.ctx.arc(x + radius, y + radius, radius, 0, 2 * Math.PI, false);
             this.ctx.fillStyle = color;
