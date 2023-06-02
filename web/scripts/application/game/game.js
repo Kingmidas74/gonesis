@@ -77,11 +77,6 @@ class Game {
             return Either.exception(new Error("World is corrupted"));
         }
 
-        if(this.#cells?.length === 0) {
-            this.#cells = Array(worldInstance.cells.length);
-        }
-
-
         for (let row = 0; row < height; row++) {
             for (let col = 0; col < width; col++) {
                 if (worldInstance.cells[row*width+col].cellType === CellType.WALL) {
@@ -107,7 +102,10 @@ class Game {
      */
     async init() {
         return (await this.#worldManager.initWorld(this.#canvas))
-            .map(this.#fillCells)
+            .map((world) => {
+                this.#cells = Array(world.cells.length);
+                return this.#fillCells(world);
+            })
             .map(_ => {
                 this.#renderer.draw(this.#cells);
                 return Either.value();

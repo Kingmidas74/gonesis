@@ -1,6 +1,4 @@
-import {Configuration} from "../application/application.js";
-import {Either} from "../application/monads/index.js";
-import {MazeGenerators} from "../application/configuration/configuration.js";
+import {Configuration, MazeGenerators} from "../application/configuration/configuration.js";
 
 export default class UIController {
 
@@ -246,7 +244,7 @@ export default class UIController {
     #handleResize = () => {
         this.#window.clearTimeout(this.#windowResizeEventTimeout);
         this.#windowResizeEventTimeout = this.#window.setTimeout(() => {
-            this.#raiseOnWindowResizeEvent(Either.of());
+            this.#raiseOnWindowResizeEvent();
         }, 250);
     }
 
