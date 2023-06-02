@@ -1,0 +1,61 @@
+name: Publish Web
+
+on:
+  workflow_dispatch:
+  push:
+
+
+env:
+  WEB_ARTIFACTS_NAME: web-artifacts
+  GITHUB_PAGES_BRANCH: online
+  GO_VERSION: 1.19
+
+jobs:
+  build:
+
+    name: Build Go App as WebAssembly
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Build
+        run: make wasm
+
+      - name: Upload web artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.WEB_ARTIFACTS_NAME }}
+          path: ./web
+
+  publish:
+
+    name: Publish Web to GitHub Pages
+
+    needs: build
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ env.GITHUB_PAGES_BRANCH }}
+
+      - name: Download web artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.WEB_ARTIFACTS_NAME }}
+
+      - name: Push new version
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add .
+          git commit -m "Publish web artifacts"
+          git push
