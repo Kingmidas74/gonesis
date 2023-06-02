@@ -1,0 +1,38 @@
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: calc(var(--gap) / 2) 1rem;
+
+    background-color: var(--primary-color);
+    color: var(--primary-font-color);
+    flex: 0 1 auto;
+    gap:var(--gap);
+}
+
+.header--action-list {
+    display: flex;
+    gap:1rem;
+}
+
+.action-list-item {
+    width: 3rem;
+    aspect-ratio: 1;
+
+    display: flex;
+    justify-content: stretch;
+    align-items: stretch;
+
+    cursor: pointer;
+}
+
+.action-list-item--button {
+    flex:1;
+    background: none;
+    border: none;
+    outline: none;
+    user-select: none;
+    cursor: inherit;
+    color: inherit;
+}
