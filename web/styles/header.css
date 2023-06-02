@@ -11,13 +11,18 @@
     gap:var(--gap);
 }
 
+.header--title {
+    font-size: clamp(10px, 2rem,7ch);
+}
+
 .header--action-list {
     display: flex;
     gap:1rem;
 }
 
 .action-list-item {
-    width: 3rem;
+    max-width: clamp(1rem, 3rem, 50px);
+    min-width: 20px;
     aspect-ratio: 1;
 
     display: flex;
