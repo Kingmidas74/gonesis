@@ -2,10 +2,19 @@
 wasm:
 	GOOS=js GOARCH=wasm go build -o ./web/scripts/application/engine/engine.wasm -tags js -tags wasm ./cmd/wasm/main.go
 
+.PHONY: run
+run:
+	GOOS=js GOARCH=wasm go build -o ./web/scripts/application/engine/engine.wasm -tags js -tags wasm ./cmd/wasm/main.go
+	go run ./cmd/server/main.go
+
+
 .PHONY: server
 server:
-	GOOS=js GOARCH=wasm go build -o ./web/engine.wasm -tags js -tags wasm ./cmd/wasm/main.go
-	go run ./cmd/server/main.go
+	docker-compose up --build --remove-orphans -d
+
+.PHONE: clean
+clean:
+	docker-compose rm --stop --force
 
 .PHONY: test
 test:

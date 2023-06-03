@@ -1,0 +1,19 @@
+version: "3.7"
+
+networks:
+  gonesis:
+    driver: bridge
+
+services:
+
+  app:
+    image: gonesis:latest
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: app
+    restart: on-failure
+    ports:
+      - "8989:80"
+    networks:
+      - gonesis
