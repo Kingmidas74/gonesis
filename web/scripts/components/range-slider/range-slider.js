@@ -77,7 +77,7 @@ export class RANGE_SLIDER extends HTMLElement {
     }
 
     get value() {
-        return this.#shadow.querySelector("input")?.value
+        return RANGE_SLIDER.windowProvider.parseInt(this.#shadow.querySelector("input")?.value)
     }
 
     connectedCallback() {

@@ -193,22 +193,10 @@ export default class UIController {
                 MazeType: this.#document.querySelector('#terrain-settings').value,
                 Topology: this.#document.querySelector('#topology-types').value,
             },
-            herbivoreConfiguration: {
-                InitialCount: this.#window.parseInt(this.#document.getElementById('herbivoreInitialCount').value),
-                Color: this.#document.getElementById('herbivoreColor').value,
-            },
-            carnivoreConfiguration: {
-                InitialCount: this.#window.parseInt(this.#document.getElementById('carnivoreInitialCount').value),
-                Color: this.#document.getElementById('carnivoreColor').value,
-            },
-            plantConfiguration: {
-                InitialCount: this.#window.parseInt(this.#document.getElementById('plantInitialCount').value),
-                Color: this.#document.getElementById('plantColor').value,
-            },
-            omnivoreConfiguration: {
-                InitialCount: this.#window.parseInt(this.#document.getElementById('omnivoreInitialCount').value),
-                Color: this.#document.getElementById('omnivoreColor').value,
-            }
+            plantConfiguration: this.#document.getElementById('plantSettings').config,
+            carnivoreConfiguration: this.#document.getElementById('carnivoreSettings').config,
+            herbivoreConfiguration: this.#document.getElementById('herbivoreSettings').config,
+            omnivoreConfiguration: this.#document.getElementById('omnivoreSettings').config,
         })
     }
 
@@ -314,18 +302,14 @@ export default class UIController {
      * @param {Configuration} settings
      */
     #setupSettings = (settings)=> {
-        this.#document.querySelector('#terrain-settings').value = settings.WorldConfiguration.MazeType;
-        this.#document.querySelector(`#topology-types`).data = Object.entries(Topologies).map(([name, value]) => ({ name, value }))
-        this.#document.querySelector(`#topology-types`).value = settings.WorldConfiguration.Topology;
+        this.#document.getElementById('terrain-settings').value = settings.WorldConfiguration.MazeType;
+        this.#document.getElementById(`topology-types`).data = Object.entries(Topologies).map(([name, value]) => ({ name, value }))
+        this.#document.getElementById(`topology-types`).value = settings.WorldConfiguration.Topology;
         this.#document.getElementById('cellSize').value = settings.WorldConfiguration.CellSize;
 
-        this.#document.getElementById('herbivoreInitialCount').value = {min:0, max:500, value: settings.HerbivoreConfiguration.InitialCount, title:"Count"}
-        this.#document.getElementById('herbivoreColor').value = settings.HerbivoreConfiguration.Color
-        this.#document.getElementById('carnivoreInitialCount').value = {min:0, max:500, value: settings.CarnivoreConfiguration.InitialCount, title:"Count"}
-        this.#document.getElementById('carnivoreColor').value = settings.CarnivoreConfiguration.Color
-        this.#document.getElementById('plantInitialCount').value = {min:0, max:500, value: settings.PlantConfiguration.InitialCount, title:"Count"}
-        this.#document.getElementById('plantColor').value = settings.PlantConfiguration.Color;
-        this.#document.getElementById('omnivoreInitialCount').value = {min:0, max:500, value: settings.OmnivoreConfiguration.InitialCount, title:"Count"};
-        this.#document.getElementById('omnivoreColor').value = settings.OmnivoreConfiguration.Color
+        this.#document.getElementById('plantSettings').config = settings.PlantConfiguration
+        this.#document.getElementById('herbivoreSettings').config = settings.HerbivoreConfiguration
+        this.#document.getElementById('carnivoreSettings').config = settings.CarnivoreConfiguration
+        this.#document.getElementById('omnivoreSettings').config = settings.OmnivoreConfiguration
     }
 }
