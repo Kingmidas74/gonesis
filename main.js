@@ -1,5 +1,6 @@
 import {Application, Configuration} from "./scripts/application/application.js";
 import {GameController, UIController } from './scripts/controllers/index.js';
+import {initializeComponents} from "./scripts/components/components.js";
 
 const config = new Configuration({
     isPlayable: false,
@@ -63,6 +64,8 @@ uiController.addOnWindowResizeListener(async () => {
             uiController.showToast(err.message)
         })
 });
+
+initializeComponents(window, document);
 
 uiController.init(application.configurationProvider.getInstance());
 (await gameController.generateGame())

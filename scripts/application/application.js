@@ -19,6 +19,10 @@ class Application {
      */
     #configurationProvider
 
+    /**
+     * Gets the configuration provider.
+     * @returns {ConfigurationProvider}
+     */
     get configurationProvider() {
         return this.#configurationProvider;
     }
