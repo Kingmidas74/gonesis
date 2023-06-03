@@ -7,6 +7,8 @@ import (
 )
 
 type Ground struct {
+	contracts.ReproductionSystem
+
 	config *configuration.Configuration
 }
 
@@ -16,10 +18,6 @@ func (a *Ground) Configure(config *configuration.Configuration) {
 
 func (a *Ground) AgentType() enum.AgentType {
 	return enum.AgentTypeGround
-}
-
-func (a *Ground) Genesis(contracts.Agent) []contracts.Agent {
-	return make([]contracts.Agent, 0)
 }
 
 func (a *Ground) MaxEnergy() int {

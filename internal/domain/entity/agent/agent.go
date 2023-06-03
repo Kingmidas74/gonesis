@@ -76,32 +76,38 @@ func (a *Agent) DecreaseEnergy(delta int) {
 
 func (a *Agent) CreateChildren(terra contracts.Terrain, config *configuration.Configuration) []contracts.Agent {
 	emptyCells := make([]contracts.Cell, 0)
+	agents := make([]contracts.Agent, 0)
+	agents = append(agents, a)
 	for _, cell := range terra.GetNeighbors(a.X(), a.Y()) {
 		if cell.IsEmpty() {
 			emptyCells = append(emptyCells, cell)
+		}
+		if cell.IsAgent() {
+			agents = append(agents, cell.Agent())
 		}
 	}
 	if len(emptyCells) == 0 {
 		return nil
 	}
 
-	targetCell := emptyCells[rand.Intn(len(emptyCells))]
-	if !targetCell.IsEmpty() {
+	children, err := a.Reproduce(agents)
+	if err != nil {
 		return nil
 	}
 
-	if children := a.Genesis(a); children != nil && len(children) > 0 {
-		if children[0] == nil {
-			return nil
+	placedChildren := make([]contracts.Agent, 0)
+
+	for i := 0; i < len(children) && len(emptyCells) > 0; i++ {
+		randIndex := rand.Intn(len(emptyCells))
+		targetCell := emptyCells[randIndex]
+		if targetCell.IsEmpty() {
+			targetCell.SetAgent(children[i])
+			placedChildren = append(placedChildren, children[i])
 		}
-		if !targetCell.IsEmpty() {
-			return nil
-		}
-		targetCell.SetAgent(children[0])
-		return children
+		emptyCells = append(emptyCells[:randIndex], emptyCells[randIndex+1:]...)
 	}
 
-	return nil
+	return placedChildren
 }
 
 func (a *Agent) Kill(terra contracts.Terrain) {

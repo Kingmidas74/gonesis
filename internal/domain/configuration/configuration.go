@@ -6,11 +6,12 @@ import (
 )
 
 const (
-	defaultMaxEnergy     = 100
-	defaultBrainSize     = 20
-	defaultEnergy        = 75
-	defaultCount         = 0
-	defaultDailyCommands = 1
+	defaultMaxEnergy              = 100
+	defaultBrainSize              = 20
+	defaultEnergy                 = 75
+	defaultCount                  = 0
+	defaultDailyCommands          = 1
+	defaultReproductionSystemType = enum.ReproductionSystemTypeBudding
 )
 
 type WorldConfiguration struct {
@@ -19,11 +20,12 @@ type WorldConfiguration struct {
 }
 
 type AgentConfiguration struct {
-	MaxEnergy            int `json:"MaxEnergy"`
-	InitialCount         int `json:"InitialCount"`
-	MaxDailyCommandCount int `json:"MaxDailyCommandCount"`
-	InitialEnergy        int `json:"InitialEnergy"`
-	BrainVolume          int `json:"BrainVolume"`
+	MaxEnergy            int                         `json:"MaxEnergy"`
+	InitialCount         int                         `json:"InitialCount"`
+	MaxDailyCommandCount int                         `json:"MaxDailyCommandCount"`
+	InitialEnergy        int                         `json:"InitialEnergy"`
+	BrainVolume          int                         `json:"BrainVolume"`
+	ReproductionType     enum.ReproductionSystemType `json:"ReproductionType"`
 }
 
 type Configuration struct {
@@ -51,6 +53,7 @@ func Instance() *Configuration {
 			MaxDailyCommandCount: defaultDailyCommands,
 			InitialEnergy:        defaultEnergy,
 			BrainVolume:          defaultBrainSize,
+			ReproductionType:     defaultReproductionSystemType,
 		},
 		HerbivoreConfiguration: AgentConfiguration{
 			MaxEnergy:            defaultMaxEnergy,
@@ -58,6 +61,7 @@ func Instance() *Configuration {
 			MaxDailyCommandCount: defaultDailyCommands,
 			InitialEnergy:        defaultEnergy,
 			BrainVolume:          defaultBrainSize,
+			ReproductionType:     defaultReproductionSystemType,
 		},
 		CarnivoreConfiguration: AgentConfiguration{
 			MaxEnergy:            defaultMaxEnergy,
@@ -65,6 +69,7 @@ func Instance() *Configuration {
 			MaxDailyCommandCount: defaultDailyCommands,
 			InitialEnergy:        defaultEnergy,
 			BrainVolume:          defaultBrainSize,
+			ReproductionType:     defaultReproductionSystemType,
 		},
 		DecomposerConfiguration: AgentConfiguration{
 			MaxEnergy:            defaultMaxEnergy,
@@ -72,6 +77,7 @@ func Instance() *Configuration {
 			MaxDailyCommandCount: defaultDailyCommands,
 			InitialEnergy:        defaultEnergy,
 			BrainVolume:          defaultBrainSize,
+			ReproductionType:     defaultReproductionSystemType,
 		},
 		OmnivoreConfiguration: AgentConfiguration{
 			MaxEnergy:            defaultMaxEnergy,
@@ -79,6 +85,7 @@ func Instance() *Configuration {
 			MaxDailyCommandCount: defaultDailyCommands,
 			InitialEnergy:        defaultEnergy,
 			BrainVolume:          defaultBrainSize,
+			ReproductionType:     defaultReproductionSystemType,
 		},
 	}
 	return instance

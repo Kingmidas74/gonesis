@@ -8,6 +8,7 @@ import (
 type Agent interface {
 	Coords
 	Energy
+	AgentNature
 
 	Address() int
 	Command(address *int) int

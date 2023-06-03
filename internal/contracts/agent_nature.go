@@ -5,15 +5,12 @@ import (
 	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
 )
 
-type Ptr[T any] interface {
-	*T
-}
-
 type AgentNature interface {
+	ReproductionSystem
+
 	Configure(config *configuration.Configuration)
 
 	AgentType() enum.AgentType
-	Genesis(a Agent) []Agent
 	MaxEnergy() int
 	MaxDailyCommandCount() int
 	InitialEnergy() int

@@ -1,6 +1,7 @@
 package game
 
 import (
+	"github.com/kingmidas74/gonesis-engine/internal/domain/entity/agent/reproduction"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/errors"
 	"math/rand"
@@ -43,7 +44,10 @@ func (s *Service) InitWorld(width, height int) (contracts.World, error) {
 		return nil, err
 	}
 
-	agents := s.generateAgents(requiredEmptyCells)
+	agents, err := s.generateAgents(requiredEmptyCells)
+	if err != nil {
+		return nil, err
+	}
 
 	emptyCells := terra.EmptyCells()
 	pickedCellIndexes := make([]int, 0)
@@ -94,66 +98,130 @@ func (s *Service) getTerrain(m contracts.Maze) (contracts.Terrain, error) {
 	}
 }
 
-func (s *Service) generatePlants() []contracts.Agent {
+func (s *Service) generatePlants() ([]contracts.Agent, error) {
+	reproductionSystem, err := s.getReproductionSystem(s.config.PlantConfiguration.ReproductionType)
+	if err != nil {
+		return nil, err
+	}
 	plants := make([]contracts.Agent, s.config.PlantConfiguration.InitialCount)
-	plantNature := &nature.Plant{}
+	plantNature := &nature.Plant{
+		ReproductionSystem: reproductionSystem,
+	}
 	plantNature.Configure(s.config)
 	for i := 0; i < s.config.PlantConfiguration.InitialCount; i++ {
 		plants[i] = agent.NewAgent(plantNature)
 	}
-	return plants
+	return plants, nil
 }
 
-func (s *Service) generateHerbivores() []contracts.Agent {
+func (s *Service) generateHerbivores() ([]contracts.Agent, error) {
+	reproductionSystem, err := s.getReproductionSystem(s.config.OmnivoreConfiguration.ReproductionType)
+	if err != nil {
+		return nil, err
+	}
 	herbivores := make([]contracts.Agent, s.config.HerbivoreConfiguration.InitialCount)
-	herbivoreNature := &nature.Herbivore{}
+	herbivoreNature := &nature.Herbivore{
+		ReproductionSystem: reproductionSystem,
+	}
 	herbivoreNature.Configure(s.config)
 	for i := 0; i < s.config.HerbivoreConfiguration.InitialCount; i++ {
 		herbivores[i] = agent.NewAgent(herbivoreNature)
 	}
-	return herbivores
+	return herbivores, nil
 }
 
-func (s *Service) generateCarnivores() []contracts.Agent {
+func (s *Service) generateCarnivores() ([]contracts.Agent, error) {
+	reproductionSystem, err := s.getReproductionSystem(s.config.OmnivoreConfiguration.ReproductionType)
+	if err != nil {
+		return nil, err
+	}
 	carnivores := make([]contracts.Agent, s.config.CarnivoreConfiguration.InitialCount)
-	carnivoreNature := &nature.Carnivore{}
+	carnivoreNature := &nature.Carnivore{
+		ReproductionSystem: reproductionSystem,
+	}
 	carnivoreNature.Configure(s.config)
 	for i := 0; i < s.config.CarnivoreConfiguration.InitialCount; i++ {
 		carnivores[i] = agent.NewAgent(carnivoreNature)
 	}
-	return carnivores
+	return carnivores, nil
 }
 
-func (s *Service) generateDecomposers() []contracts.Agent {
+func (s *Service) generateDecomposers() ([]contracts.Agent, error) {
+	reproductionSystem, err := s.getReproductionSystem(s.config.OmnivoreConfiguration.ReproductionType)
+	if err != nil {
+		return nil, err
+	}
 	decomposers := make([]contracts.Agent, s.config.DecomposerConfiguration.InitialCount)
-	decomposerNature := &nature.Decomposer{}
+	decomposerNature := &nature.Decomposer{
+		ReproductionSystem: reproductionSystem,
+	}
 	decomposerNature.Configure(s.config)
 	for i := 0; i < s.config.DecomposerConfiguration.InitialCount; i++ {
 		decomposers[i] = agent.NewAgent(decomposerNature)
 	}
-	return decomposers
+	return decomposers, nil
 }
 
-func (s *Service) generateOmnivores() []contracts.Agent {
+func (s *Service) generateOmnivores() ([]contracts.Agent, error) {
+	reproductionSystem, err := s.getReproductionSystem(s.config.OmnivoreConfiguration.ReproductionType)
+	if err != nil {
+		return nil, err
+	}
 	omnivores := make([]contracts.Agent, s.config.OmnivoreConfiguration.InitialCount)
-	omnivoreNature := &nature.Omnivore{}
+	omnivoreNature := &nature.Omnivore{
+		ReproductionSystem: reproductionSystem,
+	}
 	omnivoreNature.Configure(s.config)
 	for i := 0; i < s.config.OmnivoreConfiguration.InitialCount; i++ {
 		omnivores[i] = agent.NewAgent(omnivoreNature)
 	}
-	return omnivores
+	return omnivores, nil
 }
 
-func (s *Service) generateAgents(agentsCount int) []contracts.Agent {
-	agents := make([]contracts.Agent, 0, agentsCount)
+func (s *Service) getReproductionSystem(reproductionSystemType enum.ReproductionSystemType) (contracts.ReproductionSystem, error) {
+	switch reproductionSystemType {
+	case enum.ReproductionSystemTypeBudding:
+		return &reproduction.BuddingReproduction{}, nil
+	default:
+		return nil, errors.ErrReproductionSystemTypeNotSupported
 
-	agents = append(agents, s.generatePlants()...)
-	agents = append(agents, s.generateHerbivores()...)
-	agents = append(agents, s.generateCarnivores()...)
-	agents = append(agents, s.generateDecomposers()...)
-	agents = append(agents, s.generateOmnivores()...)
+	}
+}
 
-	return agents
+func (s *Service) generateAgents(agentsCount int) ([]contracts.Agent, error) {
+	agents := make([]contracts.Agent, 0)
+
+	plants, err := s.generatePlants()
+	if err != nil {
+		return agents, err
+	}
+	agents = append(agents, plants...)
+
+	herbivores, err := s.generateHerbivores()
+	if err != nil {
+		return agents, err
+	}
+	agents = append(agents, herbivores...)
+
+	carnivores, err := s.generateCarnivores()
+	if err != nil {
+		return agents, err
+	}
+	agents = append(agents, carnivores...)
+
+	decomposers, err := s.generateDecomposers()
+	if err != nil {
+		return agents, err
+	}
+	agents = append(agents, decomposers...)
+
+	omnivores, err := s.generateOmnivores()
+	if err != nil {
+		return agents, err
+	}
+	agents = append(agents, omnivores...)
+
+	return agents, nil
 }
 
 func (s *Service) getAvailableCommands() []contracts.Command {
