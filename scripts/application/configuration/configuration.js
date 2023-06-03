@@ -242,4 +242,4 @@ class ConfigurationProvider {
     }
 }
 
-export {Configuration, ConfigurationProvider, MazeGenerators, Topologies, Colors};
+export {Configuration, ConfigurationProvider, AgentConfiguration, MazeGenerators, Topologies, Colors};

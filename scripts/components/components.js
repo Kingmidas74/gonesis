@@ -1,9 +1,11 @@
 import {Component} from "./decorators.js";
 
 import { RADIO_GROUP_TOGGLE } from "./radio-group-toggle/radio-group-toggle.js";
-import { TERRAIN_SETTINGS } from "./terrain-settings/terrain-settings.js";
 import { COLOR_PICKER } from "./color-picker/color-picker.js";
 import { RANGE_SLIDER } from "./range-slider/range-slider.js";
+
+import { TERRAIN_SETTINGS } from "./terrain-settings/terrain-settings.js";
+import { AGENT_SETTINGS } from "./agent-settings/agent-settings.js";
 
 /**
  * Initializes custom components by defining them in the customElements registry.
@@ -28,12 +30,6 @@ const initializeComponents = (window, document, logger = console) => {
             stylePath: "./radio-group-toggle.css",
         },
         {
-            name: "app-terrain-settings",
-            component: TERRAIN_SETTINGS,
-            templatePath: "./terrain-settings.html",
-            stylePath: "./terrain-settings.css",
-        },
-        {
             name: "app-color-picker",
             component: COLOR_PICKER,
             templatePath: "./color-picker.html",
@@ -44,6 +40,18 @@ const initializeComponents = (window, document, logger = console) => {
             component: RANGE_SLIDER,
             templatePath: "./range-slider.html",
             stylePath: "./range-slider.css",
+        },
+        {
+            name: "app-terrain-settings",
+            component: TERRAIN_SETTINGS,
+            templatePath: "./terrain-settings.html",
+            stylePath: "./terrain-settings.css",
+        },
+        {
+            name: "app-agent-settings",
+            component: AGENT_SETTINGS,
+            templatePath: "./agent-settings.html",
+            stylePath: "./agent-settings.css",
         }
     ];
 
