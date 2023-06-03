@@ -12,6 +12,10 @@ const Topologies = Object.freeze({
     Neumann: "neumann",
 })
 
+const ReproductionTypes = Object.freeze({
+    Budding:   "budding",
+})
+
 const Colors = Object.freeze({
     RED:    "hsla(0, 60%, 60%, 1.0)",
     BLUE:   "hsla(240, 60%, 60%, 1.0)",
@@ -58,6 +62,7 @@ class AgentConfiguration {
                     MaxEnergy = 100,
                     InitialCount = 0,
                     Color = Colors.GREEN,
+                    ReproductionType = ReproductionTypes.Budding,
                 } = {}) {
         /**
          * The maximum energy an agent can have.
@@ -76,6 +81,11 @@ class AgentConfiguration {
          * @type {string}
          */
         this.Color = Color;
+
+        /**
+         * The type of reproduction.
+         */
+        this.ReproductionType = ReproductionType;
     }
 }
 
