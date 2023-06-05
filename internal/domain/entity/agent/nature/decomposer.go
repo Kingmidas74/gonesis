@@ -35,3 +35,15 @@ func (a *Decomposer) InitialEnergy() int {
 func (a *Decomposer) BrainVolume() int {
 	return a.config.DecomposerConfiguration.BrainVolume
 }
+
+func (a *Decomposer) ReproductionEnergyCost() int {
+	return a.config.DecomposerConfiguration.ReproductionEnergyCost
+}
+
+func (a *Decomposer) ReproductionChance() float64 {
+	return a.config.DecomposerConfiguration.ReproductionChance
+}
+
+func (a *Decomposer) MutationChance() float64 {
+	return a.config.DecomposerConfiguration.MutationChance
+}

@@ -35,3 +35,15 @@ func (a *Carnivore) InitialEnergy() int {
 func (a *Carnivore) BrainVolume() int {
 	return a.config.CarnivoreConfiguration.BrainVolume
 }
+
+func (a *Carnivore) ReproductionEnergyCost() int {
+	return a.config.CarnivoreConfiguration.ReproductionEnergyCost
+}
+
+func (a *Carnivore) ReproductionChance() float64 {
+	return a.config.CarnivoreConfiguration.ReproductionChance
+}
+
+func (a *Carnivore) MutationChance() float64 {
+	return a.config.CarnivoreConfiguration.MutationChance
+}

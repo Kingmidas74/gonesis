@@ -35,3 +35,15 @@ func (a *Plant) InitialEnergy() int {
 func (a *Plant) BrainVolume() int {
 	return a.config.PlantConfiguration.BrainVolume
 }
+
+func (a *Plant) ReproductionEnergyCost() int {
+	return a.config.PlantConfiguration.ReproductionEnergyCost
+}
+
+func (a *Plant) ReproductionChance() float64 {
+	return a.config.PlantConfiguration.ReproductionChance
+}
+
+func (a *Plant) MutationChance() float64 {
+	return a.config.PlantConfiguration.MutationChance
+}

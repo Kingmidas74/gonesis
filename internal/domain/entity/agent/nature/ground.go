@@ -35,3 +35,15 @@ func (a *Ground) MaxDailyCommandCount() int {
 func (a *Ground) InitialEnergy() int {
 	return 0
 }
+
+func (a *Ground) ReproductionEnergyCost() int {
+	return 0
+}
+
+func (a *Ground) ReproductionChance() float64 {
+	return 0
+}
+
+func (a *Ground) MutationChance() float64 {
+	return 0
+}

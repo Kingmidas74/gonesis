@@ -2,18 +2,17 @@ package agent
 
 import (
 	"github.com/kingmidas74/gonesis-engine/internal/domain/configuration"
+	"github.com/kingmidas74/gonesis-engine/internal/domain/entity"
 	"math/rand"
 
 	"github.com/kingmidas74/gonesis-engine/internal/contracts"
-	"github.com/kingmidas74/gonesis-engine/internal/domain/entity"
 )
 
 type Agent struct {
-	Brain
+	contracts.Brain
+	contracts.AgentNature
 
 	entity.Coords
-
-	contracts.AgentNature
 
 	energy int
 
@@ -28,7 +27,7 @@ func NewAgent(nature contracts.AgentNature) contracts.Agent {
 	}
 }
 
-func NewAgentWithBrain(nature contracts.AgentNature, brain Brain) contracts.Agent {
+func NewAgentWithBrain(nature contracts.AgentNature, brain contracts.Brain) contracts.Agent {
 	return &Agent{
 		Brain:       brain,
 		AgentNature: nature,
@@ -65,8 +64,8 @@ func (a *Agent) NextDay(terra contracts.Terrain, findCommandPredicate func(int) 
 
 func (a *Agent) IncreaseEnergy(delta int) {
 	a.energy += delta
-	if a.energy > 500 {
-		a.energy = 500
+	if a.energy > a.MaxEnergy() {
+		a.energy = a.MaxEnergy()
 	}
 }
 
@@ -104,6 +103,7 @@ func (a *Agent) CreateChildren(terra contracts.Terrain, config *configuration.Co
 			targetCell.SetAgent(children[i])
 			placedChildren = append(placedChildren, children[i])
 		}
+
 		emptyCells = append(emptyCells[:randIndex], emptyCells[randIndex+1:]...)
 	}
 

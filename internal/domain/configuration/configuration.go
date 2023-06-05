@@ -7,11 +7,14 @@ import (
 
 const (
 	defaultMaxEnergy              = 100
-	defaultBrainSize              = 20
-	defaultEnergy                 = 75
+	defaultBrainSize              = 64
+	defaultEnergy                 = 20
 	defaultCount                  = 0
 	defaultDailyCommands          = 1
 	defaultReproductionSystemType = enum.ReproductionSystemTypeBudding
+	defaultReproductionEnergyCost = 20
+	defaultReproductionChance     = .5
+	defaultMutationChance         = .1
 )
 
 type WorldConfiguration struct {
@@ -20,12 +23,15 @@ type WorldConfiguration struct {
 }
 
 type AgentConfiguration struct {
-	MaxEnergy            int                         `json:"MaxEnergy"`
-	InitialCount         int                         `json:"InitialCount"`
-	MaxDailyCommandCount int                         `json:"MaxDailyCommandCount"`
-	InitialEnergy        int                         `json:"InitialEnergy"`
-	BrainVolume          int                         `json:"BrainVolume"`
-	ReproductionType     enum.ReproductionSystemType `json:"ReproductionType"`
+	MaxEnergy              int                         `json:"MaxEnergy"`
+	InitialCount           int                         `json:"InitialCount"`
+	MaxDailyCommandCount   int                         `json:"MaxDailyCommandCount"`
+	InitialEnergy          int                         `json:"InitialEnergy"`
+	BrainVolume            int                         `json:"BrainVolume"`
+	ReproductionType       enum.ReproductionSystemType `json:"ReproductionType"`
+	ReproductionEnergyCost int                         `json:"ReproductionEnergyCost"`
+	ReproductionChance     float64                     `json:"ReproductionChance"`
+	MutationChance         float64                     `json:"MutationChance"`
 }
 
 type Configuration struct {
@@ -48,44 +54,59 @@ func Instance() *Configuration {
 			Topology: enum.TopologyTypeNeumann,
 		},
 		PlantConfiguration: AgentConfiguration{
-			MaxEnergy:            defaultMaxEnergy,
-			InitialCount:         defaultCount,
-			MaxDailyCommandCount: defaultDailyCommands,
-			InitialEnergy:        defaultEnergy,
-			BrainVolume:          defaultBrainSize,
-			ReproductionType:     defaultReproductionSystemType,
+			MaxEnergy:              defaultMaxEnergy,
+			InitialCount:           defaultCount,
+			MaxDailyCommandCount:   defaultDailyCommands,
+			InitialEnergy:          defaultEnergy,
+			BrainVolume:            defaultBrainSize,
+			ReproductionType:       defaultReproductionSystemType,
+			ReproductionEnergyCost: defaultReproductionEnergyCost,
+			ReproductionChance:     defaultReproductionChance,
+			MutationChance:         defaultMutationChance,
 		},
 		HerbivoreConfiguration: AgentConfiguration{
-			MaxEnergy:            defaultMaxEnergy,
-			InitialCount:         defaultCount,
-			MaxDailyCommandCount: defaultDailyCommands,
-			InitialEnergy:        defaultEnergy,
-			BrainVolume:          defaultBrainSize,
-			ReproductionType:     defaultReproductionSystemType,
+			MaxEnergy:              defaultMaxEnergy,
+			InitialCount:           defaultCount,
+			MaxDailyCommandCount:   defaultDailyCommands,
+			InitialEnergy:          defaultEnergy,
+			BrainVolume:            defaultBrainSize,
+			ReproductionType:       defaultReproductionSystemType,
+			ReproductionEnergyCost: defaultReproductionEnergyCost,
+			ReproductionChance:     defaultReproductionChance,
+			MutationChance:         defaultMutationChance,
 		},
 		CarnivoreConfiguration: AgentConfiguration{
-			MaxEnergy:            defaultMaxEnergy,
-			InitialCount:         defaultCount,
-			MaxDailyCommandCount: defaultDailyCommands,
-			InitialEnergy:        defaultEnergy,
-			BrainVolume:          defaultBrainSize,
-			ReproductionType:     defaultReproductionSystemType,
+			MaxEnergy:              defaultMaxEnergy,
+			InitialCount:           defaultCount,
+			MaxDailyCommandCount:   defaultDailyCommands,
+			InitialEnergy:          defaultEnergy,
+			BrainVolume:            defaultBrainSize,
+			ReproductionType:       defaultReproductionSystemType,
+			ReproductionEnergyCost: defaultReproductionEnergyCost,
+			ReproductionChance:     defaultReproductionChance,
+			MutationChance:         defaultMutationChance,
 		},
 		DecomposerConfiguration: AgentConfiguration{
-			MaxEnergy:            defaultMaxEnergy,
-			InitialCount:         defaultCount,
-			MaxDailyCommandCount: defaultDailyCommands,
-			InitialEnergy:        defaultEnergy,
-			BrainVolume:          defaultBrainSize,
-			ReproductionType:     defaultReproductionSystemType,
+			MaxEnergy:              defaultMaxEnergy,
+			InitialCount:           defaultCount,
+			MaxDailyCommandCount:   defaultDailyCommands,
+			InitialEnergy:          defaultEnergy,
+			BrainVolume:            defaultBrainSize,
+			ReproductionType:       defaultReproductionSystemType,
+			ReproductionEnergyCost: defaultReproductionEnergyCost,
+			ReproductionChance:     defaultReproductionChance,
+			MutationChance:         defaultMutationChance,
 		},
 		OmnivoreConfiguration: AgentConfiguration{
-			MaxEnergy:            defaultMaxEnergy,
-			InitialCount:         defaultCount,
-			MaxDailyCommandCount: defaultDailyCommands,
-			InitialEnergy:        defaultEnergy,
-			BrainVolume:          defaultBrainSize,
-			ReproductionType:     defaultReproductionSystemType,
+			MaxEnergy:              defaultMaxEnergy,
+			InitialCount:           defaultCount,
+			MaxDailyCommandCount:   defaultDailyCommands,
+			InitialEnergy:          defaultEnergy,
+			BrainVolume:            defaultBrainSize,
+			ReproductionType:       defaultReproductionSystemType,
+			ReproductionEnergyCost: defaultReproductionEnergyCost,
+			ReproductionChance:     defaultReproductionChance,
+			MutationChance:         defaultMutationChance,
 		},
 	}
 	return instance

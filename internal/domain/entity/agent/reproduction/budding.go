@@ -11,6 +11,7 @@ import (
 var ErrInvalidParentCount = errors.New("invalid parent count")
 
 type BuddingReproduction struct {
+	contracts.Mutation
 }
 
 func (b BuddingReproduction) ReproductionType() enum.ReproductionSystemType {
@@ -24,16 +25,20 @@ func (b BuddingReproduction) Reproduce(parents []contracts.Agent) ([]contracts.A
 	}
 
 	parent := parents[0]
-	if parent.Energy() < parent.MaxEnergy() {
+	if parent.Energy() < parent.ReproductionEnergyCost() {
 		return children, nil
 	}
 
-	if rand.Intn(100) > 90 {
+	if rand.Float64() < parent.ReproductionChance() {
 		return children, nil
 	}
 
-	parent.DecreaseEnergy(parent.InitialEnergy())
-	brain := agent.NewBrainWithCommands(parent.Commands())
+	brain, err := parent.Mutate(parent)
+	if err != nil {
+		return children, err
+	}
+
+	parent.DecreaseEnergy(parent.ReproductionEnergyCost())
 	child := agent.NewAgentWithBrain(parent, brain)
 	return append(children, child), nil
 }

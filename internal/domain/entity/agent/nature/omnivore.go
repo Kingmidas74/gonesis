@@ -35,3 +35,15 @@ func (a *Omnivore) InitialEnergy() int {
 func (a *Omnivore) BrainVolume() int {
 	return a.config.OmnivoreConfiguration.BrainVolume
 }
+
+func (a *Omnivore) ReproductionEnergyCost() int {
+	return a.config.OmnivoreConfiguration.ReproductionEnergyCost
+}
+
+func (a *Omnivore) ReproductionChance() float64 {
+	return a.config.OmnivoreConfiguration.ReproductionChance
+}
+
+func (a *Omnivore) MutationChance() float64 {
+	return a.config.OmnivoreConfiguration.MutationChance
+}

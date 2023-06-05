@@ -15,4 +15,8 @@ type AgentNature interface {
 	MaxDailyCommandCount() int
 	InitialEnergy() int
 	BrainVolume() int
+
+	ReproductionEnergyCost() int
+	ReproductionChance() float64
+	MutationChance() float64
 }

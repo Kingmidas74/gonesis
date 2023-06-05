@@ -9,10 +9,8 @@ type Agent interface {
 	Coords
 	Energy
 	AgentNature
+	Brain
 
-	Address() int
-	Command(address *int) int
-	Commands() []int
 	AgentType() enum.AgentType
 
 	NextDay(world Terrain, command func(commandIdentifier int) Command, config *configuration.Configuration) error

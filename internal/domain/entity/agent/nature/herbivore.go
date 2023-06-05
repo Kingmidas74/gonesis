@@ -35,3 +35,15 @@ func (a *Herbivore) InitialEnergy() int {
 func (a *Herbivore) BrainVolume() int {
 	return a.config.HerbivoreConfiguration.BrainVolume
 }
+
+func (a *Herbivore) ReproductionEnergyCost() int {
+	return a.config.HerbivoreConfiguration.ReproductionEnergyCost
+}
+
+func (a *Herbivore) ReproductionChance() float64 {
+	return a.config.HerbivoreConfiguration.ReproductionChance
+}
+
+func (a *Herbivore) MutationChance() float64 {
+	return a.config.HerbivoreConfiguration.MutationChance
+}

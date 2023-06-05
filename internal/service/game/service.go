@@ -1,6 +1,7 @@
 package game
 
 import (
+	"github.com/kingmidas74/gonesis-engine/internal/domain/entity/agent/mutation"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/entity/agent/reproduction"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/errors"
@@ -181,7 +182,9 @@ func (s *Service) generateOmnivores() ([]contracts.Agent, error) {
 func (s *Service) getReproductionSystem(reproductionSystemType enum.ReproductionSystemType) (contracts.ReproductionSystem, error) {
 	switch reproductionSystemType {
 	case enum.ReproductionSystemTypeBudding:
-		return &reproduction.BuddingReproduction{}, nil
+		return &reproduction.BuddingReproduction{
+			Mutation: mutation.RandomizeMutation{},
+		}, nil
 	default:
 		return nil, errors.ErrReproductionSystemTypeNotSupported
 

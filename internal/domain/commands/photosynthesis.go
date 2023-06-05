@@ -16,6 +16,7 @@ func NewPhotosynthesisCommand() *PhotosynthesisCommand {
 }
 
 func (c *PhotosynthesisCommand) Handle(agent contracts.Agent, terra contracts.Terrain) int {
+
 	switch agent.AgentType() {
 	case enum.AgentTypeHerbivore:
 		return c.handleHerbivore(agent, terra)
@@ -25,6 +26,7 @@ func (c *PhotosynthesisCommand) Handle(agent contracts.Agent, terra contracts.Te
 		return c.handlePlant(agent, terra)
 	}
 	return 1
+
 }
 
 func (c *PhotosynthesisCommand) IsInterrupt() bool {

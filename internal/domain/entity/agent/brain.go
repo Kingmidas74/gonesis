@@ -1,6 +1,7 @@
 package agent
 
 import (
+	"github.com/kingmidas74/gonesis-engine/internal/contracts"
 	"github.com/kingmidas74/gonesis-engine/internal/util"
 	"math/rand"
 )
@@ -10,15 +11,15 @@ type Brain struct {
 	address  int
 }
 
-func NewBrain(volume int) Brain {
-	return Brain{
+func NewBrain(volume int) contracts.Brain {
+	return &Brain{
 		address:  0,
 		commands: generateCommandsSequence(volume),
 	}
 }
 
-func NewBrainWithCommands(commands []int) Brain {
-	return Brain{
+func NewBrainWithCommands(commands []int) contracts.Brain {
+	return &Brain{
 		commands: commands,
 		address:  0,
 	}
@@ -58,6 +59,14 @@ func generatePSOnly(sequenceLength int) []int {
 		result[i] = 2
 	}
 	return result
+}
+
+func generateDefaultCommandsSequence(sequenceLength int) []int {
+	commands := make([]int, sequenceLength)
+	for i := 0; i < sequenceLength; i++ {
+		commands[i] = 0
+	}
+	return commands
 }
 
 func generateCommandsSequence(sequenceLength int) []int {
