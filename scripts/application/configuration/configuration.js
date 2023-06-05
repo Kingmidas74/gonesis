@@ -35,11 +35,17 @@ class WorldConfiguration {
                 } = {}) {
         /**
          * The type of maze to generate.
+         * @type {string}
+         * @enum {MazeGenerators}
+         * @see {@link MazeGenerators}
          */
         this.MazeType = MazeType;
 
         /**
          * The topology of the world.
+         * @type {string}
+         * @enum {Topologies}
+         * @see {@link Topologies}
          */
         this.Topology = Topology;
 
@@ -52,6 +58,7 @@ class WorldConfiguration {
 
         /**
          * The color of the maze.
+         * @type {string}
          */
         this.MazeColor = MazeColor;
     }
@@ -63,6 +70,10 @@ class AgentConfiguration {
                     InitialCount = 0,
                     Color = Colors.GREEN,
                     ReproductionType = ReproductionTypes.Budding,
+                    InitialEnergy = 20,
+                    ReproductionEnergyCost = 10,
+                    ReproductionChance = 0.5,
+                    MutationChance = 0.1,
                 } = {}) {
         /**
          * The maximum energy an agent can have.
@@ -84,8 +95,34 @@ class AgentConfiguration {
 
         /**
          * The type of reproduction.
+         * @type {string}
+         * @enum {ReproductionType}
+         * @see {@link ReproductionTypes}
          */
         this.ReproductionType = ReproductionType;
+
+        /**
+         * The energy cost of reproduction.
+         * @type {number}
+         */
+        this.ReproductionEnergyCost = ReproductionEnergyCost
+
+        /**
+         * The probability of reproduction.
+         * @type {number}
+         */
+        this.ReproductionChance = ReproductionChance
+
+        /**
+         * The probability of mutation.
+         * @type {number}
+         */
+        this.MutationChance = MutationChance
+
+        /**
+         * The initial energy of the agents.
+         */
+        this.InitialEnergy = InitialEnergy
     }
 }
 
@@ -99,22 +136,17 @@ class Configuration {
      */
     constructor({
                     isPlayable = true,
-                    worldConfiguration = new WorldConfiguration({
-                        MazeType: MazeGenerators.Border,
-                        Topology: Topologies.Moore,
-                        CellSize: 10,
-                        MazeColor: Colors.DARK,
-                    }),
+                    worldConfiguration = new WorldConfiguration(),
                     plantConfiguration = new AgentConfiguration({
                         InitialCount: 10,
                         Color: Colors.GREEN,
                     }),
                     herbivoreConfiguration = new AgentConfiguration({
-                        InitialCount: 10,
+                        InitialCount: 20,
                         Color: Colors.BLUE,
                     }),
                     carnivoreConfiguration = new AgentConfiguration({
-                        InitialCount: 10,
+                        InitialCount: 40,
                         Color: Colors.RED,
                     }),
                     decomposerConfiguration = new AgentConfiguration({
@@ -135,41 +167,48 @@ class Configuration {
 
         /**
          * The configuration for the world.
+         * @type {WorldConfiguration}
+         * @see {@link WorldConfiguration}
          */
         this.WorldConfiguration = worldConfiguration;
 
         /**
          * The configuration for the agents of type 'plant'
-         * @see {@link AgentType}.
          * @type {AgentConfiguration}
+         * @see {@link AgentConfiguration}.
+         * @see {@link AgentType}
          */
         this.PlantConfiguration = plantConfiguration;
 
         /**
          * The configuration for the agents of type 'herbivore'
          * @type {AgentConfiguration}
-         * @see {@link AgentType}.
+         * @see {@link AgentConfiguration}.
+         * @see {@link AgentType}
          */
         this.HerbivoreConfiguration = herbivoreConfiguration;
 
         /**
          * The configuration for the agents of type 'carnivore'
          * @type {AgentConfiguration}
-         * @see {@link AgentType}.
+         * @see {@link AgentConfiguration}.
+         * @see {@link AgentType}
          */
         this.CarnivoreConfiguration = carnivoreConfiguration;
 
         /**
          * The configuration for the agents of type 'decomposer'
          * @type {AgentConfiguration}
-         * @see {@link AgentType}.
+         * @see {@link AgentConfiguration}.
+         * @see {@link AgentType}
          */
         this.DecomposerConfiguration = decomposerConfiguration;
 
         /**
          * The configuration for the agents of type 'omnivore'
          * @type {AgentConfiguration}
-         * @see {@link AgentType}.
+         * @see {@link AgentConfiguration}.
+         * @see {@link AgentType}
          */
         this.OmnivoreConfiguration = omnivoreConfiguration;
     }
@@ -242,4 +281,4 @@ class ConfigurationProvider {
     }
 }
 
-export {Configuration, ConfigurationProvider, AgentConfiguration, MazeGenerators, Topologies, Colors};
+export {Configuration, ConfigurationProvider, AgentConfiguration, MazeGenerators, Topologies, Colors, ReproductionTypes};
