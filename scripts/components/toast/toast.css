@@ -1,0 +1,41 @@
+button {
+    cursor: pointer;
+}
+
+button:focus {
+    outline: none;
+}
+
+.toast {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--gap);
+    background: var(--secondary-color);
+    color: var(--secondary-font-color);
+    padding: var(--gap);
+    position: fixed;
+    bottom: var(--gap);
+    margin: auto 0;
+    max-width: 300px;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    visibility: hidden;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.toast.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.toast--close {
+    background: none;
+    border: none;
+    color: var(--accent-color);
+    font-size: 1.2em;
+    line-height: 1;
+    cursor: pointer;
+}

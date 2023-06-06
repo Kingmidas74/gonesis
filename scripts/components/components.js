@@ -6,6 +6,9 @@ import { RANGE_SLIDER } from "./range-slider/range-slider.js";
 
 import { TERRAIN_SETTINGS } from "./terrain-settings/terrain-settings.js";
 import { AGENT_SETTINGS } from "./agent-settings/agent-settings.js";
+import { PRIMARY_TOOLBAR } from "./primary-toolbar/primary-toolbar.js";
+import { GAME_SETTINGS } from "./game-settings/game-settings.js";
+import { TOAST } from "./toast/toast.js";
 
 /**
  * Initializes custom components by defining them in the customElements registry.
@@ -52,6 +55,24 @@ const initializeComponents = (window, document, logger = console) => {
             component: AGENT_SETTINGS,
             templatePath: "./agent-settings.html",
             stylePath: "./agent-settings.css",
+        },
+        {
+            name: "app-primary-toolbar",
+            component: PRIMARY_TOOLBAR,
+            templatePath: "./primary-toolbar.html",
+            stylePath: "./primary-toolbar.css",
+        },
+        {
+            name: "app-game-settings",
+            component: GAME_SETTINGS,
+            templatePath: "./game-settings.html",
+            stylePath: "./game-settings.css",
+        },
+        {
+            name: "app-toast",
+            component: TOAST,
+            templatePath: "./toast.html",
+            stylePath: "./toast.css",
         }
     ];
 

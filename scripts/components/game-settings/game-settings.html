@@ -1,0 +1,89 @@
+<header class="settings-header">
+    <h2 class="settings--title">Settings</h2>
+
+    <ul class="tab-container">
+        <li class="tab" data-target="world">
+            <svg class="icon">
+                <use href="./assets/sprite.svg#worldSettings"></use>
+            </svg>
+        </li>
+        <li class="tab" data-target="agents">
+            <svg class="icon">
+                <use href="./assets/sprite.svg#agentsSettings"></use>
+            </svg>
+        </li>
+    </ul>
+</header>
+<form class="settings--form" id="settingsForm">
+    <fieldset class="settings--form--content">
+        <fieldset class="form__fieldset" data-tab="true" id="world">
+            <legend class="form__fieldset--legend">World</legend>
+
+            <fieldset class="form__group field">
+                <input class="form__field" id="cellSize" max="50" min="2" name="cellSize"
+                       placeholder="Cell size" type="number" value="30"/>
+                <label class="form__label" for="cellSize">Cell size</label>
+            </fieldset>
+
+            <fieldset class="form__group field">
+                <app-terrain-settings id="terrain-settings"></app-terrain-settings>
+            </fieldset>
+
+            <fieldset class="form__group field">
+                <app-radio-group-toggle id="topology-types"></app-radio-group-toggle>
+            </fieldset>
+
+        </fieldset>
+
+        <fieldset class="form__fieldset" data-tab="true" id="agents">
+            <legend class="form__fieldset--legend">Agents</legend>
+
+            <ul class="tab-container">
+                <li class="tab" data-target="plant">
+                    <svg class="icon">
+                        <use href="./assets/sprite.svg#plantIcon"></use>
+                    </svg>
+                </li>
+                <li class="tab" data-target="herbivore">
+                    <svg class="icon">
+                        <use href="./assets/sprite.svg#herbivoreIcon"></use>
+                    </svg>
+                </li>
+                <li class="tab" data-target="carnivore">
+                    <svg class="icon">
+                        <use href="./assets/sprite.svg#carnivoreIcon"></use>
+                    </svg>
+                </li>
+                <li class="tab" data-target="omnivore">
+                    <svg class="icon">
+                        <use href="./assets/sprite.svg#omnivoreIcon"></use>
+                    </svg>
+                </li>
+            </ul>
+
+            <fieldset class="form__fieldset" data-tab="true" id="plant">
+                <legend class="form__fieldset--legend">Plant</legend>
+                <app-agent-settings id="plantSettings"></app-agent-settings>
+            </fieldset>
+            <fieldset class="form__fieldset" data-tab="true" id="herbivore">
+                <legend class="form__fieldset--legend">Herbivore</legend>
+                <app-agent-settings id="herbivoreSettings"></app-agent-settings>
+            </fieldset>
+            <fieldset class="form__fieldset" data-tab="true" id="carnivore">
+                <legend class="form__fieldset--legend">Carnivore</legend>
+                <app-agent-settings id="carnivoreSettings"></app-agent-settings>
+            </fieldset>
+            <fieldset class="form__fieldset" data-tab="true" id="omnivore">
+                <legend class="form__fieldset--legend">Omnivore</legend>
+                <app-agent-settings id="omnivoreSettings"></app-agent-settings>
+            </fieldset>
+        </fieldset>
+    </fieldset>
+    <fieldset class="settings--form--controls">
+        <button class="save-btn" data-title="Save" id="saveBtn" type="button">
+            <svg class="icon">
+                <use href="./assets/sprite.svg#saveIcon"></use>
+            </svg>
+        </button>
+    </fieldset>
+</form>

@@ -22,6 +22,7 @@ export class RADIO_GROUP_TOGGLE extends HTMLElement {
         super();
 
         this.#shadow = this.attachShadow({ mode: "open" });
+        this.#shadow.addEventListener('change', this.#changeEventHandler);
 
         this.#template = this.initializeTemplateParser().catch((err) => {
             RADIO_GROUP_TOGGLE.logger.error(err);
@@ -63,21 +64,20 @@ export class RADIO_GROUP_TOGGLE extends HTMLElement {
                     items: data,
                 });
                 this.#shadow.appendChild(template.content.cloneNode(true));
-
-                this.#shadow.addEventListener('change', (e) => {
-                    if (e.target.type !== 'radio') {
-                        return;
-                    }
-
-                    this.dispatchEvent(new RADIO_GROUP_TOGGLE.windowProvider.CustomEvent('change', {
-                        detail: { value: e.target.value }
-                    }))
-                });
-
             })
             .catch((err) => {
                 RADIO_GROUP_TOGGLE.logger.error(err);
             });
+    }
+
+    #changeEventHandler = (e) => {
+        if (e.target.type !== 'radio') {
+            return;
+        }
+
+        this.dispatchEvent(new RADIO_GROUP_TOGGLE.windowProvider.CustomEvent('change', {
+            detail: { value: e.target.value }
+        }))
     }
 
     set value(value) {

@@ -1,0 +1,41 @@
+svg {
+    width: 100%;
+    height: 100%;
+    color: inherit;
+}
+
+.hidden {
+    display: none !important;
+}
+
+[disabled] {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+menu {
+    display: flex;
+    gap:1rem;
+}
+
+li {
+    max-width: clamp(1rem, 3rem, 50px);
+    min-width: 20px;
+    aspect-ratio: 1;
+
+    display: flex;
+    justify-content: stretch;
+    align-items: stretch;
+
+    cursor: pointer;
+}
+
+button {
+    flex:1;
+    background: none;
+    border: none;
+    outline: none;
+    user-select: none;
+    cursor: inherit;
+    color: inherit;
+}
