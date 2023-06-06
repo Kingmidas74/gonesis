@@ -117,16 +117,10 @@ export default class UIController {
         this.#document = document;
 
         this.#elements = {
-            nextStepBtn: document.getElementById("nextStepBtn"),
-            playBtn: document.getElementById("playBtn"),
-            pauseBtn: document.getElementById("pauseBtn"),
-            generateBtn: document.getElementById("generateBtn"),
-            settingsBtn: document.getElementById("settingsBtn"),
-            sideBar: document.getElementById("settings"),
-            saveBtn: document.getElementById("saveBtn"),
+            primaryToolbar: document.getElementById("primaryToolbar"),
+            gameSettings: document.getElementById("settings"),
+            settings: document.getElementById("settings-container"),
             toast: document.getElementById('toast'),
-            toastMessage: document.querySelector('.toast--message'),
-            toastClose: document.querySelector('.toast--close'),
         };
     }
 
@@ -135,81 +129,36 @@ export default class UIController {
      * @param {Configuration} configuration
      */
     init(configuration) {
-        this.#elements.nextStepBtn.addEventListener("click", this.#raiseOnNextStepButtonClickEvent);
-        this.#elements.playBtn.addEventListener("click", this.#raiseOnPlayButtonClickEvent);
-        this.#elements.pauseBtn.addEventListener("click", this.#raiseOnPauseButtonClickEvent);
-        this.#elements.generateBtn.addEventListener("click", this.#raiseOnGenerateButtonClickEvent);
-
-        this.#elements.settingsBtn.addEventListener("click", () => {
-            this.toggleSideBar(!this.#elements.sideBar.classList.contains("active"))
+        this.#elements.primaryToolbar.addEventListener("play", this.#raiseOnPlayButtonClickEvent);
+        this.#elements.primaryToolbar.addEventListener("pause", this.#raiseOnPauseButtonClickEvent);
+        this.#elements.primaryToolbar.addEventListener("generate", this.#raiseOnGenerateButtonClickEvent);
+        this.#elements.primaryToolbar.addEventListener("nextStep", this.#raiseOnNextStepButtonClickEvent);
+        this.#elements.primaryToolbar.addEventListener("settings", () => {
+            this.#toggleSideBar(!this.#elements.settings.classList.contains("active"));
         });
+        this.#elements.gameSettings.addEventListener("update", this.#handleSettingsUpdate);
 
-        this.#elements.saveBtn.addEventListener("click", this.#handleSettingsUpdate);
-        this.#elements.sideBar.addEventListener('click', this.#handleTabClick);
         this.#window.addEventListener('resize', this.#handleResize);
-        this.setFirstTabsActive();
-
-        this.#elements.sideBar.querySelectorAll('.range-slider__range').forEach(range => {
-            range.addEventListener('input', this.#handleSettingsUpdate);
-        })
 
         this.#document.addEventListener('click', (event) => {
-            const isClickInside = this.#elements.sideBar.contains(event.target);
-            const isSettingsBtn = this.#elements.settingsBtn.contains(event.target);
-
-            if (!isClickInside && !isSettingsBtn) {
-                this.#elements.sideBar.classList.remove('active');
-                this.toggleSideBar(false)
+            const isClickOutside = !this.#elements.settings.contains(event.target);
+            if (isClickOutside) {
+                this.#elements.settings.classList.remove('active');
+                this.#toggleSideBar(false)
             }
         });
 
-        this.#elements.toastClose.addEventListener('click', () => {
-            this.#elements.toast.classList.toggle('show');
-        });
-
-        this.#setupSettings(configuration);
+        this.#elements.gameSettings.config = configuration;
     }
 
     togglePlayPause(isPlaying) {
-        this.#elements.settingsBtn.parentElement.classList.toggle("hidden", isPlaying);
-        this.#elements.generateBtn.parentElement.classList.toggle("hidden", isPlaying);
-        this.#elements.nextStepBtn.parentElement.classList.toggle("hidden", isPlaying);
-        this.#elements.playBtn.parentElement.classList.toggle("hidden", isPlaying);
-        this.#elements.pauseBtn.parentElement.classList.toggle("hidden", !isPlaying);
-
-        if(isPlaying && this.#elements.sideBar.classList.contains("active")) {
-            this.#elements.sideBar.classList.remove("active");
-        }
-    }
-
-    /**
-     * Get all settings from the UI.
-     * @returns {Configuration} The settings.
-     */
-    collectAllSettings() {
-        return new Configuration({
-            worldConfiguration: {
-                CellSize: this.#document.getElementById('cellSize').value,
-                MazeType: this.#document.querySelector('#terrain-settings').value,
-                Topology: this.#document.querySelector('#topology-types').value,
-            },
-            plantConfiguration: this.#document.getElementById('plantSettings').config,
-            carnivoreConfiguration: this.#document.getElementById('carnivoreSettings').config,
-            herbivoreConfiguration: this.#document.getElementById('herbivoreSettings').config,
-            omnivoreConfiguration: this.#document.getElementById('omnivoreSettings').config,
-        })
+        this.#elements.primaryToolbar.togglePlayPause(isPlaying);
     }
 
     #handleSettingsUpdate = (e) => {
-        if(e.target.classList.contains('range-slider__range')) {
-            e.target.parentNode.querySelector('.range-slider__value').innerHTML = e.target.value;
-            return
-        }
-
         this.#window.clearTimeout(this.#settingsUpdateEventTimeout);
         this.#settingsUpdateEventTimeout = this.#window.setTimeout(() => {
-            const settings = this.collectAllSettings();
-            this.#raiseOnSettingsUpdateEvent(settings);
+            this.#raiseOnSettingsUpdateEvent(e.detail.value);
         }, 250);
     }
 
@@ -220,96 +169,16 @@ export default class UIController {
         }, 250);
     }
 
-    #handleTabClick = (e) => {
-        const clickedTab = e.target.closest('[data-target]');
-        if (!clickedTab) return;
-
-        const container = clickedTab.parentNode;
-        const sidebar = container.closest('.settings');
-
-        Array.from(container.children).forEach(tab => {
-            tab.classList.remove('active');
-        });
-
-        clickedTab.classList.add('active');
-
-        const parentFieldset = container.closest('.form__fieldset');
-        if (parentFieldset) {
-            const allNestedFieldsets = parentFieldset.querySelectorAll('.form__fieldset');
-            allNestedFieldsets.forEach(fieldset => fieldset.classList.remove('active'));
-        }
-
-        const form = sidebar.querySelector('.settings--form--content');
-        const allSiblings = Array.from(form.children).filter(child => child !== parentFieldset);
-        allSiblings.forEach(sibling => sibling.classList.remove('active'));
-
-        const targetFieldset = form.querySelector(`#${clickedTab.getAttribute('data-target')}`);
-        if (targetFieldset) targetFieldset.classList.add('active');
-    }
-
-    setFirstTabsActive() {
-        const topLevelTabsContainer = this.#document.querySelector('.settings-header .tab-container');
-
-        const firstTopLevelTab = topLevelTabsContainer?.querySelector('.tab');
-        this.#activateTab(firstTopLevelTab);
-
-        const nestedTabGroups = this.#elements.sideBar.querySelectorAll('.form__fieldset[data-tab="true"]');
-        nestedTabGroups.forEach(tabGroup => {
-            const firstNestedTab = tabGroup.querySelector('.tab');
-            this.#activateTab(firstNestedTab);
-        });
-    }
-
-    #activateTab(tab) {
-        if (!tab) {
-            return;
-        }
-
-        const targetFieldset = this.#elements.sideBar.querySelector(`#${tab.getAttribute('data-target')}`);
-        if (!targetFieldset) {
-            return;
-        }
-
-        tab.classList.add('active');
-        targetFieldset.classList.add('active');
-    }
-
     /**
      * Shows a toast message and hides it automatically after 3 seconds.
      * @param {string} message The message to show in the toast.
      */
     showToast(message) {
-        // Set the toast message
-        this.#elements.toastMessage.textContent = message;
-
-        this.#elements.toast.classList.toggle('show');
-
-        this.#window.setTimeout(() => {
-            this.#elements.toast.classList.toggle('show');
-        }, 3000);
+        this.#elements.toast.value = message;
     }
 
-    toggleSideBar = (isOpen) => {
-        this.#elements.sideBar.classList.toggle('active', isOpen);
-        this.#elements.generateBtn.disabled = isOpen;
-        this.#elements.nextStepBtn.disabled = isOpen;
-        this.#elements.playBtn.disabled = isOpen;
-        this.#elements.pauseBtn.disabled = isOpen;
-    }
-
-    /**
-     * Sets up the UI with the given settings.
-     * @param {Configuration} settings
-     */
-    #setupSettings = (settings)=> {
-        this.#document.getElementById('terrain-settings').value = settings.WorldConfiguration.MazeType;
-        this.#document.getElementById(`topology-types`).data = Object.entries(Topologies).map(([name, value]) => ({ name, value }))
-        this.#document.getElementById(`topology-types`).value = settings.WorldConfiguration.Topology;
-        this.#document.getElementById('cellSize').value = settings.WorldConfiguration.CellSize;
-
-        this.#document.getElementById('plantSettings').config = settings.PlantConfiguration
-        this.#document.getElementById('herbivoreSettings').config = settings.HerbivoreConfiguration
-        this.#document.getElementById('carnivoreSettings').config = settings.CarnivoreConfiguration
-        this.#document.getElementById('omnivoreSettings').config = settings.OmnivoreConfiguration
+    #toggleSideBar = (isOpen) => {
+        this.#elements.settings.classList.toggle('active', isOpen);
+        this.#elements.primaryToolbar.toggleActions(isOpen);
     }
 }
