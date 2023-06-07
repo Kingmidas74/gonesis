@@ -54,6 +54,10 @@ export class AGENT_SETTINGS extends HTMLElement {
 
                 this.#shadow.getElementById("initialCount").value = {min:0, max:500, value: config.InitialCount, title:"Count"};
                 this.#shadow.getElementById("color").value = config?.Color || Colors.DARK;
+                this.#shadow.getElementById("initialEnergy").value = {min:0, max:500, value: config.InitialEnergy, title:"Energy"};
+                this.#shadow.getElementById("maxEnergy").value = {min:0, max:1000, value: config.MaxEnergy, title:"Max Energy"};
+                this.#shadow.getElementById("reproductionEnergyCost").value = {min:0, max:500, value: config.ReproductionEnergyCost, title:"Reproduction cost"};
+
 
             })
             .catch((err) => {
@@ -66,8 +70,11 @@ export class AGENT_SETTINGS extends HTMLElement {
      */
     get config() {
         return new AgentConfiguration({
-                InitialCount: this.#shadow.querySelector("#initialCount").value,
-                Color: this.#shadow.querySelector("#color").value
+                InitialCount: this.#shadow.getElementById("initialCount").value,
+                Color: this.#shadow.getElementById("color").value,
+                InitialEnergy: this.#shadow.getElementById("initialEnergy").value,
+                MaxEnergy: this.#shadow.getElementById("maxEnergy").value,
+                ReproductionEnergyCost: this.#shadow.getElementById("reproductionEnergyCost").value,
             })
     }
 
