@@ -94,9 +94,7 @@ export class COLOR_PICKER extends HTMLElement {
         let a = parseFloat(hslaInArray[3]); // we need to convert it to be between 0 to 1
 
         let rgba = this.#hslaToRgba(h, s, l, a);
-        let hex = this.#rgbaToHex(rgba);
-
-        return hex;
+        return this.#rgbaToHex(rgba);
     }
 
     #hslaToRgba = (h, s, l, a) => {

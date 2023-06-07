@@ -11,22 +11,8 @@
     <link href="./main.css" rel="stylesheet">
 </head>
 <body>
-<!-- HEADER -->
-<header class="header">
-    <h1 class="header--title">Gonesis</h1>
-    <app-primary-toolbar id="primaryToolbar"></app-primary-toolbar>
-</header>
-<!-- END HEADER -->
 
-<main class="main">
-    <canvas id="canvas"></canvas>
-
-    <aside class="settings" id="settings-container">
-        <app-game-settings id="settings"></app-game-settings>
-    </aside>
-</main>
-
-<app-toast id="toast"></app-toast>
+<app-genesis></app-genesis>
 
 <script src="scripts/application/engine/wasm_exec.js"></script>
 <script async defer src="main.js" type="module"></script>

@@ -1,4 +1,4 @@
-import {MazeGenerators} from "../../application/configuration/configuration.js";
+import {MazeGenerators} from "../../../application/configuration/configuration.js";
 
 export class TerrainSettingsData {
     /**

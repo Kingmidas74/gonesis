@@ -1,4 +1,4 @@
-import {Configuration, Topologies} from "../../application/configuration/configuration.js";
+import {Configuration, Topologies} from "../../../application/configuration/configuration.js";
 
 export class GAME_SETTINGS extends HTMLElement {
 
@@ -60,7 +60,7 @@ export class GAME_SETTINGS extends HTMLElement {
      */
     set config(config) {
         if (!this.isConnected) {
-            this.#pendingData = data;
+            this.#pendingData = config;
             return;
         }
 
@@ -146,7 +146,6 @@ export class GAME_SETTINGS extends HTMLElement {
         if (!clickedTab) return;
 
         const container = clickedTab.parentNode;
-        const sidebar = container.closest('.settings');
 
         Array.from(container.children).forEach(tab => {
             tab.classList.remove('active');

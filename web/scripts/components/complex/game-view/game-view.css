@@ -1,0 +1,8 @@
+canvas {
+    will-change: transform;
+    display: block;
+    border: 1px solid var(--primary-font-color);
+    width: 100%;
+    box-sizing: border-box;
+    height: 100%;
+}
