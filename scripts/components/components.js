@@ -1,14 +1,21 @@
 import {Component} from "./decorators.js";
 
-import { RADIO_GROUP_TOGGLE } from "./radio-group-toggle/radio-group-toggle.js";
-import { COLOR_PICKER } from "./color-picker/color-picker.js";
-import { RANGE_SLIDER } from "./range-slider/range-slider.js";
+import { RADIO_GROUP_TOGGLE } from "./basic/radio-group-toggle/radio-group-toggle.js";
+import { COLOR_PICKER } from "./basic/color-picker/color-picker.js";
+import { RANGE_SLIDER } from "./basic/range-slider/range-slider.js";
 
-import { TERRAIN_SETTINGS } from "./terrain-settings/terrain-settings.js";
-import { AGENT_SETTINGS } from "./agent-settings/agent-settings.js";
-import { PRIMARY_TOOLBAR } from "./primary-toolbar/primary-toolbar.js";
-import { GAME_SETTINGS } from "./game-settings/game-settings.js";
-import { TOAST } from "./toast/toast.js";
+import { TERRAIN_SETTINGS } from "./complex/terrain-settings/terrain-settings.js";
+import { AGENT_SETTINGS } from "./complex/agent-settings/agent-settings.js";
+import { PRIMARY_TOOLBAR } from "./complex/primary-toolbar/primary-toolbar.js";
+import { GAME_SETTINGS } from "./complex/game-settings/game-settings.js";
+import { TOAST } from "./complex/toast/toast.js";
+
+import { GAME_VIEW } from "./complex/game-view/game-view.js";
+import { BRAIN_VIEW} from "./complex/brain-view/brain-view.js";
+import { CHART_VIEW } from "./complex/chart-view/chart-view.js";
+import { GAME_MODULES } from "./complex/game-modules/game-modules.js";
+
+import { APPLICATION } from "./application/application.js";
 
 /**
  * Initializes custom components by defining them in the customElements registry.
@@ -73,6 +80,36 @@ const initializeComponents = (window, document, logger = console) => {
             component: TOAST,
             templatePath: "./toast.html",
             stylePath: "./toast.css",
+        },
+        {
+            name: "app-game-view",
+            component: GAME_VIEW,
+            templatePath: "./game-view.html",
+            stylePath: "./game-view.css",
+        },
+        {
+            name: "app-brain-view",
+            component: BRAIN_VIEW,
+            templatePath: "./brain-view.html",
+            stylePath: "./brain-view.css",
+        },
+        {
+            name: "app-chart-view",
+            component: CHART_VIEW,
+            templatePath: "./chart-view.html",
+            stylePath: "./chart-view.css",
+        },
+        {
+            name: "app-game-modules",
+            component: GAME_MODULES,
+            templatePath: "./game-modules.html",
+            stylePath: "./game-modules.css",
+        },
+        {
+            name: "app-genesis",
+            component: APPLICATION,
+            templatePath: "./application.html",
+            stylePath: "./application.css",
         }
     ];
 

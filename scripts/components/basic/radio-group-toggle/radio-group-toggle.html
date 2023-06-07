@@ -1,0 +1,10 @@
+<ul>
+  {% for item in items %}
+  <li>
+    <label>
+      <input name="group" type="radio" value="{{ item.value }}"/>
+      <span>{{ item.name }}</span>
+    </label>
+  </li>
+  {% endfor %}
+</ul>
