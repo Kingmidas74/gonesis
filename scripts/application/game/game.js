@@ -119,7 +119,10 @@ class Game {
      */
     async #update() {
         return this.#worldManager.updateWorld().map(world => {
-            this.#fillCells(world);
+            if(this.#configuration.getInstance().DrawRequired)
+            {
+                this.#fillCells(world);
+            }
             return this.#livingAgentsCount(world) > 0
         });
     }

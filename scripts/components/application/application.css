@@ -19,31 +19,6 @@
     font-size: clamp(10px, 2rem,7ch);
 }
 
-
-.main {
-    position: relative;
-    max-width: 100vw;
-    overflow: hidden;
-    display: flex;
-    flex-flow: column;
-    align-items: stretch;
-    justify-content: stretch;
-    flex:1;
-    padding: var(--gap);
-    height: 100%;
-}
-
-.main > section {
-    display:none;
-    overflow: hidden;
-    height: 100%;
-    flex: 1;
-}
-
-.main > section.active {
-    display: block;
-}
-
 aside {
     width: clamp(20vw,100%,45ch);
     height: 100%;
@@ -67,60 +42,8 @@ aside.active {
     transition: translate 0.45s ease-in-out;
 }
 
-footer {
-    padding: .5rem;
+app-tab-layout {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    gap:var(--gap);
-}
-
-footer svg {
-    width: 100%;
-    height: 100%;
-    color: inherit;
-}
-
-footer .hidden {
-    display: none !important;
-}
-
-footer [disabled] {
-    pointer-events: none;
-    opacity: 0.5;
-}
-
-footer menu {
-    display: flex;
-    gap:var(--gap);
-    padding: 0;
-}
-
-footer li {
-    max-width: clamp(1rem, 3rem, 50px);
-    min-width: 20px;
-    aspect-ratio: 1;
-
-    display: flex;
-    justify-content: stretch;
-    align-items: stretch;
-
-    cursor: pointer;
-
-    border-radius: 50px;
-}
-
-footer li.active {
-    color: var(--secondary-font-color);
-    background-color: var(--secondary-color);
-}
-
-footer button {
-    flex:1;
-    background: none;
-    border: none;
-    outline: none;
-    user-select: none;
-    cursor: inherit;
-    color: inherit;
+    flex-flow: column;
+    flex: 1;
 }

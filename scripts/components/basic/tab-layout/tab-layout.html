@@ -1,0 +1,39 @@
+<main class="main">
+  <section id="game" class="active">
+    <slot name="game"></slot>
+  </section>
+  <section id="brain">
+    <slot name="brain"></slot>
+  </section>
+  <section id="chart">
+    <slot name="chart"></slot>
+  </section>
+
+  <slot name="settings"></slot>
+</main>
+
+<footer>
+  <menu>
+    <li class="active">
+      <button type="button" data-title="Game" data-target="game"  id="gameBtn">
+        <svg>
+          <use href="./assets/sprite.svg#gameIcon"></use>
+        </svg>
+      </button>
+    </li>
+    <li>
+      <button type="button" data-title="Brain" data-target="brain" id="brainBtn">
+        <svg>
+          <use href="./assets/sprite.svg#brainIcon"></use>
+        </svg>
+      </button>
+    </li>
+    <li>
+      <button type="button" data-title="Charts" data-target="chart" id="chartBtn">
+        <svg>
+          <use href="./assets/sprite.svg#chartIcon"></use>
+        </svg>
+      </button>
+    </li>
+  </menu>
+</footer>

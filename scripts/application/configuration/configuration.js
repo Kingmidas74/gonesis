@@ -136,6 +136,7 @@ class Configuration {
      */
     constructor({
                     isPlayable = true,
+                    drawRequired = true,
                     worldConfiguration = new WorldConfiguration(),
                     plantConfiguration = new AgentConfiguration({
                         InitialCount: 10,
@@ -164,6 +165,12 @@ class Configuration {
          * @type {boolean}
          */
         this.Playable = isPlayable;
+
+        /**
+         * Indicates if the game should be drawn.
+         * @type {boolean}
+         */
+        this.DrawRequired = drawRequired;
 
         /**
          * The configuration for the world.
