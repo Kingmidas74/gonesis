@@ -1,7 +1,6 @@
 package agent
 
 import (
-	"fmt"
 	"math/rand"
 
 	"github.com/kingmidas74/gonesis-engine/internal/contracts"
@@ -82,7 +81,6 @@ func (b *Brain) KeepAddress(from, count int) {
 		count:         count,
 		returnAddress: b.address,
 	}
-	fmt.Println("subroutine", sub)
 	b.subroutineStack = append(b.subroutineStack, sub)
 	b.address = sub.start
 }
@@ -93,7 +91,6 @@ func (b *Brain) Return() {
 	}
 
 	sub := b.subroutineStack[len(b.subroutineStack)-1]
-	fmt.Println("return", sub)
 	b.SetAddress(sub.returnAddress + 1)
 	b.subroutineStack = b.subroutineStack[:len(b.subroutineStack)-1]
 }
