@@ -1,5 +1,3 @@
-import {Application} from "../../application/application.js";
-
 export class APPLICATION extends HTMLElement {
 
     #shadow;
@@ -18,7 +16,9 @@ export class APPLICATION extends HTMLElement {
         this.#template = this.#initializeTemplateParser()
             .then((templateContent) => {
                 const template = APPLICATION.documentProvider.createElement("template");
-                template.innerHTML = APPLICATION.templateParser?.parse(templateContent);
+                template.innerHTML = APPLICATION.templateParser?.parse(templateContent, {
+                    title: 'Gonesis',
+                });
                 this.#shadow.appendChild(template.content.cloneNode(true));
             })
             .then(this.#setup)
@@ -37,7 +37,6 @@ export class APPLICATION extends HTMLElement {
         };
 
         this.#elements.primaryToolbar.addEventListener("play", () => {
-            console.log('play');
             this.#elements.gameView.playGame()
                 .then(_=> this.togglePlayPause(true))
                 .catch((err) => {
@@ -46,19 +45,17 @@ export class APPLICATION extends HTMLElement {
                 })
         });
         this.#elements.primaryToolbar.addEventListener("pause", () => {
-            console.log('pause');
             this.#elements.gameView.pauseGame();
             this.togglePlayPause(false);
         });
         this.#elements.primaryToolbar.addEventListener("generate", async () => {
             (await this.#elements.gameView.generateGame()).map((_) => {
-                console.log("Game generated");
+                APPLICATION.logger.log("Game generated");
             }).orElse((err) => {
                 this.showToast(err.message)
             });
         });
         this.#elements.primaryToolbar.addEventListener("nextStep", async () => {
-            console.log('nextStep');
             await this.#elements.gameView.nextStep()
         });
         this.#elements.primaryToolbar.addEventListener("settings", () => {
@@ -73,22 +70,6 @@ export class APPLICATION extends HTMLElement {
                 this.#toggleSideBar(false)
             }
         });
-
-        this.#shadow.querySelector('footer').addEventListener('click', (event) => {
-            const clickedBtn = event.target.closest('[data-target]');
-            if (!clickedBtn) return;
-
-            const menu = clickedBtn.closest('menu');
-
-            Array.from(menu.children).forEach(tab => {
-                tab.classList.remove('active');
-            });
-
-            clickedBtn.parentElement.classList.add('active');
-
-            Array.from(this.#shadow.querySelectorAll("main > section")).forEach(section => section.classList.remove('active'))
-            this.#shadow.querySelector(`#${clickedBtn.getAttribute('data-target')}`)?.classList.add('active');
-        })
 
         this.#elements.gameSettings.config = await this.#elements.gameView.config
     }
@@ -116,10 +97,6 @@ export class APPLICATION extends HTMLElement {
     #toggleSideBar = (isOpen) => {
         this.#elements.aside.classList.toggle('active', isOpen);
         this.#elements.primaryToolbar.toggleActions(isOpen);
-    }
-
-    get canvas() {
-        return this.#shadow.querySelector('app-game-view').canvas
     }
 
     async #initializeTemplateParser() {

@@ -9,11 +9,12 @@ import { AGENT_SETTINGS } from "./complex/agent-settings/agent-settings.js";
 import { PRIMARY_TOOLBAR } from "./complex/primary-toolbar/primary-toolbar.js";
 import { GAME_SETTINGS } from "./complex/game-settings/game-settings.js";
 import { TOAST } from "./complex/toast/toast.js";
+import { TAB_LAYOUT } from "./basic/tab-layout/tab-layout.js";
 
 import { GAME_VIEW } from "./complex/game-view/game-view.js";
 import { BRAIN_VIEW} from "./complex/brain-view/brain-view.js";
 import { CHART_VIEW } from "./complex/chart-view/chart-view.js";
-import { GAME_MODULES } from "./complex/game-modules/game-modules.js";
+
 
 import { APPLICATION } from "./application/application.js";
 
@@ -100,10 +101,10 @@ const initializeComponents = (window, document, logger = console) => {
             stylePath: "./chart-view.css",
         },
         {
-            name: "app-game-modules",
-            component: GAME_MODULES,
-            templatePath: "./game-modules.html",
-            stylePath: "./game-modules.css",
+            name: "app-tab-layout",
+            component: TAB_LAYOUT,
+            templatePath: "./tab-layout.html",
+            stylePath: "./tab-layout.css",
         },
         {
             name: "app-genesis",

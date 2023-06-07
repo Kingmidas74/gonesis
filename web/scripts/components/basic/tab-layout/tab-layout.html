@@ -1,15 +1,15 @@
 <main class="main">
   <section id="game" class="active">
-    <canvas id="canvas"></canvas>
+    <slot name="game"></slot>
   </section>
   <section id="brain">
+    <slot name="brain"></slot>
   </section>
   <section id="chart">
+    <slot name="chart"></slot>
   </section>
 
-  <aside id="settings-container">
-    <app-game-settings id="settings"></app-game-settings>
-  </aside>
+  <slot name="settings"></slot>
 </main>
 
 <footer>

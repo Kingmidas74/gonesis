@@ -1,46 +1,25 @@
-
 .main {
     position: relative;
-    flex: 1;
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    justify-content: flex-start;
-    width: 100vw;
+    max-width: 100vw;
     overflow: hidden;
+    display: flex;
+    flex-flow: column;
+    align-items: stretch;
+    justify-content: stretch;
+    flex:1;
+    padding: var(--gap);
+    height: 100%;
 }
 
 .main > section {
-    flex:0 0 100vw;
     display:none;
     overflow: hidden;
+    height: 100%;
+    flex: 1;
 }
 
 .main > section.active {
     display: block;
-}
-
-aside {
-    width: clamp(20vw,100%,45ch);
-    height: 100%;
-    padding: 1em;
-    position: absolute;
-    top: 0;
-    right: 0;
-    translate: 100%;
-    background-color: var(--primary-color);
-    color: var(--primary-font-color);
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap);
-    overflow-y: auto;
-    transition: translate 0.45s ease-in-out;
-
-}
-
-aside.active {
-    translate:0;
-    transition: translate 0.45s ease-in-out;
 }
 
 footer {
@@ -69,6 +48,7 @@ footer [disabled] {
 footer menu {
     display: flex;
     gap:var(--gap);
+    padding: 0;
 }
 
 footer li {
