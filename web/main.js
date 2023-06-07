@@ -2,11 +2,14 @@ import {Application, Configuration} from "./scripts/application/application.js";
 import {GameController, UIController } from './scripts/controllers/index.js';
 import {initializeComponents} from "./scripts/components/components.js";
 
+/*
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker
         .register('./sw.js')
         .catch((err) => { console.log('Service Worker Failed to Register', err); });
 }
+
+ */
 
 const config = new Configuration({
     isPlayable: false,

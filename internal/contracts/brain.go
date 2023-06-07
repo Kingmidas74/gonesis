@@ -6,4 +6,6 @@ type Brain interface {
 	Address() int
 	Command(identifier *int) int
 	Commands() []int
+	KeepAddress(from, count int)
+	Return()
 }

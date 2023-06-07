@@ -1,20 +1,29 @@
 package agent
 
 import (
+	"fmt"
+	"math/rand"
+
 	"github.com/kingmidas74/gonesis-engine/internal/contracts"
 	"github.com/kingmidas74/gonesis-engine/internal/util"
-	"math/rand"
 )
 
 type Brain struct {
-	commands []int
-	address  int
+	commands        []int
+	address         int
+	subroutineStack []subroutine
+}
+
+type subroutine struct {
+	start         int
+	count         int
+	returnAddress int
 }
 
 func NewBrain(volume int) contracts.Brain {
 	return &Brain{
 		address:  0,
-		commands: generateCommandsSequence(volume),
+		commands: generateDefaultCommandsSequence(volume),
 	}
 }
 
@@ -30,7 +39,12 @@ func (b *Brain) IncreaseAddress(delta int) {
 }
 
 func (b *Brain) SetAddress(address int) {
-	b.address = b.mod(address)
+	if len(b.subroutineStack) > 0 {
+		sub := b.subroutineStack[len(b.subroutineStack)-1]
+		b.address = b.mod(address, sub.count) + sub.start
+		return
+	}
+	b.address = b.mod(address, len(b.commands))
 }
 
 func (b *Brain) Address() int {
@@ -42,50 +56,44 @@ func (b *Brain) Command(identifier *int) int {
 	if identifier != nil {
 		address = *identifier
 	}
-	return b.commands[b.mod(address)]
+	return b.commands[b.mod(address, len(b.commands))]
 }
 
 func (b *Brain) Commands() []int {
 	return b.commands
 }
 
-func (b *Brain) mod(address int) int {
-	return util.ModLikePython(address, len(b.commands))
-}
-
-func generatePSOnly(sequenceLength int) []int {
-	result := make([]int, sequenceLength)
-	for i := 0; i < sequenceLength; i++ {
-		result[i] = 2
-	}
-	return result
+func (b *Brain) mod(address, length int) int {
+	return util.ModLikePython(address, length)
 }
 
 func generateDefaultCommandsSequence(sequenceLength int) []int {
 	commands := make([]int, sequenceLength)
 	for i := 0; i < sequenceLength; i++ {
-		commands[i] = 0
+		commands[i] = rand.Intn(sequenceLength)
 	}
 	return commands
 }
 
-func generateCommandsSequence(sequenceLength int) []int {
-	// Create weighted buckets
-	buckets := make([]int, 0)
-	for i := 0; i < sequenceLength; i++ {
-		weight := sequenceLength - i // calculate the weight for each number
-		for j := 0; j < weight; j++ {
-			buckets = append(buckets, i)
-		}
+func (b *Brain) KeepAddress(from, count int) {
+	count = len(b.commands) / 4
+	sub := subroutine{
+		start:         from,
+		count:         count,
+		returnAddress: b.address,
+	}
+	fmt.Println("subroutine", sub)
+	b.subroutineStack = append(b.subroutineStack, sub)
+	b.address = sub.start
+}
+
+func (b *Brain) Return() {
+	if len(b.subroutineStack) == 0 {
+		return
 	}
 
-	// Shuffle the bucket to randomize the order
-	rand.Shuffle(len(buckets), func(i, j int) {
-		buckets[i], buckets[j] = buckets[j], buckets[i]
-	})
-
-	// Trim the buckets to the required sequence length
-	buckets = buckets[:sequenceLength]
-
-	return buckets
+	sub := b.subroutineStack[len(b.subroutineStack)-1]
+	fmt.Println("return", sub)
+	b.SetAddress(sub.returnAddress + 1)
+	b.subroutineStack = b.subroutineStack[:len(b.subroutineStack)-1]
 }
