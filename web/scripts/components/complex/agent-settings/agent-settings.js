@@ -1,4 +1,4 @@
-import {Colors, AgentConfiguration } from "../../../application/configuration/configuration.js";
+import {Colors, AgentConfiguration, Topologies} from "../../../application/configuration/configuration.js";
 
 export class AGENT_SETTINGS extends HTMLElement {
 
@@ -58,6 +58,9 @@ export class AGENT_SETTINGS extends HTMLElement {
                 this.#shadow.getElementById("maxEnergy").value = {min:0, max:1000, value: config.MaxEnergy, title:"Max Energy"};
                 this.#shadow.getElementById("reproductionEnergyCost").value = {min:0, max:500, value: config.ReproductionEnergyCost, title:"Reproduction cost"};
 
+                this.#shadow.getElementById(`brain-volume`).data = [{name: 'small', value: 16}, {name: 'medium', value: 64}, {name: 'large', value: 256}];
+                this.#shadow.getElementById(`brain-volume`).value = 16;
+
 
             })
             .catch((err) => {
@@ -75,6 +78,7 @@ export class AGENT_SETTINGS extends HTMLElement {
                 InitialEnergy: this.#shadow.getElementById("initialEnergy").value,
                 MaxEnergy: this.#shadow.getElementById("maxEnergy").value,
                 ReproductionEnergyCost: this.#shadow.getElementById("reproductionEnergyCost").value,
+                BrainVolume: this.#shadow.getElementById(`brain-volume`).value,
             })
     }
 

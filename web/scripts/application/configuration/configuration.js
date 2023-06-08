@@ -74,6 +74,7 @@ class AgentConfiguration {
                     ReproductionEnergyCost = 10,
                     ReproductionChance = 0.5,
                     MutationChance = 0.1,
+                    BrainVolume = 64,
                 } = {}) {
         /**
          * The maximum energy an agent can have.
@@ -123,6 +124,11 @@ class AgentConfiguration {
          * The initial energy of the agents.
          */
         this.InitialEnergy = InitialEnergy
+
+        /**
+         * The volume of the brain.
+         */
+        this.BrainVolume = BrainVolume
     }
 }
 

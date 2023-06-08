@@ -1,0 +1,44 @@
+:host {
+    display: flex;
+    gap: var(--gap);
+    flex-wrap: wrap;
+}
+
+:host > * {
+    flex: 1;
+}
+
+#matrix {
+    --N:4;
+
+    display: grid;
+    gap:calc(var(--gap) / 4);
+    grid-template-columns: repeat(var(--N), 1fr);
+    grid-template-rows: repeat(var(--N), 1fr);
+    flex:1;
+    flex-grow: 0;
+    flex-shrink: 0;
+    aspect-ratio: 1;
+    justify-items: center;
+    align-items: center;
+    margin: auto;
+}
+
+.square {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid black;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    padding: .3rem;
+}
+
+.square.active {
+    background-color: var(--secondary-color);
+    color: var(--secondary-font-color);
+}
+span {
+    flex: 3;
+}
