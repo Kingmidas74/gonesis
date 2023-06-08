@@ -40,6 +40,10 @@ export class TAB_LAYOUT extends HTMLElement {
 
             Array.from(this.#shadow.querySelectorAll("main > section")).forEach(section => section.classList.remove('active'))
             this.#shadow.querySelector(`#${clickedBtn.getAttribute('data-target')}`)?.classList.add('active');
+
+            this.dispatchEvent(new TAB_LAYOUT.windowProvider.CustomEvent('change', {
+                detail: { value: clickedBtn.getAttribute('data-target') }
+            }))
         })
     }
 

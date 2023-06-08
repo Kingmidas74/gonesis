@@ -21,6 +21,8 @@ class Engine {
      */
     #jsonProvider
 
+    #isInitialized = false
+
     /**
      * Creates an instance of Engine.
      * @param {string} wasmFile Name of wasm file
@@ -38,8 +40,11 @@ class Engine {
      * @returns {Promise<void>}
      */
     async init() {
+        if (this.#isInitialized) {
+            return new Promise(resolve => resolve())
+        }
         const result = await this.#windowProvider.WebAssembly.instantiateStreaming(fetch(this.#wasmFile), this.#go.importObject)
-        this.#go.run(result.instance).catch(err => console.error(err));
+        this.#go.run(result.instance).then(_ => this.#isInitialized = true).catch(err => console.error(err));
     }
 
     /**

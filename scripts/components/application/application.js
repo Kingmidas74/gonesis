@@ -32,6 +32,7 @@ export class APPLICATION extends HTMLElement {
             primaryToolbar: this.#shadow.querySelector('app-primary-toolbar'),
             gameView: this.#shadow.querySelector('app-game-view'),
             gameSettings: this.#shadow.querySelector('app-game-settings'),
+            tabLayout: this.#shadow.querySelector('app-tab-layout'),
             aside: this.#shadow.querySelector('aside'),
             toast: this.#shadow.querySelector('app-toast'),
         };
@@ -61,6 +62,9 @@ export class APPLICATION extends HTMLElement {
         this.#elements.primaryToolbar.addEventListener("settings", () => {
             this.#toggleSideBar(!this.#elements.aside.classList.contains("active"));
         });
+        this.#elements.tabLayout.addEventListener("change", (e) => {
+            this.#elements.primaryToolbar.classList.toggle("hidden", e.detail.value !== "game");
+        })
         this.#elements.gameSettings.addEventListener("update", this.#handleSettingsUpdate);
 
         this.#shadow.addEventListener('click', (event) => {

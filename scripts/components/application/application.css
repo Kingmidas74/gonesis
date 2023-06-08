@@ -2,6 +2,11 @@
     display: flex;
     flex-flow: column;
 }
+
+.hidden {
+    display: none !important;
+}
+
 .header {
     display: flex;
     align-items: center;
