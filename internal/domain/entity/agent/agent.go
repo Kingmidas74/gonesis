@@ -3,6 +3,7 @@ package agent
 import (
 	"github.com/kingmidas74/gonesis-engine/internal/domain/configuration"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/entity"
+	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
 	"math/rand"
 
 	"github.com/kingmidas74/gonesis-engine/internal/contracts"
@@ -74,16 +75,23 @@ func (a *Agent) DecreaseEnergy(delta int) {
 }
 
 func (a *Agent) CreateChildren(terra contracts.Terrain, config *configuration.Configuration) []contracts.Agent {
-	emptyCells := make([]contracts.Cell, 0)
-	agents := make([]contracts.Agent, 0)
+	neighbors := terra.GetNeighbors(a.X(), a.Y())
+	emptyCells := make([]contracts.Cell, 0, len(neighbors))
+	agents := make([]contracts.Agent, 0, len(neighbors)+1)
 	agents = append(agents, a)
-	for _, cell := range terra.GetNeighbors(a.X(), a.Y()) {
+	for _, cell := range neighbors {
 		if cell.IsEmpty() {
 			emptyCells = append(emptyCells, cell)
+			continue
 		}
 		if cell.IsAgent() {
 			agents = append(agents, cell.Agent())
+			continue
 		}
+		if cell.CellType() == enum.CellTypeWall {
+			continue
+		}
+		panic("unknown cell type")
 	}
 	if len(emptyCells) == 0 {
 		return nil
@@ -94,7 +102,7 @@ func (a *Agent) CreateChildren(terra contracts.Terrain, config *configuration.Co
 		return nil
 	}
 
-	placedChildren := make([]contracts.Agent, 0)
+	placedChildren := make([]contracts.Agent, 0, len(children))
 
 	for i := 0; i < len(children) && len(emptyCells) > 0; i++ {
 		randIndex := rand.Intn(len(emptyCells))
@@ -102,6 +110,9 @@ func (a *Agent) CreateChildren(terra contracts.Terrain, config *configuration.Co
 		if targetCell.IsEmpty() {
 			targetCell.SetAgent(children[i])
 			placedChildren = append(placedChildren, children[i])
+		} else {
+			children[i].Kill(terra)
+			children = append(children[:i], children[i+1:]...)
 		}
 
 		emptyCells = append(emptyCells[:randIndex], emptyCells[randIndex+1:]...)

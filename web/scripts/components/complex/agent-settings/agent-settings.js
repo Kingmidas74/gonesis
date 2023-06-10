@@ -61,6 +61,13 @@ export class AGENT_SETTINGS extends HTMLElement {
                 this.#shadow.getElementById(`brain-volume`).data = [{name: 'small', value: 16}, {name: 'medium', value: 64}, {name: 'large', value: 256}];
                 this.#shadow.getElementById(`brain-volume`).value = 16;
 
+                this.#shadow.getElementById("initialCount").addEventListener("change", (event) => {
+                    event.stopPropagation();
+                    this.dispatchEvent(new AGENT_SETTINGS.windowProvider.CustomEvent('change', {
+                        detail: { value: this.config }
+                    }))
+                });
+
 
             })
             .catch((err) => {
@@ -78,7 +85,7 @@ export class AGENT_SETTINGS extends HTMLElement {
                 InitialEnergy: this.#shadow.getElementById("initialEnergy").value,
                 MaxEnergy: this.#shadow.getElementById("maxEnergy").value,
                 ReproductionEnergyCost: this.#shadow.getElementById("reproductionEnergyCost").value,
-                BrainVolume: this.#shadow.getElementById(`brain-volume`).value,
+                BrainVolume: parseInt(this.#shadow.getElementById(`brain-volume`).value),
             })
     }
 

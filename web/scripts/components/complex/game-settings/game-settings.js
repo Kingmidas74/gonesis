@@ -1,4 +1,4 @@
-import {Configuration, Topologies} from "../../../application/configuration/configuration.js";
+import {Configuration, MazeGenerators, Topologies} from "../../../application/configuration/configuration.js";
 
 export class GAME_SETTINGS extends HTMLElement {
 
@@ -10,11 +10,14 @@ export class GAME_SETTINGS extends HTMLElement {
 
     #controls = {}
 
+    #selectedAgentType = null;
+
     constructor() {
         super();
 
         this.#shadow = this.attachShadow({ mode: "open" });
         this.#shadow.addEventListener('click', this.#onClickHandler);
+        this.#shadow.addEventListener('change', this.#onChangeHandler);
 
         this.#template = this.initializeTemplateParser()
             .then((templateContent) => {
@@ -28,6 +31,7 @@ export class GAME_SETTINGS extends HTMLElement {
                     carnivoreSettings: this.#shadow.getElementById("carnivoreSettings"),
                     omnivoreSettings: this.#shadow.getElementById("omnivoreSettings"),
                     saveBtn: this.#shadow.getElementById("saveBtn"),
+                    oneAgentTypeMode: this.#shadow.getElementById("oneAgentTypeMode"),
                 }
             })
             .catch((err) => {
@@ -70,10 +74,22 @@ export class GAME_SETTINGS extends HTMLElement {
             this.#shadow.getElementById(`topology-types`).value = config.WorldConfiguration.Topology;
             this.#shadow.getElementById('cellSize').value = config.WorldConfiguration.CellSize;
 
+            this.#controls.oneAgentTypeMode.data = {
+                name: "One agent type mode",
+                value: config.WorldConfiguration.OneAgentTypeMode,
+            };
+
             this.#controls.plantSettings.config = config.PlantConfiguration
             this.#controls.herbivoreSettings.config = config.HerbivoreConfiguration
             this.#controls.carnivoreSettings.config = config.CarnivoreConfiguration
             this.#controls.omnivoreSettings.config = config.OmnivoreConfiguration
+
+            this.#controls.plantSettings.addEventListener('change', this.#onChangeHandler)
+            this.#controls.herbivoreSettings.addEventListener('change', this.#onChangeHandler)
+            this.#controls.carnivoreSettings.addEventListener('change', this.#onChangeHandler)
+            this.#controls.omnivoreSettings.addEventListener('change', this.#onChangeHandler)
+
+            this.#controls.oneAgentTypeMode.addEventListener('change', this.#onChangeHandler)
 
             this.#setFirstTabsActive();
         })
@@ -84,17 +100,26 @@ export class GAME_SETTINGS extends HTMLElement {
      * @returns {Configuration}
      */
     get config() {
-        return new Configuration({
+        const result = new Configuration({
             worldConfiguration: {
                 CellSize: this.#shadow.getElementById('cellSize').value,
                 MazeType: this.#shadow.querySelector('#terrain-settings').value,
                 Topology: this.#shadow.querySelector('#topology-types').value,
+                OneAgentTypeMode: this.#controls.oneAgentTypeMode.value,
             },
             plantConfiguration: this.#controls.plantSettings.config,
             herbivoreConfiguration: this.#controls.herbivoreSettings.config,
             carnivoreConfiguration: this.#controls.carnivoreSettings.config,
             omnivoreConfiguration: this.#controls.omnivoreSettings.config,
         })
+
+        if(result.WorldConfiguration.OneAgentTypeMode) {
+            result.PlantConfiguration.InitialCount = 0
+            result.HerbivoreConfiguration.InitialCount = 0
+            result.CarnivoreConfiguration.InitialCount = 0
+        }
+
+        return result
     }
 
     connectedCallback() {
@@ -113,7 +138,10 @@ export class GAME_SETTINGS extends HTMLElement {
         const nestedTabGroups = this.#shadow.querySelectorAll('.form__fieldset[data-tab="true"]');
         nestedTabGroups.forEach(tabGroup => {
             const firstNestedTab = tabGroup.querySelector('.tab');
-            this.#activateTab(firstNestedTab);
+            if(firstNestedTab) {
+                this.#selectedAgentType = this.#shadow.querySelector(`#${firstNestedTab.getAttribute('data-target')}`);
+                this.#activateTab(firstNestedTab);
+            }
         });
     }
 
@@ -164,7 +192,27 @@ export class GAME_SETTINGS extends HTMLElement {
         allSiblings.forEach(sibling => sibling.classList.remove('active'));
 
         const targetFieldset = form.querySelector(`#${clickedTab.getAttribute('data-target')}`);
-        if (targetFieldset) targetFieldset.classList.add('active');
+        if (targetFieldset) {
+            targetFieldset.classList.add('active');
+            if(form.contains(clickedTab)) {
+                this.#selectedAgentType = targetFieldset
+            }
+        }
     }
 
+    #onChangeHandler = (e) => {
+
+        this.#shadow.querySelectorAll('#agents > [data-tab="true"]').forEach(tab => {
+            tab.classList.remove('active');
+        })
+
+        this.#shadow.querySelector('#agents > menu').classList.toggle('hidden', e.detail.value);
+
+        if(e.detail.value) {
+            const targetFieldset = this.#shadow.querySelector(`#omnivore`);
+            if (targetFieldset) targetFieldset.classList.add('active');
+        } else {
+            this.#selectedAgentType.classList.add('active');
+        }
+    }
 }

@@ -2,12 +2,6 @@ class CanvasWrapper {
     constructor() {
     }
 
-    clear() {
-    }
-
-    init() {
-    }
-
     /**
      * Draws a circle.
      * @param x
@@ -32,19 +26,28 @@ class CanvasWrapper {
 
     /**
      * Gets the width of the canvas element.
-     * @returns {number} The width of the canvas.
+     * @returns {Promise<number>} The width of the canvas.
      */
     get width() {
-        return 0;
+        return Promise.resolve(0);
     }
 
     /**
      * Gets the height of the canvas element.
-     * @returns {number} The height of the canvas.
+     * @returns {Promise<number>} The height of the canvas.
      */
     get height() {
-        return 0;
+        return Promise.resolve(0);
     }
+
+    /**
+     * Renders the buffer canvas to the main canvas.
+     */
+    render() {
+
+    }
+
+    init() {}
 }
 
 
@@ -57,71 +60,20 @@ class CanvasWrapper2D extends CanvasWrapper{
     #canvas
 
     /**
-     *
-     * @param {HTMLCanvasElement} canvasElement
+     * @type {HTMLCanvasElement} canvas for buffer
+     * @private
      */
-    constructor(canvasElement) {
-        super();
-        this.#canvas = canvasElement;
-        if(this.#canvas.getContext)
-        {
-            this.ctx = this.#canvas.getContext("2d");
-            this.#canvas.style.transform = 'translate3d(0, 0, 0)';
-        }
-        this.init();
-    }
-
-    init() {
-        this.#canvas.width = this.#canvas.offsetWidth;
-        this.#canvas.height = this.#canvas.offsetHeight;
-    }
+    #bufferCanvas;
 
     /**
-     * Gets the width of the canvas element.
-     * @returns {number} The width of the canvas.
+     * @type {CanvasRenderingContext2D} ctx for buffer canvas
+     * @private
      */
-    get width() {
-        return this.#canvas.width;
-    }
+    #bufferCtx;
 
     /**
-     * Gets the height of the canvas element.
-     * @returns {number} The height of the canvas.
+     * @type {Map}
      */
-    get height() {
-        return this.#canvas.height;
-    }
-
-    /**
-     * Gets the canvas context.
-     * @returns {CanvasRenderingContext2D} The canvas context.
-     */
-    get context() {
-        return this.ctx;
-    }
-
-    /**
-     * Clears the entire canvas by erasing the contents.
-     */
-    clear() {
-        this.ctx.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
-    }
-
-    /**
-     * Draw a rectangle.
-     * @param {number} x - The x position.
-     * @param {number} y - The y position.
-     * @param {number} width - The width of the rectangle.
-     * @param {number} height - The height of the rectangle.
-     * @param {string} color - The color of the rectangle in RGBA format.
-     */
-    drawRect(x, y, width, height, color) {
-        this.ctx.fillStyle = color;
-        this.ctx.fillRect(x, y, width, height);
-    }
-}
-
-class CanvasWrapperCached extends CanvasWrapper2D {
     #previousFrame
 
     /**
@@ -129,8 +81,49 @@ class CanvasWrapperCached extends CanvasWrapper2D {
      * @param {HTMLCanvasElement} canvasElement
      */
     constructor(canvasElement) {
-        super(canvasElement);
+        super();
+        this.#canvas = canvasElement;
         this.#previousFrame = new Map();
+
+        if(this.#canvas.getContext)
+        {
+            this.#bufferCanvas = document.createElement("canvas");
+            this.#bufferCtx = this.#bufferCanvas.getContext("2d");
+            this.ctx = this.#canvas.getContext("2d");
+            this.#canvas.style.transform = 'translate3d(0, 0, 0)';
+            this.init();
+        }
+    }
+
+    init = () => {
+        this.#canvas.width = this.#canvas.offsetWidth;
+        this.#canvas.height = this.#canvas.offsetHeight;
+        this.#bufferCanvas.width = this.#canvas.width;
+        this.#bufferCanvas.height = this.#canvas.height;
+    }
+
+    /**
+     * Gets the width of the canvas element.
+     * @returns {Promise<number>} The width of the canvas.
+     */
+    get width() {
+        return Promise.resolve(this.#canvas.width);
+    }
+
+    /**
+     * Gets the height of the canvas element.
+     * @returns {Promise<number>} The height of the canvas.
+     */
+    get height() {
+        return Promise.resolve(this.#canvas.height);
+    }
+
+    /**
+     * Renders the buffer canvas to the main canvas.
+     */
+    render() {
+        //this.ctx.clearRect(0, 0, this.#bufferCanvas.width, this.#bufferCanvas.height);
+        this.ctx.drawImage(this.#bufferCanvas, 0, 0);
     }
 
     /**
@@ -144,11 +137,11 @@ class CanvasWrapperCached extends CanvasWrapper2D {
     drawRect(x, y, width, height, color) {
         let key = `${x},${y}`;
 
-        if(!this.#previousFrame.has(key) || this.#previousFrame.get(key) !== color) {
-            this.ctx.fillStyle = color;
-            this.ctx.fillRect(x, y, width, height);
+        //if(!this.#previousFrame.has(key) || this.#previousFrame.get(key) !== color) {
+            this.#bufferCtx.fillStyle = color;
+            this.#bufferCtx.fillRect(x, y, width, height);
             this.#previousFrame.set(key, color);
-        }
+        //}
     }
 
     /**
@@ -160,32 +153,13 @@ class CanvasWrapperCached extends CanvasWrapper2D {
      */
     drawCircle(x, y, radius, color) {
         let key = `${x},${y}`;
-        if(!this.#previousFrame.has(key) || this.#previousFrame.get(key) !== color) {
-
-            this.ctx.fillStyle = "#ffffff";
-            this.ctx.fillRect(x, y, 2 * radius, 2 * radius);
-
-            this.ctx.beginPath();
-            this.ctx.arc(x + radius, y + radius, radius, 0, 2 * Math.PI, false);
-            this.ctx.fillStyle = color;
-            this.ctx.fill();
+        //if(!this.#previousFrame.has(key) || this.#previousFrame.get(key) !== color) {
+            this.#bufferCtx.beginPath();
+            this.#bufferCtx.arc(x + radius, y + radius, radius, 0, 2 * Math.PI, false);
+            this.#bufferCtx.fillStyle = color;
+            this.#bufferCtx.fill();
             this.#previousFrame.set(key, color);
-        }
-    }
-
-    /**
-     * Clears the entire canvas by erasing the contents.
-     */
-    clear() {
-        for(let [key, color] of this.#previousFrame) {
-            let [x, y] = key.split(',').map(Number);
-            if(this.ctx.fillStyle !== color) {
-                this.ctx.fillStyle = color;
-                this.ctx.clearRect(x, y, this.width, this.height);
-            }
-        }
-
-        this.#previousFrame.clear();
+        //}
     }
 }
 
@@ -329,12 +303,11 @@ class CanvasWrapperWebGL extends CanvasWrapper{
      */
     drawRect(x, y, width, height, color) {
         const gl = this.#context;
-
         // Convert the color from RGB to 0.0-1.0
-        const r = parseInt(color.slice(1, 3), 16) / 255;
-        const g = parseInt(color.slice(3, 5), 16) / 255;
-        const b = parseInt(color.slice(5, 7), 16) / 255;
-        const colors = [r, g, b, 1.0];
+        const {
+            r,g,b,a
+        } = this.#hslaToHex(color);
+        const colors = [r, g, b, a];
 
         const positions = [
             x, y,
@@ -370,5 +343,59 @@ class CanvasWrapperWebGL extends CanvasWrapper{
 
         gl.drawArrays(gl.TRIANGLES, 0, positions.length / 2);
     }
+
+    #previousFrame = new Map();
+
+    /**
+     * Draws a circle.
+     * @param x
+     * @param y
+     * @param radius
+     * @param color
+     */
+    drawCircle(x, y, radius, color) {
+        let key = `${x},${y}`;
+        if(!this.#previousFrame.has(key) || this.#previousFrame.get(key) !== color) {
+           this.drawRect(x, y, radius * 2, radius * 2, color);
+
+            this.#previousFrame.set(key, color);
+        }
+    }
+
+    #hslaToHex = (hsla) => {
+        const hslaInArray = hsla.substring(5, hsla.length-1).replace(/ /g, '').split(',');
+
+        let h = parseInt(hslaInArray[0]) / 360; // we need to convert it to be between 0 to 1
+        let s = parseInt(hslaInArray[1]) / 100; // we need to convert it to be between 0 to 1
+        let l = parseInt(hslaInArray[2]) / 100; // we need to convert it to be between 0 to 1
+        let a = parseFloat(hslaInArray[3]); // we need to convert it to be between 0 to 1
+
+        return this.#hslaToRgba(h, s, l, a);
+    }
+
+    #hslaToRgba = (h, s, l, a) => {
+        let r, g, b;
+
+        if(s === 0){
+            r = g = b = l; // achromatic
+        } else {
+            const hue2rgb = (p, q, t) => {
+                if(t < 0) t += 1;
+                if(t > 1) t -= 1;
+                if(t < 1/6) return p + (q - p) * 6 * t;
+                if(t < 1/2) return q;
+                if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                return p;
+            };
+            let q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            let p = 2 * l - q;
+            r = hue2rgb(p, q, h + 1/3);
+            g = hue2rgb(p, q, h);
+            b = hue2rgb(p, q, h - 1/3);
+        }
+        return {r,g,b,a}
+
+    }
+
 }
-export {CanvasWrapper2D, CanvasWrapperCached, CanvasWrapperWebGL};
+export {CanvasWrapper2D, CanvasWrapperWebGL};

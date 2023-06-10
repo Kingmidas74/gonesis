@@ -19,7 +19,7 @@ export class BRAIN_VIEW extends HTMLElement {
                 template.innerHTML = BRAIN_VIEW.templateParser?.parse(templateContent);
                 this.#shadow.appendChild(template.content.cloneNode(true));
 
-                const engine = new Engine("engine.wasm", BRAIN_VIEW.windowProvider);
+             /*   const engine = new Engine("engine.wasm", BRAIN_VIEW.windowProvider);
                 await engine.init()
 
                 let matrixContainer = this.#shadow.getElementById('matrix');
@@ -31,11 +31,13 @@ export class BRAIN_VIEW extends HTMLElement {
                     }
                 });
                 for(let i=0; i < N*N; i++) {
-                    let newDiv = BRAIN_VIEW.documentProvider.createElement('div');
+                    let newDiv = BRAIN_VIEW.documentProvider.createElement('li');
                     newDiv.className = 'square';
                     newDiv.textContent = Math.floor(BRAIN_VIEW.windowProvider.Math.random()*100).toString();
                     matrixContainer.appendChild(newDiv);
                 }
+
+              */
             })
             .catch((err) => {
                 BRAIN_VIEW.logger.error(err);

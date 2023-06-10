@@ -72,7 +72,7 @@ func (t *Terrain[T]) GetNeighbor(x, y int, direction int) contracts.Cell {
 
 func (t *Terrain[T]) GetNeighbors(x, y int) []contracts.Cell {
 	coords := (*new(T)).GetNeighbors(x, y)
-	result := make([]contracts.Cell, 0)
+	result := make([]contracts.Cell, 0, len(coords))
 	for _, c := range coords {
 		result = append(result, t.Cell(c.X(), c.Y()))
 	}

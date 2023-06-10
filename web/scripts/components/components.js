@@ -3,6 +3,7 @@ import {Component} from "./decorators.js";
 import { RADIO_GROUP_TOGGLE } from "./basic/radio-group-toggle/radio-group-toggle.js";
 import { COLOR_PICKER } from "./basic/color-picker/color-picker.js";
 import { RANGE_SLIDER } from "./basic/range-slider/range-slider.js";
+import { CUSTOM_CHECKBOX } from "./basic/custom-checkbox/custom-checkbox.js";
 
 import { TERRAIN_SETTINGS } from "./complex/terrain-settings/terrain-settings.js";
 import { AGENT_SETTINGS } from "./complex/agent-settings/agent-settings.js";
@@ -51,6 +52,12 @@ const initializeComponents = (window, document, logger = console) => {
             component: RANGE_SLIDER,
             templatePath: "./range-slider.html",
             stylePath: "./range-slider.css",
+        },
+        {
+            name: "app-custom-checkbox",
+            component: CUSTOM_CHECKBOX,
+            templatePath: "./custom-checkbox.html",
+            stylePath: "./custom-checkbox.css",
         },
         {
             name: "app-terrain-settings",

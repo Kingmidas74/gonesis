@@ -227,6 +227,14 @@ func (s *Service) generateAgents(agentsCount int) ([]contracts.Agent, error) {
 	return agents, nil
 }
 
+func (s *Service) Next() (contracts.World, error) {
+	err := s.world.Next(s.config)
+	if err != nil {
+		return nil, err
+	}
+	return s.world, nil
+}
+
 func (s *Service) getAvailableCommands() []contracts.Command {
 	return []contracts.Command{
 		commands.NewMoveCommand(),

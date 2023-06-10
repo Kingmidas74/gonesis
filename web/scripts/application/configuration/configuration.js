@@ -32,7 +32,24 @@ class WorldConfiguration {
                     Topology = Topologies.Moore,
                     CellSize = 10,
                     MazeColor = Colors.DARK,
+                    Width = 0,
+                    Height = 0,
+                    OneAgentTypeMode = false,
                 } = {}) {
+        /**
+         * The width of the world.
+         * @type {number}
+         * @default 0
+         */
+        this.Width = Width;
+
+        /**
+         * The height of the world.
+         * @type {number}
+         * @default 0
+         */
+        this.Height = Height;
+
         /**
          * The type of maze to generate.
          * @type {string}
@@ -61,6 +78,13 @@ class WorldConfiguration {
          * @type {string}
          */
         this.MazeColor = MazeColor;
+
+        /**
+         * Whether to use only one agent type.
+         * @type {boolean}
+         * @default false
+         */
+        this.OneAgentTypeMode = OneAgentTypeMode;
     }
 }
 
@@ -71,7 +95,7 @@ class AgentConfiguration {
                     Color = Colors.GREEN,
                     ReproductionType = ReproductionTypes.Budding,
                     InitialEnergy = 20,
-                    ReproductionEnergyCost = 10,
+                    ReproductionEnergyCost = 40,
                     ReproductionChance = 0.5,
                     MutationChance = 0.1,
                     BrainVolume = 64,

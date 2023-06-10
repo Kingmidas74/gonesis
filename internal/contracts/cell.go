@@ -16,4 +16,7 @@ type Cell interface {
 
 	IsEmpty() bool
 	IsAgent() bool
+
+	Lock()
+	Unlock()
 }

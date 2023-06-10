@@ -53,9 +53,14 @@ export class GAME_VIEW extends HTMLElement {
         return templateContent;
     }
 
-    #setup = async () => {
-        this.#application = new Application();
-        await this.#application.configure(window, document, this.#shadow.querySelector("canvas"), "engine.wasm")
+    #setup = () => {
+        return new Promise((resolve, reject) => {
+            GAME_VIEW.windowProvider.setTimeout(async () => {
+                this.#application = new Application();
+                await this.#application.configure(window, document, this.#shadow.querySelector("canvas"), "engine.wasm")
+                resolve();
+            }, 1)
+        })
     }
 
     connectedCallback() {

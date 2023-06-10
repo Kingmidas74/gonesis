@@ -43,12 +43,8 @@ type Configuration struct {
 	OmnivoreConfiguration   AgentConfiguration `json:"OmnivoreConfiguration"`
 }
 
-var (
-	instance *Configuration
-)
-
-func Instance() *Configuration {
-	instance = &Configuration{
+func NewConfiguration() *Configuration {
+	return &Configuration{
 		WorldConfiguration: WorldConfiguration{
 			MazeType: enum.MazeTypeEmpty,
 			Topology: enum.TopologyTypeNeumann,
@@ -109,7 +105,24 @@ func Instance() *Configuration {
 			MutationChance:         defaultMutationChance,
 		},
 	}
-	return instance
+}
+
+func NewAgentConfiguration() *AgentConfiguration {
+	return &AgentConfiguration{
+		MaxEnergy:              defaultMaxEnergy,
+		InitialCount:           defaultCount,
+		MaxDailyCommandCount:   defaultDailyCommands,
+		InitialEnergy:          defaultEnergy,
+		BrainVolume:            defaultBrainSize,
+		ReproductionType:       defaultReproductionSystemType,
+		ReproductionEnergyCost: defaultReproductionEnergyCost,
+		ReproductionChance:     defaultReproductionChance,
+		MutationChance:         defaultMutationChance,
+	}
+}
+
+func (c *AgentConfiguration) FromJson(jsonString string) error {
+	return json.Unmarshal([]byte(jsonString), c)
 }
 
 func (c *Configuration) FromJson(jsonString string) error {

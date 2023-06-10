@@ -75,6 +75,9 @@ func generateDefaultCommandsSequence(sequenceLength int) []int {
 }
 
 func (b *Brain) KeepAddress(from, count int) {
+	if len(b.subroutineStack) > 1 {
+		return
+	}
 	count = len(b.commands) / 4
 	sub := subroutine{
 		start:         from,
