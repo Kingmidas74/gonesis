@@ -20,21 +20,17 @@ export default class Renderer {
         this.#configurationProvider = configurationProvider;
     }
 
-    /** Clear canvas */
-    clear() {
-        this.#canvas.clear();
-    }
-
     /**
      * Draw cell sets on canvas
      * @param {Array<Cell>} cellSets - The cell sets.
      */
     draw(...cellSets) {
-        this.clear()
+        //this.clear()
         for (let cellSet of cellSets) {
             for (let i = 0; i < cellSet.length; i++) {
                 cellSet[i].draw(this.#canvas, this.#configurationProvider.getInstance().WorldConfiguration.CellSize);
             }
         }
+        this.#canvas.render()
     }
 }

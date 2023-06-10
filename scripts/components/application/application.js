@@ -76,6 +76,7 @@ export class APPLICATION extends HTMLElement {
         });
 
         this.#elements.gameSettings.config = await this.#elements.gameView.config
+
     }
 
     togglePlayPause(isPlaying) {

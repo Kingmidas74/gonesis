@@ -9,7 +9,8 @@ export class TemplateParserService {
     parse(template, data= {}) {
         const regexFor =
             /{%\s*for\s+(\w+)\s+in\s+(\w+)\s*%}([\s\S]+?){%\s*endfor\s*%}/gi;
-        const regexIf = /{%\s*if\s+(\w+)\s*%}([\s\S]+?){%\s*endif\s*%}/gi;
+//        const regexIf = /{%\s*if\s+(\w+)\s*%}([\s\S]+?){%\s*endif\s*%}/gi;
+        const regexIf = /{%\s*if\s+(\w+)\s*%}([\s\S]+?){% else %}([\s\S]+?){%\s*endif\s*%}/gi;
         let match;
         let output = template;
 
@@ -32,11 +33,12 @@ export class TemplateParserService {
         while ((match = regexIf.exec(output)) !== null) {
             const condition = match[1];
             const ifBlock = match[2];
+            const elseBlock = match[3] || "";
 
             if (data[condition]) {
                 output = output.replace(match[0], this.parse(ifBlock, data));
             } else {
-                output = output.replace(match[0], "");
+                output = output.replace(match[0], this.parse(elseBlock, data));
             }
         }
 

@@ -33,6 +33,9 @@
     width: 100%;
     height: 100%;
     padding: .3rem;
+    cursor: pointer;
+    user-select: none;
+    outline: transparent;
 }
 
 .square.active {

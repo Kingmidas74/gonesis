@@ -37,7 +37,7 @@ class CellFactory {
     }
 
     createEmpty(x, y, energyPercent) {
-        return new Empty(x, y, "#ffffff");
+        return new Empty(x, y, "hsla(0, 100%, 100%, 1.0)");
     }
 
     createAgent(x, y, energy, agentType) {

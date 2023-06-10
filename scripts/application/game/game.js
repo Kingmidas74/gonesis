@@ -77,6 +77,9 @@ class Game {
             return Either.exception(new Error("World is corrupted"));
         }
 
+        this.#configuration.getInstance().WorldConfiguration.Width = width;
+        this.#configuration.getInstance().WorldConfiguration.Height = height;
+
         for (let row = 0; row < height; row++) {
             for (let col = 0; col < width; col++) {
                 if (worldInstance.cells[row*width+col].cellType === CellType.WALL) {

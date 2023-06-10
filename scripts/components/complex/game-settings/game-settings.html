@@ -37,6 +37,7 @@
 
         <fieldset class="form__fieldset" data-tab="true" id="agents">
             <legend class="form__fieldset--legend">Agents</legend>
+            <app-custom-checkbox id="oneAgentTypeMode"></app-custom-checkbox>
 
             <menu class="tab-container">
                 <li class="tab" data-target="plant">
@@ -63,19 +64,19 @@
 
             <fieldset class="form__fieldset" data-tab="true" id="plant">
                 <legend class="form__fieldset--legend">Plant</legend>
-                <app-agent-settings id="plantSettings"></app-agent-settings>
+                <app-agent-settings id="plantSettings" data-agent-type="plant"></app-agent-settings>
             </fieldset>
             <fieldset class="form__fieldset" data-tab="true" id="herbivore">
                 <legend class="form__fieldset--legend">Herbivore</legend>
-                <app-agent-settings id="herbivoreSettings"></app-agent-settings>
+                <app-agent-settings id="herbivoreSettings" data-agent-type="herbivore"></app-agent-settings>
             </fieldset>
             <fieldset class="form__fieldset" data-tab="true" id="carnivore">
                 <legend class="form__fieldset--legend">Carnivore</legend>
-                <app-agent-settings id="carnivoreSettings"></app-agent-settings>
+                <app-agent-settings id="carnivoreSettings" data-agent-type="carnivore"></app-agent-settings>
             </fieldset>
             <fieldset class="form__fieldset" data-tab="true" id="omnivore">
                 <legend class="form__fieldset--legend">Omnivore</legend>
-                <app-agent-settings id="omnivoreSettings"></app-agent-settings>
+                <app-agent-settings id="omnivoreSettings" data-agent-type="omnivore"></app-agent-settings>
             </fieldset>
         </fieldset>
     </fieldset>
