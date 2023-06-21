@@ -7,4 +7,5 @@ type World interface {
 
 	Agents() []Agent
 	Next(config *configuration.Configuration) error
+	CurrentDay() int
 }

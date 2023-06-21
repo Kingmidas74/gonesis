@@ -1,5 +1,6 @@
 import {MathProvider} from "../providers/math.provider.js";
 import {Engine} from "../engine/engine.js";
+import {Either} from "../monads/either.js";
 
 /**
  * Manages the world in the game.
@@ -10,11 +11,6 @@ export default class WorldManager {
      * @private
      */
     #mathProvider
-    /**
-     * @type {JSON}
-     * @private
-     */
-    #jsonProvider
 
     /**
      * @type {Engine}
@@ -53,11 +49,13 @@ export default class WorldManager {
      * @returns {Either<World, Error>} The world data in object format.
      */
     async initWorld(canvas) {
-        await this.#initEngine();
-        canvas.init()
-        const width = this.#mathProvider.floor((await canvas.width) / this.#config.getInstance().WorldConfiguration.CellSize);
-        const height = this.#mathProvider.floor((await canvas.height) / this.#config.getInstance().WorldConfiguration.CellSize);
-        return this.#engine.initWorld(width, height, this.#config.getInstance());
+        try {
+            await this.#initEngine();
+            canvas.init(this.#config.getInstance().WorldConfiguration.Ratio.Width * this.#config.getInstance().WorldConfiguration.Ratio.CellSize, this.#config.getInstance().WorldConfiguration.Ratio.Height * this.#config.getInstance().WorldConfiguration.Ratio.CellSize);
+            return this.#engine.initWorld(this.#config.getInstance());
+        } catch (e) {
+            return Either.exception(e)
+        }
     }
 
     /**

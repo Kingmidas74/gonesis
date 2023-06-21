@@ -1,6 +1,7 @@
 package game
 
 import (
+	"encoding/json"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/entity/agent/mutation"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/entity/agent/reproduction"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
@@ -61,7 +62,7 @@ func (s *Service) InitWorld(width, height int) (contracts.World, error) {
 		pickedCellIndexes = append(pickedCellIndexes, targetIndex)
 		emptyCell := emptyCells[targetIndex]
 		if agents[i] == nil {
-			panic("here")
+			panic("agent is nil")
 		}
 		emptyCell.SetAgent(agents[i])
 	}
@@ -228,6 +229,10 @@ func (s *Service) generateAgents(agentsCount int) ([]contracts.Agent, error) {
 }
 
 func (s *Service) Next() (contracts.World, error) {
+	if s.world == nil {
+		c, _ := json.Marshal(*s.config)
+		panic(string(c))
+	}
 	err := s.world.Next(s.config)
 	if err != nil {
 		return nil, err
@@ -237,28 +242,10 @@ func (s *Service) Next() (contracts.World, error) {
 
 func (s *Service) getAvailableCommands() []contracts.Command {
 	return []contracts.Command{
+		commands.NewPhotosynthesisCommand(),
 		commands.NewMoveCommand(),
 		commands.NewEatCommand(),
-		commands.NewMoveCommand(),
+		commands.NewCallSubroutineCommand(),
 		commands.NewEndSubroutineCommand(),
-		commands.NewEatCommand(),
-		commands.NewCallSubroutineCommand(),
-		commands.NewMoveCommand(),
-		commands.NewEatCommand(),
-		commands.NewMoveCommand(),
-		commands.NewEatCommand(),
-		commands.NewCallSubroutineCommand(),
-		commands.NewMoveCommand(),
-		commands.NewEatCommand(),
-		commands.NewEndSubroutineCommand(),
-		commands.NewMoveCommand(),
-		commands.NewEatCommand(),
-		commands.NewCallSubroutineCommand(),
-		commands.NewMoveCommand(),
-		commands.NewEatCommand(),
-		commands.NewMoveCommand(),
-		commands.NewEndSubroutineCommand(),
-		commands.NewEatCommand(),
-		commands.NewCallSubroutineCommand(),
 	}
 }

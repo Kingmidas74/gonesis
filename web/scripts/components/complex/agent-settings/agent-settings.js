@@ -52,21 +52,31 @@ export class AGENT_SETTINGS extends HTMLElement {
                 template.innerHTML = AGENT_SETTINGS.templateParser?.parse(templateContent);
                 this.#shadow.appendChild(template.content.cloneNode(true));
 
-                this.#shadow.getElementById("initialCount").value = {min:0, max:500, value: config.InitialCount, title:"Count"};
+                this.#shadow.getElementById("initialCount").value = {min:0, max:500, value: config.InitialCount};
                 this.#shadow.getElementById("color").value = config?.Color || Colors.DARK;
-                this.#shadow.getElementById("initialEnergy").value = {min:0, max:500, value: config.InitialEnergy, title:"Energy"};
-                this.#shadow.getElementById("maxEnergy").value = {min:0, max:1000, value: config.MaxEnergy, title:"Max Energy"};
-                this.#shadow.getElementById("reproductionEnergyCost").value = {min:0, max:500, value: config.ReproductionEnergyCost, title:"Reproduction cost"};
+                this.#shadow.getElementById("initialEnergy").value = {min:0, max:config.MaxEnergy, value: config.InitialEnergy};
+                this.#shadow.getElementById("maxEnergy").value = {min:config.InitialEnergy, max:1000, value: config.MaxEnergy};
+                this.#shadow.getElementById("reproductionEnergyCost").value = {min:0, max:500, value: config.ReproductionEnergyCost};
 
                 this.#shadow.getElementById(`brain-volume`).data = [{name: 'small', value: 16}, {name: 'medium', value: 64}, {name: 'large', value: 256}];
                 this.#shadow.getElementById(`brain-volume`).value = 16;
 
-                this.#shadow.getElementById("initialCount").addEventListener("change", (event) => {
+                /*this.#shadow.getElementById("initialCount").addEventListener("change", (event) => {
                     event.stopPropagation();
                     this.dispatchEvent(new AGENT_SETTINGS.windowProvider.CustomEvent('change', {
                         detail: { value: this.config }
                     }))
+                });*/
+/*
+                this.#shadow.getElementById("initialEnergy").addEventListener("change", (event) => {
+                    event.stopPropagation();
+                    this.#shadow.getElementById("maxEnergy").value = {min:event.detail.value, max:1000, value: config.MaxEnergy};
                 });
+
+                this.#shadow.getElementById("maxEnergy").addEventListener("change", (event) => {
+                    event.stopPropagation();
+                    this.#shadow.getElementById("initialEnergy").value = {min:0, max:event.detail.value, value: config.InitialEnergy};
+                });*/
 
 
             })

@@ -8,4 +8,5 @@ type Brain interface {
 	Commands() []int
 	KeepAddress(from, count int)
 	Return()
+	Equals(other Brain) int
 }

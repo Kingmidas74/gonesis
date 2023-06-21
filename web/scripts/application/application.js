@@ -1,8 +1,9 @@
 import { MathProvider } from "./providers/math.provider.js";
+import { JSONProvider } from "./providers/json.provider.js";
 
 import { Engine } from "./engine/engine.js";
 
-import { CanvasWrapper, Renderer } from "./render/index.js";
+import { CanvasWrapper } from "./render/index.js";
 import { WorldManager, ConfigurationProvider, CellFactory, Game } from "./game/index.js";
 
 import {Configuration} from "./configuration/configuration.js";
@@ -48,19 +49,18 @@ class Application {
         const configurationProvider = new ConfigurationProvider();
 
         const mathProvider = new MathProvider();
+        const jsonProvider = new JSONProvider();
 
         const canvas = new CanvasWrapper(canvasElement);
-        const engine = new Engine(wasmFile, window);
+        const engine = new Engine(wasmFile, window, jsonProvider);
         const worldManager = new WorldManager(engine, configurationProvider, mathProvider);
-        const cellFactory = new CellFactory(configurationProvider);
-        const renderer = new Renderer(canvas, configurationProvider);
+        const cellFactory = new CellFactory(configurationProvider, canvas);
 
         this.#game = new Game({
             canvas: canvas,
             worldManager: worldManager,
             configurationProvider: configurationProvider,
             windowProvider: window,
-            renderer: renderer,
             cellFactory: cellFactory,
         });
 

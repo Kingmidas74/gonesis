@@ -12,6 +12,7 @@ type Agent interface {
 	Brain
 
 	AgentType() enum.AgentType
+	Generation() int
 
 	NextDay(world Terrain, command func(commandIdentifier int) Command, config *configuration.Configuration) error
 	Kill(world Terrain)

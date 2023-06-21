@@ -1,23 +1,10 @@
-const CellType = Object.freeze({
-    EMPTY:  "empty",
-    WALL: "wall",
-    AGENT: "agent",
-    FOOD: "food"
-});
-
-const AgentType = Object.freeze({
-    CARNIVORE:  "carnivore",
-    HERBIVORE: "herbivore",
-    DECOMPOSER: "decomposer",
-    PLANT: "plant",
-    OMNIVORE: "omnivore",
-});
+import { CellType, AgentType } from "../domain/enum.js";
 
 class Cell {
 
     /**
      * Cell constructor.
-     * @param {string} cellType - The type of the cell.
+     * @param {CellType} cellType - The type of the cell.
      * @param {number} energy - The energy of the cell.
      */
     constructor(cellType, energy) {
@@ -34,14 +21,16 @@ class Agent {
      * @param {number} x - The x coordinate of the agent.
      * @param {number} y - The y coordinate of the agent.
      * @param {number} energy - The energy of the agent.
-     * @param {string} agentType - The type of the agent.
+     * @param {AgentType} agentType - The type of the agent.
+     * @param {number} generation - The generation of the agent.
      */
-    constructor(commands, x, y, energy, agentType) {
+    constructor(commands, x, y, energy, agentType, generation) {
         this.commands = commands;
         this.x = x;
         this.y = y;
         this.energy = energy;
         this.agentType = agentType;
+        this.generation = generation;
     }
 }
 
@@ -53,15 +42,17 @@ class World {
      * @param {number} height - The height of the world.
      * @param {Array<Cell>} cells - The cells of the world.
      * @param {Array<Agent>} agents - The agents of the world.
+     * @param {number} currentDay - The current day of the world.
      */
-    constructor(width, height, cells, agents) {
+    constructor(width, height, cells, agents, currentDay) {
         this.width = width;
         this.height = height;
         this.cells = cells;
         this.agents = agents;
+        this.currentDay = currentDay;
     }
 }
 
 
 
-export { CellType, AgentType, Cell, Agent, World };
+export { Cell, Agent, World };

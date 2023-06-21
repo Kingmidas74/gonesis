@@ -15,7 +15,8 @@ type Agent struct {
 
 	entity.Coords
 
-	energy int
+	energy     int
+	generation int
 
 	config *configuration.Configuration
 }
@@ -25,14 +26,16 @@ func NewAgent(nature contracts.AgentNature) contracts.Agent {
 		Brain:       NewBrain(nature.BrainVolume()),
 		AgentNature: nature,
 		energy:      nature.InitialEnergy(),
+		generation:  0,
 	}
 }
 
-func NewAgentWithBrain(nature contracts.AgentNature, brain contracts.Brain) contracts.Agent {
+func NewAgentWithBrain(nature contracts.AgentNature, brain contracts.Brain, generation int) contracts.Agent {
 	return &Agent{
 		Brain:       brain,
 		AgentNature: nature,
 		energy:      nature.InitialEnergy(),
+		generation:  generation,
 	}
 }
 
@@ -72,6 +75,10 @@ func (a *Agent) IncreaseEnergy(delta int) {
 
 func (a *Agent) DecreaseEnergy(delta int) {
 	a.energy -= delta
+}
+
+func (a *Agent) Generation() int {
+	return a.generation
 }
 
 func (a *Agent) CreateChildren(terra contracts.Terrain, config *configuration.Configuration) []contracts.Agent {

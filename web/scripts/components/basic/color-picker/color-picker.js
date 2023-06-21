@@ -49,6 +49,7 @@ export class COLOR_PICKER extends HTMLElement {
                 const template = COLOR_PICKER.documentProvider.createElement("template");
                 template.innerHTML = COLOR_PICKER.templateParser?.parse(templateContent, {
                     color: hslaColor,
+                    title: this.getAttribute('data-title') || 'Color',
                 });
                 this.#shadow.appendChild(template.content.cloneNode(true));
 

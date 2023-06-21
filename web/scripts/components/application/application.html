@@ -3,10 +3,16 @@
   <app-primary-toolbar id="primaryToolbar"></app-primary-toolbar>
 </header>
 
-<app-tab-layout>
-  <app-game-view slot="game"></app-game-view>
+<app-tab-layout data-brain-slot-available="{{ brainSlotAvailable }}" data-game-slot-available="{{ gameSlotAvailable }}" data-chart-slot-available="{{ chartSlotAvailable }}">
+  {% if brainSlotAvailable %}
   <app-brain-view slot="brain"></app-brain-view>
+  {% endif %}
+  {% if gameSlotAvailable %}
+  <app-game-view slot="game"></app-game-view>
+  {% endif %}
+  {% if chartSlotAvailable %}
   <app-chart-view slot="chart"></app-chart-view>
+  {% endif %}
   <aside id="settings-container" slot="settings">
     <app-game-settings id="settings"></app-game-settings>
   </aside>

@@ -4,21 +4,22 @@ import (
 	"fmt"
 	"github.com/kingmidas74/gonesis-engine/internal/contracts"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/configuration"
-	"sync"
 )
 
 type World struct {
 	contracts.Terrain
-	commands []contracts.Command
+	commands   []contracts.Command
+	currentDay int
 
 	_agents []contracts.Agent
 }
 
 func New(terrain contracts.Terrain, commands []contracts.Command) *World {
 	return &World{
-		Terrain:  terrain,
-		commands: commands,
-		_agents:  make([]contracts.Agent, 0, terrain.Width()*terrain.Height()),
+		Terrain:    terrain,
+		commands:   commands,
+		currentDay: 0,
+		_agents:    make([]contracts.Agent, 0, terrain.Width()*terrain.Height()),
 	}
 }
 
@@ -51,20 +52,24 @@ func (w *World) Next(config *configuration.Configuration) error {
 	return w.runDay(config)
 }
 
+func (w *World) CurrentDay() int {
+	return w.currentDay
+}
+
 func (w *World) runDay(config *configuration.Configuration) error {
 	errors := make(chan error)
 	done := make(chan bool)
 
-	var wg sync.WaitGroup
+	//var wg sync.WaitGroup
 
 	for _, cell := range w.Cells() {
 		if !cell.IsAgent() {
 			continue
 		}
-		wg.Add(1)
+		//wg.Add(1)
 
-		go func(cell contracts.Cell) {
-			defer wg.Done()
+		func(cell contracts.Cell) {
+			//defer wg.Done()
 
 			agent := cell.Agent()
 
@@ -83,8 +88,8 @@ func (w *World) runDay(config *configuration.Configuration) error {
 		}(cell)
 	}
 
-	go func() {
-		wg.Wait()
+	func() {
+		//wg.Wait()
 		close(done)
 	}()
 
@@ -100,6 +105,7 @@ func (w *World) runDay(config *configuration.Configuration) error {
 			panic(fmt.Errorf("too many agents: current %v, max %v", livingAgentsCount, w.Width()*w.Height()))
 			return fmt.Errorf("too many agents: current %v, max %v", livingAgentsCount, w.Width()*w.Height())
 		}
+		w.currentDay++
 		return nil
 	case err := <-errors:
 		return err

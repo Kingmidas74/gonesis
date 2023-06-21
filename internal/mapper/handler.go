@@ -17,10 +17,11 @@ func NewWorld(world contracts.World) model.World {
 	agents := make([]model.Agent, len(world.Agents()))
 	for i, agent := range world.Agents() {
 		agents[i] = model.Agent{
-			X:         agent.X(),
-			Y:         agent.Y(),
-			Energy:    agent.Energy(),
-			AgentType: agent.AgentType().String(),
+			X:          agent.X(),
+			Y:          agent.Y(),
+			Energy:     agent.Energy(),
+			AgentType:  agent.AgentType().String(),
+			Generation: agent.Generation(),
 
 			Brain: model.Brain{
 				Commands: agent.Commands(),
@@ -29,10 +30,11 @@ func NewWorld(world contracts.World) model.World {
 	}
 
 	return model.World{
-		Width:  world.Width(),
-		Height: world.Height(),
-		Cells:  cells,
-		Agents: agents,
+		Width:      world.Width(),
+		Height:     world.Height(),
+		Cells:      cells,
+		Agents:     agents,
+		CurrentDay: world.CurrentDay(),
 	}
 }
 

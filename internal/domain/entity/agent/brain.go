@@ -1,10 +1,9 @@
 package agent
 
 import (
-	"math/rand"
-
 	"github.com/kingmidas74/gonesis-engine/internal/contracts"
 	"github.com/kingmidas74/gonesis-engine/internal/util"
+	"math"
 )
 
 type Brain struct {
@@ -69,7 +68,7 @@ func (b *Brain) mod(address, length int) int {
 func generateDefaultCommandsSequence(sequenceLength int) []int {
 	commands := make([]int, sequenceLength)
 	for i := 0; i < sequenceLength; i++ {
-		commands[i] = rand.Intn(sequenceLength)
+		commands[i] = 0
 	}
 	return commands
 }
@@ -96,4 +95,19 @@ func (b *Brain) Return() {
 	sub := b.subroutineStack[len(b.subroutineStack)-1]
 	b.SetAddress(sub.returnAddress + 1)
 	b.subroutineStack = b.subroutineStack[:len(b.subroutineStack)-1]
+}
+
+func (b *Brain) Equals(other contracts.Brain) (difference int) {
+	difference = 0
+
+	if len(b.commands) != len(other.Commands()) {
+		difference = int(math.Abs(float64(len(b.commands) - len(other.Commands()))))
+	}
+
+	for i := 0; i < len(b.commands); i++ {
+		if b.commands[i] != other.Commands()[i] {
+			difference++
+		}
+	}
+	return
 }

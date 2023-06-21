@@ -1,19 +1,29 @@
 <main class="main">
-  <section id="game" class="active">
+
+  {% if renderGameSlot %}
+  <section id="game" data-order="1" class="active">
     <slot name="game"></slot>
   </section>
-  <section id="brain">
+  {% endif %}
+
+  {% if renderBrainSlot %}
+  <section id="brain" data-order="2">
     <slot name="brain"></slot>
   </section>
-  <section id="chart">
+  {% endif %}
+
+  {% if renderChartSlot %}
+  <section id="chart" data-order="3">
     <slot name="chart"></slot>
   </section>
+  {% endif %}
 
   <slot name="settings"></slot>
 </main>
 
 <footer>
   <menu>
+    {% if renderGameSlot %}
     <li class="active">
       <button type="button" data-title="Game" data-target="game"  id="gameBtn">
         <svg>
@@ -21,13 +31,9 @@
         </svg>
       </button>
     </li>
-    <li>
-      <button type="button" data-title="Brain" data-target="brain" id="brainBtn">
-        <svg>
-          <use href="./assets/sprite.svg#brainIcon"></use>
-        </svg>
-      </button>
-    </li>
+    {% endif %}
+
+    {% if renderChartSlot %}
     <li>
       <button type="button" data-title="Charts" data-target="chart" id="chartBtn">
         <svg>
@@ -35,5 +41,16 @@
         </svg>
       </button>
     </li>
+    {% endif %}
+
+    {% if renderBrainSlot %}
+    <li>
+      <button type="button" data-title="Brain" data-target="brain" id="brainBtn">
+        <svg>
+          <use href="./assets/sprite.svg#brainIcon"></use>
+        </svg>
+      </button>
+    </li>
+    {% endif %}
   </menu>
 </footer>

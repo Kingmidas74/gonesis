@@ -26,29 +26,42 @@ const Colors = Object.freeze({
     YELLOW: "hsla(60, 0%, 100%, 1.0)"
 });
 
+/**
+ * The ratio of the world.
+ * @type {Readonly<{}>}
+ */
+const TerrainCellSizes = Object.freeze({
+    L: 30,
+    M: 20,
+    S: 10,
+})
+
+class TerrainRatio {
+    constructor({
+                Width = 0,
+                Height = 0,
+                CellSize = TerrainCellSizes.M,
+                } = {}) {
+
+        this.Width = Width;
+        this.Height = Height;
+        this.CellSize = CellSize;
+    }
+}
+
 class WorldConfiguration {
     constructor({
                     MazeType = MazeGenerators.Empty,
                     Topology = Topologies.Moore,
-                    CellSize = 10,
                     MazeColor = Colors.DARK,
-                    Width = 0,
-                    Height = 0,
                     OneAgentTypeMode = false,
+                    Ratio = new TerrainRatio(),
                 } = {}) {
         /**
-         * The width of the world.
-         * @type {number}
-         * @default 0
+         * The ratio of the world.
+         * @type {TerrainRatio}
          */
-        this.Width = Width;
-
-        /**
-         * The height of the world.
-         * @type {number}
-         * @default 0
-         */
-        this.Height = Height;
+        this.Ratio = Ratio;
 
         /**
          * The type of maze to generate.
@@ -65,13 +78,6 @@ class WorldConfiguration {
          * @see {@link Topologies}
          */
         this.Topology = Topology;
-
-
-        /**
-         * The size of each cell in the maze.
-         * @type {number}
-         */
-        this.CellSize = CellSize;
 
         /**
          * The color of the maze.
@@ -95,9 +101,9 @@ class AgentConfiguration {
                     Color = Colors.GREEN,
                     ReproductionType = ReproductionTypes.Budding,
                     InitialEnergy = 20,
-                    ReproductionEnergyCost = 40,
-                    ReproductionChance = 0.5,
-                    MutationChance = 0.1,
+                    ReproductionEnergyCost = 20,
+                    ReproductionChance = .5,
+                    MutationChance = .5,
                     BrainVolume = 64,
                 } = {}) {
         /**
@@ -260,15 +266,13 @@ class ConfigurationProvider {
      * @type {Configuration}
      * @private
      */
-    static #instance;
+    #instance;
 
     /**
      * Creates an instance of SettingsProvider. If the instance does not exist, it creates a new one.
      */
     constructor() {
-        if (!ConfigurationProvider.#instance) {
-            ConfigurationProvider.#instance = new Configuration();
-        }
+        this.#instance = new Configuration();
     }
 
     /**
@@ -276,7 +280,7 @@ class ConfigurationProvider {
      * @returns {Configuration} The singleton instance of the game settings.
      */
     getInstance() {
-        return ConfigurationProvider.#instance;
+        return this.#instance;
     }
 
     /**
@@ -285,37 +289,37 @@ class ConfigurationProvider {
      */
     updateConfiguration(newConfig) {
         if(newConfig.WorldConfiguration) {
-            Object.assign(ConfigurationProvider.#instance.WorldConfiguration, newConfig.WorldConfiguration);
+            Object.assign(this.#instance.WorldConfiguration, newConfig.WorldConfiguration);
             delete newConfig.WorldConfiguration;
         }
 
         if(newConfig.PlantConfiguration) {
-            Object.assign(ConfigurationProvider.#instance.PlantConfiguration, newConfig.PlantConfiguration);
+            Object.assign(this.#instance.PlantConfiguration, newConfig.PlantConfiguration);
             delete newConfig.PlantConfiguration;
         }
 
         if(newConfig.HerbivoreConfiguration) {
-            Object.assign(ConfigurationProvider.#instance.HerbivoreConfiguration, newConfig.HerbivoreConfiguration);
+            Object.assign(this.#instance.HerbivoreConfiguration, newConfig.HerbivoreConfiguration);
             delete newConfig.HerbivoreConfiguration;
         }
 
         if(newConfig.CarnivoreConfiguration) {
-            Object.assign(ConfigurationProvider.#instance.CarnivoreConfiguration, newConfig.CarnivoreConfiguration);
+            Object.assign(this.#instance.CarnivoreConfiguration, newConfig.CarnivoreConfiguration);
             delete newConfig.CarnivoreConfiguration;
         }
 
         if(newConfig.DecomposerConfiguration) {
-            Object.assign(ConfigurationProvider.#instance.DecomposerConfiguration, newConfig.DecomposerConfiguration);
+            Object.assign(this.#instance.DecomposerConfiguration, newConfig.DecomposerConfiguration);
             delete newConfig.DecomposerConfiguration;
         }
 
         if(newConfig.OmnivoreConfiguration) {
-            Object.assign(ConfigurationProvider.#instance.OmnivoreConfiguration, newConfig.OmnivoreConfiguration);
+            Object.assign(this.#instance.OmnivoreConfiguration, newConfig.OmnivoreConfiguration);
             delete newConfig.OmnivoreConfiguration;
         }
 
-        Object.assign(ConfigurationProvider.#instance, newConfig);
+        Object.assign(this.#instance, newConfig);
     }
 }
 
-export {Configuration, ConfigurationProvider, AgentConfiguration, MazeGenerators, Topologies, Colors, ReproductionTypes};
+export {Configuration, ConfigurationProvider, AgentConfiguration, MazeGenerators, Topologies, Colors, ReproductionTypes, WorldConfiguration, TerrainRatio, TerrainCellSizes};

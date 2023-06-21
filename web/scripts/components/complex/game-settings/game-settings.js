@@ -1,4 +1,8 @@
-import {Configuration, MazeGenerators, Topologies} from "../../../application/configuration/configuration.js";
+import {
+    Configuration,
+    TerrainRatio,
+    Topologies
+} from "../../../application/configuration/configuration.js";
 
 export class GAME_SETTINGS extends HTMLElement {
 
@@ -32,6 +36,8 @@ export class GAME_SETTINGS extends HTMLElement {
                     omnivoreSettings: this.#shadow.getElementById("omnivoreSettings"),
                     saveBtn: this.#shadow.getElementById("saveBtn"),
                     oneAgentTypeMode: this.#shadow.getElementById("oneAgentTypeMode"),
+                    terrainSettings: this.#shadow.getElementById('terrain-settings'),
+                    topologyTypes: this.#shadow.getElementById('topology-types'),
                 }
             })
             .catch((err) => {
@@ -68,16 +74,17 @@ export class GAME_SETTINGS extends HTMLElement {
             return;
         }
 
-        this.#template.then(_ => {
-            this.#shadow.getElementById('terrain-settings').value = config.WorldConfiguration.MazeType;
-            this.#shadow.getElementById(`topology-types`).data = Object.entries(Topologies).map(([name, value]) => ({ name, value }))
-            this.#shadow.getElementById(`topology-types`).value = config.WorldConfiguration.Topology;
-            this.#shadow.getElementById('cellSize').value = config.WorldConfiguration.CellSize;
+        if(!config) {
+            return
+        }
 
-            this.#controls.oneAgentTypeMode.data = {
-                name: "One agent type mode",
-                value: config.WorldConfiguration.OneAgentTypeMode,
-            };
+        this.#template.then(_ => {
+            this.#controls.terrainSettings.mazeType = config.WorldConfiguration.MazeType;
+            this.#controls.terrainSettings.size = config.WorldConfiguration.Ratio.CellSize;
+            this.#controls.topologyTypes.data = Object.entries(Topologies).map(([name, value]) => ({ name, value }))
+            this.#controls.topologyTypes.value = config.WorldConfiguration.Topology;
+
+            this.#controls.oneAgentTypeMode.value =  config.WorldConfiguration.OneAgentTypeMode
 
             this.#controls.plantSettings.config = config.PlantConfiguration
             this.#controls.herbivoreSettings.config = config.HerbivoreConfiguration
@@ -102,10 +109,10 @@ export class GAME_SETTINGS extends HTMLElement {
     get config() {
         const result = new Configuration({
             worldConfiguration: {
-                CellSize: this.#shadow.getElementById('cellSize').value,
-                MazeType: this.#shadow.querySelector('#terrain-settings').value,
-                Topology: this.#shadow.querySelector('#topology-types').value,
+                MazeType: this.#controls.terrainSettings.mazeType,
+                Topology: this.#controls.topologyTypes.value,
                 OneAgentTypeMode: this.#controls.oneAgentTypeMode.value,
+                Ratio: new TerrainRatio({CellSize: parseInt(this.#controls.terrainSettings.size)}),
             },
             plantConfiguration: this.#controls.plantSettings.config,
             herbivoreConfiguration: this.#controls.herbivoreSettings.config,
@@ -201,7 +208,9 @@ export class GAME_SETTINGS extends HTMLElement {
     }
 
     #onChangeHandler = (e) => {
-
+        if(e?.target?.id !== 'oneAgentTypeMode') {
+            return
+        }
         this.#shadow.querySelectorAll('#agents > [data-tab="true"]').forEach(tab => {
             tab.classList.remove('active');
         })

@@ -38,13 +38,14 @@ aside {
     flex-direction: column;
     gap: var(--gap);
     overflow-y: auto;
-    transition: translate 0.45s ease-in-out;
-
+    transition: all 0.45s ease-in-out;
+    box-shadow: 0px 0rem 0rem 0rem var(--primary-font-color);
 }
 
 aside.active {
     translate:0;
-    transition: translate 0.45s ease-in-out;
+    transition: all 0.45s ease-in-out;
+    box-shadow: 0px 0.1rem 1rem 0.1rem var(--primary-font-color);
 }
 
 app-tab-layout {

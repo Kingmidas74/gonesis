@@ -18,6 +18,8 @@ export class RADIO_GROUP_TOGGLE extends HTMLElement {
 
     #pendingData;
 
+    #data = [];
+
     constructor() {
         super();
 
@@ -27,6 +29,15 @@ export class RADIO_GROUP_TOGGLE extends HTMLElement {
         this.#template = this.initializeTemplateParser().catch((err) => {
             RADIO_GROUP_TOGGLE.logger.error(err);
         });
+    }
+
+    static get observedAttributes() { return ['title']; }
+    attributeChangedCallback(attr, oldVal, newVal) {
+        if (oldVal === newVal) return; // nothing to do
+        switch (attr) {
+            case 'title':
+                break;
+        }
     }
 
     async initializeTemplateParser() {
@@ -52,7 +63,9 @@ export class RADIO_GROUP_TOGGLE extends HTMLElement {
      * @param {Array<RadioGroupToggleItemData>} data
      */
     set data(data) {
+        this.#data = data;
         if (!this.isConnected) {
+            console.log('not connected', data)
             this.#pendingData = data;
             return;
         }
@@ -61,6 +74,7 @@ export class RADIO_GROUP_TOGGLE extends HTMLElement {
             .then((templateContent) => {
                 const template = RADIO_GROUP_TOGGLE.documentProvider.createElement("template");
                 template.innerHTML = RADIO_GROUP_TOGGLE.templateParser?.parse(templateContent, {
+                    title: this.getAttribute('data-title'),
                     items: data,
                 });
                 this.#shadow.appendChild(template.content.cloneNode(true));

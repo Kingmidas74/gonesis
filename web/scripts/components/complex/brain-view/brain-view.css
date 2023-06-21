@@ -1,12 +1,17 @@
 :host {
     display: flex;
-    gap: var(--gap);
-    flex-wrap: wrap;
+
+}
+canvas {
+    will-change: transform;
+    display: block;
+    border: 1px solid var(--primary-font-color);
+
+    flex:0 0 30%;
+    aspect-ratio: 1;
+    box-sizing: border-box;
 }
 
-:host > * {
-    flex: 1;
-}
 
 #matrix {
     --N:4;
@@ -41,7 +46,4 @@
 .square.active {
     background-color: var(--secondary-color);
     color: var(--secondary-font-color);
-}
-span {
-    flex: 3;
 }
