@@ -16,7 +16,11 @@ export class TAB_LAYOUT extends HTMLElement {
         this.#template = this.#initializeTemplateParser()
             .then((templateContent) => {
                 const template = TAB_LAYOUT.documentProvider.createElement("template");
-                template.innerHTML = TAB_LAYOUT.templateParser?.parse(templateContent);
+                template.innerHTML = TAB_LAYOUT.templateParser?.parse(templateContent, {
+                    renderGameSlot: this.getAttribute('data-game-slot-available') === 'true',
+                    renderBrainSlot: this.getAttribute('data-brain-slot-available') === 'true',
+                    renderChartSlot: this.getAttribute('data-chart-slot-available') === 'true',
+                });
                 this.#shadow.appendChild(template.content.cloneNode(true));
             })
             .then(this.#setup)
@@ -38,7 +42,9 @@ export class TAB_LAYOUT extends HTMLElement {
 
             clickedBtn.parentElement.classList.add('active');
 
-            Array.from(this.#shadow.querySelectorAll("main > section")).forEach(section => section.classList.remove('active'))
+            Array.from(this.#shadow.querySelectorAll("main > section")).forEach(section => {
+                section?.classList?.remove('active')
+            })
             this.#shadow.querySelector(`#${clickedBtn.getAttribute('data-target')}`)?.classList.add('active');
 
             this.dispatchEvent(new TAB_LAYOUT.windowProvider.CustomEvent('change', {

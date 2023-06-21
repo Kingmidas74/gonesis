@@ -1,16 +1,4 @@
-import {MazeGenerators} from "../../../application/configuration/configuration.js";
-
-export class TerrainSettingsData {
-    /**
-     *
-     * @param {String} name The item name.
-     * @param {String} value The item value.
-     */
-    constructor(name, value) {
-        this.name = name;
-        this.value = value;
-    }
-}
+import {MazeGenerators, TerrainRatio, TerrainCellSizes} from "../../../application/configuration/configuration.js";
 
 export class TERRAIN_SETTINGS extends HTMLElement {
 
@@ -18,8 +6,8 @@ export class TERRAIN_SETTINGS extends HTMLElement {
 
     #template;
 
-    #terrainTypesToggle
-    #mazeTypesToggle
+    #elements = {}
+
 
     #pendingData;
 
@@ -33,17 +21,27 @@ export class TERRAIN_SETTINGS extends HTMLElement {
                 const template = TERRAIN_SETTINGS.documentProvider.createElement("template");
                 template.innerHTML = TERRAIN_SETTINGS.templateParser?.parse(templateContent, {});
                 this.#shadow.appendChild(template.content.cloneNode(true));
-                this.#terrainTypesToggle = this.#shadow.querySelector("#terrain-types")
-                this.#mazeTypesToggle = this.#shadow.querySelector("#maze-types")
+
+                this.#elements = {
+                    terrainTypesToggle: this.#shadow.querySelector("#terrain-types"),
+                    mazeTypesToggle: this.#shadow.querySelector('#maze-types'),
+                    terrainRatioToggle: this.#shadow.querySelector('#terrain-ratio'),
+                }
+
                 const terrainTypes = Object.entries(MazeGenerators).map(([name, value]) => ({ name, value })).filter(({ value }) => [MazeGenerators.Border, MazeGenerators.Empty, MazeGenerators.Grid].includes(value));
                 terrainTypes.push({ name: "Maze", value: "maze" })
                 const mazeTypes = Object.entries(MazeGenerators).map(([name, value]) => ({ name, value })).filter(({ value }) => [MazeGenerators.AldousBroder, MazeGenerators.Binary, MazeGenerators.SideWinder].includes(value));
-                this.#terrainTypesToggle.addEventListener("change", (event) => {
-                    this.#mazeTypesToggle.classList.toggle("hidden", event?.detail?.value !== "maze");
+                this.#elements.terrainTypesToggle.addEventListener("change", (event) => {
+                    this.#elements.mazeTypesToggle.classList.toggle("hidden", event?.detail?.value !== "maze");
                 });
-                this.#terrainTypesToggle.data = terrainTypes;
-                this.#mazeTypesToggle.data = mazeTypes;
-                this.#mazeTypesToggle.value = MazeGenerators.AldousBroder;
+                this.#elements.terrainTypesToggle.data = terrainTypes;
+                this.#elements.mazeTypesToggle.data = mazeTypes;
+                this.#elements.mazeTypesToggle.value = MazeGenerators.AldousBroder;
+
+                this.#elements.terrainRatioToggle.data = Object.entries(TerrainCellSizes).map(([name, value]) => ({
+                        name: name,
+                        value: value
+                }));
 
             })
             .catch((err) => {
@@ -70,20 +68,30 @@ export class TERRAIN_SETTINGS extends HTMLElement {
         return templateContent;
     }
 
-    set value(value) {
+    set mazeType(value) {
         this.#template.then(_ => {
-            this.#mazeTypesToggle.classList.toggle("hidden", ![MazeGenerators.SideWinder, MazeGenerators.Binary, MazeGenerators.AldousBroder].includes(value));
-            this.#mazeTypesToggle.value = value;
-            this.#terrainTypesToggle.value = value;
+            this.#elements.mazeTypesToggle.classList.toggle("hidden", ![MazeGenerators.SideWinder, MazeGenerators.Binary, MazeGenerators.AldousBroder].includes(value));
+            this.#elements.mazeTypesToggle.value = value;
+            this.#elements.terrainTypesToggle.value = value;
         });
     }
 
-    get value() {
-        let terrainType = this.#terrainTypesToggle.value;
+    get mazeType() {
+        let terrainType = this.#elements.terrainTypesToggle.value;
         if (terrainType === "maze") {
-           terrainType = this.#mazeTypesToggle.value;
+            terrainType = this.#elements.mazeTypesToggle.value;
         }
         return terrainType;
+    }
+
+    set size(value) {
+        this.#template.then(_ => {
+            this.#elements.terrainRatioToggle.value = value;
+        });
+    }
+
+    get size() {
+        return this.#elements.terrainRatioToggle.value;
     }
 
     connectedCallback() {

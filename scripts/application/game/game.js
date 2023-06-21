@@ -1,5 +1,5 @@
-import {CellType} from "../engine/domain.js";
-import {Either} from "../monads/index.js";
+import {CellType} from "../domain/enum.js";
+import {Either} from "../monads/either.js";
 
 class Game {
 
@@ -25,11 +25,6 @@ class Game {
     #cells
 
     /**
-     * @type {Renderer} Size of cell
-     * @private
-     */
-    #renderer
-    /**
      * @type {WorldManager} Manager of the world
      * @private
      */
@@ -42,18 +37,21 @@ class Game {
     #cellFactory
 
     /**
+     * @type {World} The world data in object format.
+     * @private
+     */
+    #worldInstance
+
+    /**
      * Constructs a new instance of Game.
      * @param {CanvasWrapper} canvas - The canvas for drawing.
      * @param {WorldManager} worldManager - The manager of the world.
      * @param {ConfigurationProvider} configurationProvider - The configuration of the game.
      * @param {Window} windowProvider - The provider for window operations.
-     * @param {Renderer} renderer - The renderer for drawing.
      * @param {CellFactory} cellFactory - The factory for creating cells.
      */
-    constructor({canvas, worldManager, configurationProvider, windowProvider, renderer, cellFactory}) {
+    constructor({canvas, worldManager, configurationProvider, windowProvider, cellFactory}) {
         this.#windowProvider = windowProvider;
-
-        this.#renderer = renderer;
 
         this.#canvas = canvas;
         this.#configuration = configurationProvider;
@@ -64,10 +62,63 @@ class Game {
     }
 
     /**
+     * Initialize game's world
+     * @returns {Promise<Either<World, Error>>} void if world is initialized successfully, error otherwise
+     */
+    async init() {
+        return (await this.#worldManager.initWorld(this.#canvas))
+            .bind((world) => {
+                this.#worldInstance = world;
+                this.#cells = Array(world.cells.length);
+
+                return this.#fillCells(world);
+            })
+            .map(this.#drawCells)
+            .map(_ => this.#worldInstance);
+    }
+
+    /**
+     * Step game
+     * @returns {Promise<Either<World, Error>>}
+     */
+    async step() {
+        return this.#worldManager
+            .updateWorld()
+            .bind(this.#fillCells)
+            .map(world => {
+                this.#worldInstance = world;
+                return this.#drawCells(world);
+            })
+            .map(_ => this.#worldInstance);
+    }
+
+    /**
+     * @param {World} world - The world data in object format.
+     * @returns {number}
+     */
+    calculateGeneration(world) {
+        let maxGeneration = 0;
+        for (const a of this.#cells) {
+            if (a?.generation > maxGeneration) {
+                maxGeneration = a?.generation;
+            }
+        }
+        return maxGeneration;
+    }
+
+    /**
+     * @param {World} world - The world data in object format.
+     * @returns {Array<Agent>}
+     */
+    agents = (world) => {
+        return this.#worldInstance?.agents ?? []
+    }
+
+    /**
      * Fill cells array based on world data.
      * @param {World} worldInstance - The world data in object format.
      * @private
-     * @returns {Either<void, Error>} void if world is filled successfully, error otherwise
+     * @returns {Either<World, Error>} world if world is filled successfully, error otherwise
      */
     #fillCells = (worldInstance) => {
         const width = worldInstance.width;
@@ -77,72 +128,43 @@ class Game {
             return Either.exception(new Error("World is corrupted"));
         }
 
-        this.#configuration.getInstance().WorldConfiguration.Width = width;
-        this.#configuration.getInstance().WorldConfiguration.Height = height;
-
         for (let row = 0; row < height; row++) {
             for (let col = 0; col < width; col++) {
                 if (worldInstance.cells[row*width+col].cellType === CellType.WALL) {
                     this.#cells[row*width+col] = this.#cellFactory.createWall(col, row);
                 }
                 if (worldInstance.cells[row*width+col].cellType === CellType.EMPTY) {
-                    const energyPercent = (worldInstance.cells[row*width+col].energy / (worldInstance.height - 1));
-                    this.#cells[row*width+col] = this.#cellFactory.createEmpty(col, row, energyPercent);
+                    this.#cells[row*width+col] = this.#cellFactory.createEmpty(col, row);
                 }
             }
         }
 
         for (const agent of worldInstance.agents) {
-            this.#cells[agent.y*width+agent.x] = this.#cellFactory.createAgent(agent.x, agent.y, agent.energy, agent.agentType);
+            this.#cells[agent.y*width+agent.x] = this.#cellFactory.createAgent(agent);
         }
 
-        return Either.value()
+        return Either.value(worldInstance)
     }
 
-    /**
-     * Initialize game's world
-     * @returns {Promise<Either<null, Error>>} void if world is initialized successfully, error otherwise
-     */
-    async init() {
-        return (await this.#worldManager.initWorld(this.#canvas))
-            .map((world) => {
-                this.#cells = Array(world.cells.length);
-                return this.#fillCells(world);
-            })
-            .map(_ => {
-                this.#renderer.draw(this.#cells);
-                return Either.value();
-            })
-    }
-
-    /**
-     * Update game's world
-     * @returns {Either<boolean, Error>} true if game is not over, false otherwise
-     * @private
-     */
-    async #update() {
-        return this.#worldManager.updateWorld().map(world => {
-            if(this.#configuration.getInstance().DrawRequired)
-            {
-                this.#fillCells(world);
-            }
-            return this.#livingAgentsCount(world) > 0
-        });
+    #drawCells = () => {
+        for (const cell of this.#cells) {
+            cell.draw();
+        }
+        this.#canvas.render()
     }
 
     /**
      * @param {World} world - The world data in object format.
      * @return {number} count of living agents
-     * @private
      */
-    #livingAgentsCount(world) {
-        let count = 0;
-        for (const a of world.agents) {
-            if (a.energy > 0) {
-                count++;
-            }
-        }
-        return count;
+    livingAgentsCount(world) {
+        return world.agents.filter(a => a.energy > 0).length;
+    }
+
+    isOnlyOneAgentTypeAlive(world) {
+        const firstLivingAgentType = world.agents.find(a => a.energy > 0)?.agentType;
+        const everyAgentIsSameType = world.agents.every(a => a.agentType === firstLivingAgentType);
+        return everyAgentIsSameType && firstLivingAgentType !== undefined;
     }
 
     /**
@@ -158,17 +180,6 @@ class Game {
             }
         }
         return count;
-    }
-
-    /**
-     * Step game
-     * @returns {Either<boolean, Error>}
-     */
-    async step() {
-        return (await this.#update()).map((shouldContinue) => {
-            this.#renderer.draw(this.#cells);
-            return shouldContinue;
-        });
     }
 }
 

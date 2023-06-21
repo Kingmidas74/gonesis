@@ -3,24 +3,36 @@
     max-width: 100vw;
     overflow: hidden;
     display: flex;
-    flex-flow: column;
+    flex-flow: row;
+    flex-wrap: nowrap;
     align-items: stretch;
     justify-content: stretch;
     flex:1;
     padding: 0 var(--gap);
+    gap:var(--gap);
     height: 100%;
+    box-sizing: border-box;
 }
 
 .main > section {
-    display:none;
-    overflow: hidden;
+    position: absolute;
+    width: calc(100% - 2 * var(--gap));
     height: 100%;
-    flex: 1;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s, opacity 0.5s linear;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .main > section.active {
-    display: block;
+    visibility: visible;
+    opacity: 1;
 }
+
+
+
+
 
 footer {
     padding: .5rem;

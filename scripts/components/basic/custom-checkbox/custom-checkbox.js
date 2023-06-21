@@ -48,29 +48,6 @@ export class CUSTOM_CHECKBOX extends HTMLElement {
         return templateContent;
     }
 
-    /**
-     * @param {CheckboxData} data
-     */
-    set data(data) {
-        if (!this.isConnected) {
-            this.#pendingData = data;
-            return;
-        }
-
-        this.#template
-            .then((templateContent) => {
-                const template = CUSTOM_CHECKBOX.documentProvider.createElement("template");
-                template.innerHTML = CUSTOM_CHECKBOX.templateParser?.parse(templateContent, {
-                    name: data.name,
-                    value: data.value,
-                });
-                this.#shadow.appendChild(template.content.cloneNode(true));
-            })
-            .catch((err) => {
-                CUSTOM_CHECKBOX.logger.error(err);
-            });
-    }
-
     #changeEventHandler = (e) => {
         if (e.target.type !== 'checkbox') {
             return;
@@ -82,13 +59,18 @@ export class CUSTOM_CHECKBOX extends HTMLElement {
     }
 
     set value(value) {
-        this.#template.then(_ => {
-            const target = this.#shadow.querySelector(`input`);
-            if (!target) {
-                return;
-            }
-            target.checked = true
-        });
+        this.#template
+            .then((templateContent) => {
+                const template = CUSTOM_CHECKBOX.documentProvider.createElement("template");
+                template.innerHTML = CUSTOM_CHECKBOX.templateParser?.parse(templateContent, {
+                    title: this.getAttribute('data-title'),
+                    value: value,
+                });
+                this.#shadow.appendChild(template.content.cloneNode(true));
+            })
+            .catch((err) => {
+                CUSTOM_CHECKBOX.logger.error(err);
+            });
     }
 
     get value() {

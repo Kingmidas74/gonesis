@@ -1,5 +1,6 @@
 import {Application} from "../../../application/application.js";
-import {Either} from "../../../application/monads/index.js";
+import {Configuration, TerrainCellSizes} from "../../../application/configuration/configuration.js";
+import {Either} from "../../../application/monads/either.js";
 
 export class GAME_VIEW extends HTMLElement {
 
@@ -16,12 +17,15 @@ export class GAME_VIEW extends HTMLElement {
      */
     #application;
 
+    #width = 0;
+    #height = 0;
+
     constructor() {
         super();
 
         this.#shadow = this.attachShadow({ mode: "open" });
 
-        this.#template = this.initializeTemplateParser()
+        this.#template = this.#initializeTemplateParser()
             .then((templateContent) => {
                 const template = GAME_VIEW.documentProvider.createElement("template");
                 template.innerHTML = GAME_VIEW.templateParser?.parse(templateContent);
@@ -32,9 +36,43 @@ export class GAME_VIEW extends HTMLElement {
             .catch((err) => {
                 GAME_VIEW.logger.error(err);
             });
+        GAME_VIEW.windowProvider.addEventListener('resize', this.#windowResizeListener);
     }
 
-    async initializeTemplateParser() {
+    #windowResizeListener = async () => {
+        const { width, height } = this.#adjustCanvasSize();
+        this.#application.configurationProvider.getInstance().WorldConfiguration.Ratio.Width = width;
+        this.#application.configurationProvider.getInstance().WorldConfiguration.Ratio.Height = height;
+        await this.generateGame();
+    }
+
+    #adjustCanvasSize = () => {
+
+        const gcd = (a, b) => (b === 0 ? a : gcd(b, a % b));
+
+        const lcm = (a, b) => (a * b) / gcd(a, b);
+
+        const lcmOfArray = (arr) => arr.reduce((a, b) => lcm(a, b));
+
+        const lsmRatio = lcmOfArray(Object.values(TerrainCellSizes));
+
+        const canvas = this.#shadow.querySelector('canvas');
+        if (!canvas) return;
+        const parentWidth = this.offsetWidth;
+        const widthToSet = parentWidth - (parentWidth % lsmRatio);
+        canvas.style.width = `${widthToSet}px`;
+
+        const parentHeight = this.offsetHeight;
+        const heightToSet = parentHeight - (parentHeight % lsmRatio);
+        canvas.style.height = `${heightToSet}px`;
+
+        this.#width = widthToSet;
+        this.#height = heightToSet;
+
+        return { width: widthToSet, height: heightToSet};
+    }
+
+    async #initializeTemplateParser() {
         const [cssResponse, htmlResponse] = await Promise.all([
             GAME_VIEW.windowProvider.fetch(
                 new URL(GAME_VIEW.stylePath, new URL(import.meta.url)).href
@@ -56,8 +94,11 @@ export class GAME_VIEW extends HTMLElement {
     #setup = () => {
         return new Promise((resolve, reject) => {
             GAME_VIEW.windowProvider.setTimeout(async () => {
+                const {width, height} = this.#adjustCanvasSize();
                 this.#application = new Application();
-                await this.#application.configure(window, document, this.#shadow.querySelector("canvas"), "engine.wasm")
+                await this.#application.configure(GAME_VIEW.windowProvider, GAME_VIEW.documentProvider, this.#shadow.querySelector("canvas"), "engine.wasm")
+                this.#application.configurationProvider.getInstance().WorldConfiguration.Ratio.Width = width;
+                this.#application.configurationProvider.getInstance().WorldConfiguration.Ratio.Height = height;
                 resolve();
             }, 1)
         })
@@ -91,13 +132,16 @@ export class GAME_VIEW extends HTMLElement {
      */
     async playGame() {
         if(!this.#isGenerated) {
-            this.generateGame().catch((error) => {
-                this.dispatchEvent(new GAME_VIEW.windowProvider.CustomEvent('over', {
-                    detail: { value: Either.exception(error) }
-                }))
-            })
+            (await this.generateGame())
+                .orElse(error => {
+                    this.dispatchEvent(new GAME_VIEW.windowProvider.CustomEvent('over', {
+                        detail: { value: error }
+                    }))
+                })
         }
+
         this.#application.configurationProvider.getInstance().Playable = true;
+        this.dispatchEvent(new GAME_VIEW.windowProvider.CustomEvent('start'))
         const desiredFPS = 10;
         const timeStep = 1000 / desiredFPS;
         let lastTime = GAME_VIEW.windowProvider.performance.now();
@@ -110,25 +154,27 @@ export class GAME_VIEW extends HTMLElement {
                     return;
                 }
                 lastTime = currentTime - (deltaTime % timeStep);
-                const stepResult = await this.#application.game.step();
-                stepResult.map(shouldContinue => {
-                    if(!shouldContinue) {
-                        this.#application.configurationProvider.getInstance().Playable = false;
-                        this.dispatchEvent(new GAME_VIEW.windowProvider.CustomEvent('over', {
-                            detail: { value: stepResult }
-                        }))
-                    }
-
-                }).orElse(err => {
-                    this.dispatchEvent(new GAME_VIEW.windowProvider.CustomEvent('over', {
-                        detail: { value: stepResult }
-                    }))
-                });
+                (await this.#application.game.step())
+                    .map(worldInstance => {
+                        if(this.#application.game.livingAgentsCount(worldInstance) === 0 ||
+                            (!this.#application.configurationProvider.getInstance().WorldConfiguration.OneAgentTypeMode &&
+                                this.#application.game.isOnlyOneAgentTypeAlive(worldInstance))) {
+                            this.dispatchEvent(new GAME_VIEW.windowProvider.CustomEvent('finish', {
+                                detail: {value: worldInstance}
+                            }))
+                            this.pauseGame();
+                        } else {
+                            this.dispatchEvent(new GAME_VIEW.windowProvider.CustomEvent('update', {
+                                detail: {value: worldInstance}
+                            }))
+                        }
+                        return worldInstance;
+                    }).orElse(_ => {
+                        this.pauseGame();
+                    })
             }
-
             GAME_VIEW.windowProvider.requestAnimationFrame(loop);
         }
-
         GAME_VIEW.windowProvider.requestAnimationFrame(loop);
     }
 
@@ -142,13 +188,17 @@ export class GAME_VIEW extends HTMLElement {
 
     /**
      * Generates a new world.
-     * @returns {Promise<Either<null, Error>>}
+     * @returns {Promise<Either<World, Error>>}
      */
     generateGame = async () => {
         this.pauseGame();
+        const {width, height} = this.#adjustCanvasSize()
+        this.#application.configurationProvider.getInstance().WorldConfiguration.Ratio.Width = width / this.#application.configurationProvider.getInstance().WorldConfiguration.Ratio.CellSize;
+        this.#application.configurationProvider.getInstance().WorldConfiguration.Ratio.Height = height / this.#application.configurationProvider.getInstance().WorldConfiguration.Ratio.CellSize;
         return (await this.#application.game.init())
-            .map(() => {
+            .map((world) => {
                 this.#isGenerated = true;
+                return world;
             })
     }
 
@@ -167,5 +217,7 @@ export class GAME_VIEW extends HTMLElement {
         return this.#template.then(() => this.#application.configurationProvider.getInstance());
     }
 
-
+    disconnectedCallback() {
+        GAME_VIEW.windowProvider.removeEventListener('resize', this.#windowResizeListener);
+    }
 }

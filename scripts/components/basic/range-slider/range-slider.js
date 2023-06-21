@@ -46,30 +46,30 @@ export class RANGE_SLIDER extends HTMLElement {
 
         this.#template
             .then((templateContent) => {
-                const template = RANGE_SLIDER.documentProvider.createElement("template");
-                template.innerHTML = RANGE_SLIDER.templateParser?.parse(templateContent, {
-                    min: value?.min || 0,
-                    max: value?.max || 1000,
-                    value: value?.value || 0,
-                    title: value?.title || 'Value'
-                });
-                this.#shadow.appendChild(template.content.cloneNode(true));
+                    const template = RANGE_SLIDER.documentProvider.createElement("template");
+                    template.innerHTML = RANGE_SLIDER.templateParser?.parse(templateContent, {
+                        min: value?.min || 0,
+                        max: value?.max || 1000,
+                        value: value?.value || 0,
+                        title: this.getAttribute('data-title') || 'Value',
+                        step: value?.step || 1,
+                    });
+                    this.#shadow.appendChild(template.content.cloneNode(true));
 
-                this.#shadow.querySelector("input").value = value?.value || 0;
-                this.#shadow.querySelector(".value").textContent = value?.value || 0;
+                    this.#shadow.querySelector("input").value = value?.value || 0;
+                    this.#shadow.querySelector(".value").textContent = value?.value || 0;
 
-                this.#shadow.addEventListener('change', (e) => {
-                    if (e.target.type !== 'range') {
-                        return;
-                    }
+                    this.#shadow.addEventListener('change', (e) => {
+                        if (e.target.type !== 'range') {
+                            return;
+                        }
 
-                    this.#shadow.querySelector(".value").textContent = e.target.value;
+                        this.#shadow.querySelector(".value").textContent = e.target.value;
 
-                    this.dispatchEvent(new RANGE_SLIDER.windowProvider.CustomEvent('change', {
-                        detail: { value: e.target.value }
-                    }))
-                });
-
+                        this.dispatchEvent(new RANGE_SLIDER.windowProvider.CustomEvent('change', {
+                            detail: {value: parseInt(e.target.value)}
+                        }))
+                    });
             })
             .catch((err) => {
                 RANGE_SLIDER.logger.error(err);

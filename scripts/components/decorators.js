@@ -7,6 +7,7 @@ export function Component({
                               documentProvider = document,
                               logger = console,
                               templateParser = new TemplateParserService(),
+                              json = JSON,
                           }) {
     return (OriginalClass) => {
         OriginalClass.stylePath = stylePath;
@@ -15,6 +16,7 @@ export function Component({
         OriginalClass.documentProvider = documentProvider;
         OriginalClass.logger = logger;
         OriginalClass.templateParser = templateParser;
+        OriginalClass.jsonProvider = json;
         return OriginalClass;
     };
 }

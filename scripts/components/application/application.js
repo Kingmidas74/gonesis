@@ -17,7 +17,10 @@ export class APPLICATION extends HTMLElement {
             .then((templateContent) => {
                 const template = APPLICATION.documentProvider.createElement("template");
                 template.innerHTML = APPLICATION.templateParser?.parse(templateContent, {
-                    title: 'Gonesis',
+                    title: this.getAttribute('data-title'),
+                    brainSlotAvailable: false,
+                    chartSlotAvailable: true,
+                    gameSlotAvailable: true,
                 });
                 this.#shadow.appendChild(template.content.cloneNode(true));
             })
@@ -31,6 +34,8 @@ export class APPLICATION extends HTMLElement {
         this.#elements = {
             primaryToolbar: this.#shadow.querySelector('app-primary-toolbar'),
             gameView: this.#shadow.querySelector('app-game-view'),
+            brainView: this.#shadow.querySelector('app-brain-view'),
+            chartView: this.#shadow.querySelector('app-chart-view'),
             gameSettings: this.#shadow.querySelector('app-game-settings'),
             tabLayout: this.#shadow.querySelector('app-tab-layout'),
             aside: this.#shadow.querySelector('aside'),
@@ -51,7 +56,6 @@ export class APPLICATION extends HTMLElement {
         });
         this.#elements.primaryToolbar.addEventListener("generate", async () => {
             (await this.#elements.gameView.generateGame()).map((_) => {
-                APPLICATION.logger.log("Game generated");
             }).orElse((err) => {
                 this.showToast(err.message)
             });
@@ -63,8 +67,26 @@ export class APPLICATION extends HTMLElement {
             this.#toggleSideBar(!this.#elements.aside.classList.contains("active"));
         });
         this.#elements.tabLayout.addEventListener("change", (e) => {
-            this.#elements.primaryToolbar.classList.toggle("hidden", e.detail.value !== "game");
+          //  this.#elements.primaryToolbar.classList.toggle("hidden", e.detail.value !== "game");
         })
+
+        this.#elements.gameView.addEventListener('start', (e) => {
+            this.#elements.chartView.clean();
+        })
+
+        this.#elements.gameView.addEventListener('update', (e) => {
+            this.#elements.chartView.updateData(e.detail.value);
+        })
+
+        this.#elements.gameView.addEventListener('over', (e) => {
+            this.togglePlayPause(false);
+        })
+
+        this.#elements.gameView.addEventListener('finish', (e) => {
+            this.togglePlayPause(false);
+        })
+
+
         this.#elements.gameSettings.addEventListener("update", this.#handleSettingsUpdate);
 
         this.#shadow.addEventListener('click', (event) => {
@@ -75,8 +97,8 @@ export class APPLICATION extends HTMLElement {
             }
         });
 
-        this.#elements.gameSettings.config = await this.#elements.gameView.config
-
+        this.#elements.gameSettings.config = await this.#elements.gameView?.config;
+        this.#elements.chartView.config = await this.#elements.gameView?.config;
     }
 
     togglePlayPause(isPlaying) {
@@ -86,9 +108,13 @@ export class APPLICATION extends HTMLElement {
     #handleSettingsUpdate = async (e) => {
         this.#elements.gameView.pauseGame();
         await this.#elements.gameView.updateSettings(e.detail.value);
-        (await this.#elements.gameView.generateGame()).orElse((err) => {
+        this.#elements.aside.classList.remove('active');
+        this.#toggleSideBar(false);
+        this.#elements.gameView.generateGame().then(res => res.orElse(err => {
             this.showToast(err.message)
-        });
+        })).catch(err => {
+            this.showToast(err.message)
+        })
     }
 
     /**

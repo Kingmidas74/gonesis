@@ -6,16 +6,17 @@ export class TemplateParserService {
      * @param {String} template raw string with template literals
      * @param {Object} data Any object with values for template
      */
-    parse(template, data= {}) {
+    parse(template, data = {}) {
         const regexFor =
             /{%\s*for\s+(\w+)\s+in\s+(\w+)\s*%}([\s\S]+?){%\s*endfor\s*%}/gi;
-//        const regexIf = /{%\s*if\s+(\w+)\s*%}([\s\S]+?){%\s*endif\s*%}/gi;
-        const regexIf = /{%\s*if\s+(\w+)\s*%}([\s\S]+?){% else %}([\s\S]+?){%\s*endif\s*%}/gi;
+        //const regexIf = /{%\s*if\s+(\w+)\s*%}([\s\S]*?){% else %}([\s\S]*?){%\s*endif\s*%}/gi;
+        const regexIf = /{%\s*if\s+(\w+)\s*%}([\s\S]*?)(?:{% else %}([\s\S]*?))?\s*{%\s*endif\s*%}/gi;
+
         let match;
         let output = template;
 
         // handle 'for' directive
-        while ((match = regexFor.exec(template)) !== null) {
+        for (match of output.matchAll(regexFor)) {
             const loopVariable = match[1];
             const loopArray = data[match[2]];
             const loopBlock = match[3];
@@ -30,7 +31,7 @@ export class TemplateParserService {
         }
 
         // handle 'if' directive
-        while ((match = regexIf.exec(output)) !== null) {
+        for (match of output.matchAll(regexIf)) {
             const condition = match[1];
             const ifBlock = match[2];
             const elseBlock = match[3] || "";

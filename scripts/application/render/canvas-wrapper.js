@@ -1,3 +1,6 @@
+/**
+ * @interface
+ */
 class CanvasWrapper {
     constructor() {
     }
@@ -10,7 +13,7 @@ class CanvasWrapper {
      * @param color
      */
     drawCircle(x, y, radius, color) {
-
+        throw new Error("Not implemented");
     }
 
     /**
@@ -22,32 +25,40 @@ class CanvasWrapper {
      * @param {string} color - The color of the rectangle in RGBA format.
      */
     drawRect(x, y, width, height, color) {
+        throw new Error("Not implemented");
     }
 
     /**
      * Gets the width of the canvas element.
-     * @returns {Promise<number>} The width of the canvas.
+     * @returns {number} The width of the canvas.
      */
     get width() {
-        return Promise.resolve(0);
+        throw new Error("Not implemented");
     }
 
     /**
      * Gets the height of the canvas element.
-     * @returns {Promise<number>} The height of the canvas.
+     * @returns {number} The height of the canvas.
      */
     get height() {
-        return Promise.resolve(0);
+        throw new Error("Not implemented");
     }
 
     /**
      * Renders the buffer canvas to the main canvas.
      */
     render() {
-
+        throw new Error("Not implemented");
     }
 
-    init() {}
+    /**
+     * Initialize canvas
+     * @param {number} width
+     * @param {number} height
+     */
+    init(width, height) {
+        throw new Error("Not implemented");
+    }
 }
 
 
@@ -91,31 +102,35 @@ class CanvasWrapper2D extends CanvasWrapper{
             this.#bufferCtx = this.#bufferCanvas.getContext("2d");
             this.ctx = this.#canvas.getContext("2d");
             this.#canvas.style.transform = 'translate3d(0, 0, 0)';
-            this.init();
         }
     }
 
-    init = () => {
-        this.#canvas.width = this.#canvas.offsetWidth;
-        this.#canvas.height = this.#canvas.offsetHeight;
+    /**
+     * Initialize canvas
+     * @param {number} width
+     * @param {number} height
+     */
+    init = (width, height) => {
+        this.#canvas.width = width;
+        this.#canvas.height = height;
         this.#bufferCanvas.width = this.#canvas.width;
         this.#bufferCanvas.height = this.#canvas.height;
     }
 
     /**
      * Gets the width of the canvas element.
-     * @returns {Promise<number>} The width of the canvas.
+     * @returns {number} The width of the canvas.
      */
     get width() {
-        return Promise.resolve(this.#canvas.width);
+        return this.#canvas.width;
     }
 
     /**
      * Gets the height of the canvas element.
-     * @returns {Promise<number>} The height of the canvas.
+     * @returns {number} The height of the canvas.
      */
     get height() {
-        return Promise.resolve(this.#canvas.height);
+        return this.#canvas.height;
     }
 
     /**

@@ -1,68 +1,60 @@
-import {Wall, Agent, Empty } from "../render/index.js";
-import {AgentType} from "../engine/domain.js";
+import {WallDrawStrategy, Cell, AgentDrawStrategy, EmptyDrawStrategy} from "../render/index.js";
+import {AgentType, CellType} from "../domain/enum.js";
 
 class CellFactory {
+
     /**
      * @type {ConfigurationProvider} The configuration of the game.
      */
     #configuration;
 
-    #cellColors;
+    #drawingStrategies = new Map();
 
     /**
      * Constructs a new instance of CellFactory.
      * @param {ConfigurationProvider} configurationProvider
+     * @param {CanvasWrapper} canvasWrapper
      */
-    constructor(configurationProvider) {
+    constructor(configurationProvider, canvasWrapper) {
         this.#configuration = configurationProvider;
+        this.#drawingStrategies.set(CellType.WALL, new WallDrawStrategy(canvasWrapper, this.#configuration));
+        this.#drawingStrategies.set(CellType.EMPTY, new EmptyDrawStrategy(canvasWrapper, this.#configuration));
+
+        this.#drawingStrategies.set(AgentType.PLANT, new AgentDrawStrategy(canvasWrapper, this.#configuration));
+        this.#drawingStrategies.set(AgentType.HERBIVORE, new AgentDrawStrategy(canvasWrapper, this.#configuration));
+        this.#drawingStrategies.set(AgentType.CARNIVORE, new AgentDrawStrategy(canvasWrapper, this.#configuration));
+        this.#drawingStrategies.set(AgentType.OMNIVORE, new AgentDrawStrategy(canvasWrapper, this.#configuration));
+        this.#drawingStrategies.set(AgentType.DECOMPOSER, new AgentDrawStrategy(canvasWrapper, this.#configuration));
     }
 
-    #calculateColor(initialColor, light) {
-        // Extract HSL values using regular expressions
-        return initialColor
-        let [_, hue, saturation, lightness, alpha] = initialColor.match(/hsla\((\d+),\s*([\d.]+)%,\s*([\d.]+)%,\s*([\d.]+)\)/i);
-        lightness = Math.min(Number(lightness) + light, 100);
-        return `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
-    }
-
-    #changeAlpha(initialColor, newAlpha) {
-        return initialColor
-        // Extract HSLA values using regular expressions
-        let [_, hue, saturation, lightness] = initialColor.match(/hsla\((\d+),\s*([\d.]+)%,\s*([\d.]+)%,\s*([\d.]+)\)/i);
-        return `hsla(${hue}, ${saturation}%, ${lightness}%, ${newAlpha})`;
-    }
-
+    /**
+     * Creates a wall cell.
+     * @param {number} x - The x coordinate of the cell.
+     * @param {number} y - The y coordinate of the cell.
+     * @returns {import('../render/cell.js').Cell}
+     */
     createWall(x, y) {
-        return new Wall(x, y, this.#configuration.getInstance().WorldConfiguration.MazeColor);
+        return new Cell(x, y, this.#drawingStrategies.get(CellType.WALL));
     }
 
-    createEmpty(x, y, energyPercent) {
-        return new Empty(x, y, "hsla(0, 100%, 100%, 1.0)");
+    /**
+     * Creates an empty cell.
+     * @param {number} x - The x coordinate of the cell.
+     * @param {number} y - The y coordinate of the cell.
+     * @returns {import('../render/cell.js').Cell}
+     */
+    createEmpty(x, y) {
+        return new Cell(x, y, this.#drawingStrategies.get(CellType.EMPTY));
     }
 
-    createAgent(x, y, energy, agentType) {
-        let agentColor = null;
-        switch (agentType) {
-            case AgentType.CARNIVORE:
-                agentColor = this.#configuration.getInstance().CarnivoreConfiguration.Color
-                break;
-            case AgentType.HERBIVORE:
-                agentColor = this.#configuration.getInstance().HerbivoreConfiguration.Color
-                break;
-            case AgentType.DECOMPOSER:
-                agentColor = this.#configuration.getInstance().DecomposerConfiguration.Color
-                break;
-            case AgentType.PLANT:
-                agentColor = this.#configuration.getInstance().PlantConfiguration.Color
-                break;
-            case AgentType.OMNIVORE:
-                agentColor = this.#configuration.getInstance().OmnivoreConfiguration.Color
-                break;
-            default:
-                throw "Unknown agent type: " + agentType;
-        }
-
-        return new Agent(x, y, agentColor, energy);
+    /**
+     * Creates an agent.
+     * @param {Agent} agent
+     * @returns {import('../render/cell.js').Cell}
+     */
+    createAgent(agent) {
+        let drawingStrategies = this.#drawingStrategies.get(agent.agentType).withAgent(agent);
+        return new Cell(agent.x, agent.y, drawingStrategies);
     }
 }
 
