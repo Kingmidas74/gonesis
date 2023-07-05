@@ -40,6 +40,37 @@ func (t NeumannTopology) GetNeighbors(x, y int) []contracts.Coords {
 	return result
 }
 
+func (t NeumannTopology) CanMoveTo(currentCell, targetCell contracts.Cell, terra contracts.Terrain) bool {
+	deltaX := targetCell.X() - currentCell.X()
+	deltaY := targetCell.Y() - currentCell.Y()
+
+	if deltaX > 1 {
+		deltaX = deltaX - terra.Width()
+	}
+	if deltaX < -1 {
+		deltaX = deltaX + terra.Width()
+	}
+	if deltaY > 1 {
+		deltaY = deltaY - terra.Height()
+	}
+	if deltaY < -1 {
+		deltaY = deltaY + terra.Height()
+	}
+
+	switch {
+	case deltaX == 1 && deltaY == 0: // Moving East
+		return !currentCell.EastWall()
+	case deltaX == -1 && deltaY == 0: // Moving West
+		return !currentCell.WestWall()
+	case deltaY == 1 && deltaX == 0: // Moving South
+		return !currentCell.SouthWall()
+	case deltaY == -1 && deltaX == 0: // Moving North
+		return !currentCell.NorthWall()
+	default:
+		return false // Target cell is the current cell
+	}
+}
+
 func (t NeumannTopology) getCoordsMultiples() map[NeumannDirection][2]int {
 	multiples := make(map[NeumannDirection][2]int)
 	multiples[NeumannDirectionUp] = [2]int{0, -1}

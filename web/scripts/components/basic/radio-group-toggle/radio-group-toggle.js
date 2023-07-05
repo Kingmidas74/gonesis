@@ -65,7 +65,6 @@ export class RADIO_GROUP_TOGGLE extends HTMLElement {
     set data(data) {
         this.#data = data;
         if (!this.isConnected) {
-            console.log('not connected', data)
             this.#pendingData = data;
             return;
         }

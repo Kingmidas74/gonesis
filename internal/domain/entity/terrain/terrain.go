@@ -2,7 +2,6 @@ package terrain
 
 import (
 	"github.com/kingmidas74/gonesis-engine/internal/contracts"
-	"github.com/kingmidas74/gonesis-engine/internal/domain/entity"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
 	"github.com/kingmidas74/gonesis-engine/internal/util"
 )
@@ -17,18 +16,13 @@ func NewTerrain[T contracts.Topology](maze contracts.Maze) contracts.Terrain {
 	terra := &Terrain[T]{
 		width:  maze.Width(),
 		height: maze.Height(),
-		cells:  make([]contracts.Cell, maze.Width()*maze.Height()),
+		cells:  maze.Content(),
 	}
 
 	for y := 0; y < maze.Height(); y++ {
 		for x := 0; x < maze.Width(); x++ {
 			cellIndex := terra.getCellIndex(x, y)
-			if maze.Content()[cellIndex] {
-				terra.cells[cellIndex] = entity.NewCell(x, y, enum.CellTypeEmpty)
-				terra.cells[cellIndex].IncreaseEnergy(maze.Height() - y)
-			} else {
-				terra.cells[cellIndex] = entity.NewCell(x, y, enum.CellTypeWall)
-			}
+			terra.cells[cellIndex].IncreaseEnergy(maze.Height() - y)
 		}
 	}
 
@@ -44,9 +38,9 @@ func (t *Terrain[T]) transformY(y int) int {
 }
 
 func (t *Terrain[T]) getCellIndex(x, y int) int {
-	x = t.transformX(x)
-	y = t.transformY(y)
-	return y*t.width + x
+	tx := t.transformX(x)
+	ty := t.transformY(y)
+	return ty*t.width + tx
 }
 
 func (t *Terrain[T]) Cell(x, y int) contracts.Cell {
@@ -68,6 +62,10 @@ func (t *Terrain[T]) Height() int {
 func (t *Terrain[T]) GetNeighbor(x, y int, direction int) contracts.Cell {
 	coords := (*new(T)).GetNeighbor(x, y, direction)
 	return t.Cell(coords.X(), coords.Y())
+}
+
+func (t *Terrain[T]) CanMoveTo(currentCell, targetCell contracts.Cell) bool {
+	return targetCell.IsEmpty() && (*new(T)).CanMoveTo(currentCell, targetCell, t)
 }
 
 func (t *Terrain[T]) GetNeighbors(x, y int) []contracts.Cell {

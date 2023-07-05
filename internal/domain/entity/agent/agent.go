@@ -1,12 +1,13 @@
 package agent
 
 import (
-	"github.com/kingmidas74/gonesis-engine/internal/domain/configuration"
-	"github.com/kingmidas74/gonesis-engine/internal/domain/entity"
-	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
 	"math/rand"
 
+	"github.com/google/uuid"
+
 	"github.com/kingmidas74/gonesis-engine/internal/contracts"
+	"github.com/kingmidas74/gonesis-engine/internal/domain/configuration"
+	"github.com/kingmidas74/gonesis-engine/internal/domain/entity"
 )
 
 type Agent struct {
@@ -15,6 +16,7 @@ type Agent struct {
 
 	entity.Coords
 
+	id         string
 	energy     int
 	generation int
 
@@ -27,6 +29,7 @@ func NewAgent(nature contracts.AgentNature) contracts.Agent {
 		AgentNature: nature,
 		energy:      nature.InitialEnergy(),
 		generation:  0,
+		id:          uuid.New().String(),
 	}
 }
 
@@ -36,7 +39,12 @@ func NewAgentWithBrain(nature contracts.AgentNature, brain contracts.Brain, gene
 		AgentNature: nature,
 		energy:      nature.InitialEnergy(),
 		generation:  generation,
+		id:          uuid.New().String(),
 	}
+}
+
+func (a *Agent) ID() string {
+	return a.id
 }
 
 func (a *Agent) Energy() int {
@@ -48,7 +56,7 @@ func (a *Agent) IsAlive() bool {
 }
 
 // TODO: replace findCommandPredicate with []contracts.Command
-func (a *Agent) NextDay(terra contracts.Terrain, findCommandPredicate func(int) contracts.Command, config *configuration.Configuration) error {
+func (a *Agent) NextDay(terra contracts.Terrain, findCommandPredicate func(int) contracts.Command) error {
 	for step := 0; a.IsAlive() && step < a.MaxEnergy(); step++ {
 		commandIdentifier := a.Command(nil)
 		command := findCommandPredicate(commandIdentifier)
@@ -56,7 +64,7 @@ func (a *Agent) NextDay(terra contracts.Terrain, findCommandPredicate func(int) 
 			a.IncreaseAddress(commandIdentifier)
 			continue
 		}
-		delta := command.Handle(a, terra)
+		delta := command.Handle(a, terra) //DOUBLE BECAUSE OF NOT COPY?
 		a.IncreaseAddress(delta)
 		if command.IsInterrupt() {
 			break
@@ -86,6 +94,7 @@ func (a *Agent) CreateChildren(terra contracts.Terrain, config *configuration.Co
 	emptyCells := make([]contracts.Cell, 0, len(neighbors))
 	agents := make([]contracts.Agent, 0, len(neighbors)+1)
 	agents = append(agents, a)
+
 	for _, cell := range neighbors {
 		if cell.IsEmpty() {
 			emptyCells = append(emptyCells, cell)
@@ -95,11 +104,9 @@ func (a *Agent) CreateChildren(terra contracts.Terrain, config *configuration.Co
 			agents = append(agents, cell.Agent())
 			continue
 		}
-		if cell.CellType() == enum.CellTypeWall {
-			continue
-		}
 		panic("unknown cell type")
 	}
+
 	if len(emptyCells) == 0 {
 		return nil
 	}
@@ -110,19 +117,32 @@ func (a *Agent) CreateChildren(terra contracts.Terrain, config *configuration.Co
 	}
 
 	placedChildren := make([]contracts.Agent, 0, len(children))
-
-	for i := 0; i < len(children) && len(emptyCells) > 0; i++ {
+	i := 0
+	for len(children) > 0 && len(emptyCells) > 0 {
 		randIndex := rand.Intn(len(emptyCells))
 		targetCell := emptyCells[randIndex]
-		if targetCell.IsEmpty() {
-			targetCell.SetAgent(children[i])
-			placedChildren = append(placedChildren, children[i])
-		} else {
-			children[i].Kill(terra)
-			children = append(children[:i], children[i+1:]...)
+
+		if !terra.CanMoveTo(terra.Cell(a.X(), a.Y()), targetCell) {
+			i++                     // incrementing i
+			if i == len(children) { // check if i is not out of bounds
+				break
+			}
+			continue
 		}
 
-		emptyCells = append(emptyCells[:randIndex], emptyCells[randIndex+1:]...)
+		targetCell.SetAgent(children[i])
+		placedChildren = append(placedChildren, children[i])
+
+		// Efficiently remove the item at randIndex by replacing it with the last item and shrinking the slice.
+		emptyCells[randIndex] = emptyCells[len(emptyCells)-1]
+		emptyCells = emptyCells[:len(emptyCells)-1]
+
+		// Remove the child from the children slice
+		children[i] = children[len(children)-1]
+		children = children[:len(children)-1]
+		if i == len(children) { // check if i is not out of bounds
+			break
+		}
 	}
 
 	return placedChildren

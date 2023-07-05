@@ -20,7 +20,7 @@ func (c *MoveCommand) Handle(agent contracts.Agent, terra contracts.Terrain) int
 	case enum.AgentTypeHerbivore:
 		return c.handleHerbivore(agent, terra)
 	case enum.AgentTypeCarnivore:
-		return c.handleCarnivore(agent, terra)
+		return c.handleHerbivore(agent, terra)
 	case enum.AgentTypePlant:
 		return c.handlePlant(agent, terra)
 	case enum.AgentTypeOmnivore:
@@ -38,31 +38,11 @@ func (c *MoveCommand) handleHerbivore(agent contracts.Agent, terra contracts.Ter
 	direction := agent.Command(&whereAddress)
 	targetCell := terra.GetNeighbor(agent.X(), agent.Y(), direction)
 	if targetCell == nil {
-		return 0
+		panic("target cell is nil")
 	}
 
 	originalTargetCellType := targetCell.CellType()
-	if targetCell.IsEmpty() {
-		terra.Cell(agent.X(), agent.Y()).RemoveAgent()
-		targetCell.SetAgent(agent)
-	}
-
-	localDelta := originalTargetCellType.Value() + 1
-	deltaAddress := agent.Address() + localDelta
-	delta := agent.Command(&deltaAddress)
-	return delta
-}
-
-func (c *MoveCommand) handleCarnivore(agent contracts.Agent, terra contracts.Terrain) int {
-	whereAddress := agent.Address() + 1
-	direction := agent.Command(&whereAddress)
-	targetCell := terra.GetNeighbor(agent.X(), agent.Y(), direction)
-	if targetCell == nil {
-		return 0
-	}
-
-	originalTargetCellType := targetCell.CellType()
-	if targetCell.IsEmpty() {
+	if terra.CanMoveTo(terra.Cell(agent.X(), agent.Y()), targetCell) {
 		terra.Cell(agent.X(), agent.Y()).RemoveAgent()
 		targetCell.SetAgent(agent)
 	}

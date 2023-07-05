@@ -2,30 +2,34 @@ package mapper
 
 import (
 	"github.com/kingmidas74/gonesis-engine/internal/contracts"
-	"github.com/kingmidas74/gonesis-engine/internal/handler/webasm/model"
+	"github.com/kingmidas74/gonesis-engine/internal/mapper/model"
 )
 
 func NewWorld(world contracts.World) model.World {
 	cells := make([]model.Cell, len(world.Cells()))
 	for i, cell := range world.Cells() {
 		cells[i] = model.Cell{
-			CellType: cell.CellType().String(),
-			Energy:   cell.Energy(),
+			CellType:  cell.CellType().String(),
+			Energy:    cell.Energy(),
+			X:         cell.X(),
+			Y:         cell.Y(),
+			NorthWall: cell.NorthWall(),
+			SouthWall: cell.SouthWall(),
+			WestWall:  cell.WestWall(),
+			EastWall:  cell.EastWall(),
 		}
-	}
 
-	agents := make([]model.Agent, len(world.Agents()))
-	for i, agent := range world.Agents() {
-		agents[i] = model.Agent{
-			X:          agent.X(),
-			Y:          agent.Y(),
-			Energy:     agent.Energy(),
-			AgentType:  agent.AgentType().String(),
-			Generation: agent.Generation(),
-
-			Brain: model.Brain{
-				Commands: agent.Commands(),
-			},
+		if cell.IsAgent() {
+			cells[i].Agent = &model.Agent{
+				X:          cell.Agent().X(),
+				Y:          cell.Agent().Y(),
+				Energy:     cell.Agent().Energy(),
+				AgentType:  cell.Agent().AgentType().String(),
+				Generation: cell.Agent().Generation(),
+				Brain: model.Brain{
+					Commands: cell.Agent().Commands(),
+				},
+			}
 		}
 	}
 
@@ -33,7 +37,6 @@ func NewWorld(world contracts.World) model.World {
 		Width:      world.Width(),
 		Height:     world.Height(),
 		Cells:      cells,
-		Agents:     agents,
 		CurrentDay: world.CurrentDay(),
 	}
 }

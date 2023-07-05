@@ -1,4 +1,4 @@
-import {MazeGenerators, TerrainRatio, TerrainCellSizes} from "../../../application/configuration/configuration.js";
+import {MazeGenerators, TerrainRatio, TerrainCellSizes} from "../../../configuration/configuration.js";
 
 export class TERRAIN_SETTINGS extends HTMLElement {
 
@@ -70,9 +70,10 @@ export class TERRAIN_SETTINGS extends HTMLElement {
 
     set mazeType(value) {
         this.#template.then(_ => {
-            this.#elements.mazeTypesToggle.classList.toggle("hidden", ![MazeGenerators.SideWinder, MazeGenerators.Binary, MazeGenerators.AldousBroder].includes(value));
+            const isMaze = [MazeGenerators.SideWinder, MazeGenerators.Binary, MazeGenerators.AldousBroder].includes(value);
+            this.#elements.mazeTypesToggle.classList.toggle("hidden", !isMaze);
             this.#elements.mazeTypesToggle.value = value;
-            this.#elements.terrainTypesToggle.value = value;
+            this.#elements.terrainTypesToggle.value = isMaze ? "maze" : value;
         });
     }
 

@@ -1,15 +1,17 @@
 /**
- * A class implementing a JSON interface
+ * An interface implementing a JSON interface
+ *
+ * @interface
  * @see {JSON}
  */
-class JSONProvider {
+class IJSONProvider {
     /**
      * Parses a JSON string, constructing the JavaScript value or object described by the string.
      * @param {string} text A valid JSON string.
      * @returns {any} The JavaScript value or object described by the string.
      */
     parse(text) {
-        return JSON.parse(text);
+        throw new Error("Not implemented");
     }
 
     /**
@@ -18,8 +20,8 @@ class JSONProvider {
      * @returns {string} A JSON string representing the given value.
      */
     stringify(value) {
-        return JSON.stringify(value);
+        throw new Error("Not implemented");
     }
 }
 
-export { JSONProvider }
+export { IJSONProvider }

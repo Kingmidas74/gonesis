@@ -1,4 +1,4 @@
-import {AgentType} from "../../../application/domain/enum.js";
+import {AgentType} from "../../../domain/enum.js";
 
 export class CHART_VIEW extends HTMLElement {
 
@@ -108,7 +108,7 @@ export class CHART_VIEW extends HTMLElement {
         if(worldInstance.currentDay % 1 !== 0) {
             return;
         }
-        let newCounts = worldInstance.agents.reduce((counts, agent) => {
+        let newCounts = worldInstance.cells.filter(c => c.agent).map(c => c.agent).reduce((counts, agent) => {
             if (!counts[agent.agentType]) {
                 counts[agent.agentType] = 0;
             }
@@ -126,7 +126,7 @@ export class CHART_VIEW extends HTMLElement {
         }
 
         this.#myChart.data.labels.push(worldInstance.currentDay);
-        this.#myChart.update();
+        this.#myChart?.update();
     }
 
     connectedCallback() {
@@ -154,7 +154,7 @@ export class CHART_VIEW extends HTMLElement {
         for(let i = 0; i < this.#datasets.length; i++) {
             this.#datasets[i].data = [];
         }
-        this.#myChart.update();
+        this.#myChart?.update();
     }
 
     #getAgentTypeColor = (agentType) => {

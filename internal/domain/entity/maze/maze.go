@@ -5,10 +5,10 @@ import "github.com/kingmidas74/gonesis-engine/internal/contracts"
 type Maze struct {
 	width   int
 	height  int
-	content []bool
+	content []contracts.Cell
 }
 
-func newMaze(width, height int, content []bool) contracts.Maze {
+func newMaze(width, height int, content []contracts.Cell) contracts.Maze {
 	return &Maze{
 		width:   width,
 		height:  height,
@@ -24,6 +24,6 @@ func (m Maze) Height() int {
 	return m.height
 }
 
-func (m Maze) Content() []bool {
+func (m Maze) Content() []contracts.Cell {
 	return m.content
 }

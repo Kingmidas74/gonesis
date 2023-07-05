@@ -28,6 +28,10 @@ class CanvasWrapper {
         throw new Error("Not implemented");
     }
 
+    drawLine(xStart, yStart, xEnd, yEnd, color) {
+        throw new Error("Not implemented");
+    }
+
     /**
      * Gets the width of the canvas element.
      * @returns {number} The width of the canvas.
@@ -56,7 +60,7 @@ class CanvasWrapper {
      * @param {number} width
      * @param {number} height
      */
-    init(width, height) {
+    init = (width, height) => {
         throw new Error("Not implemented");
     }
 }
@@ -90,15 +94,16 @@ class CanvasWrapper2D extends CanvasWrapper{
     /**
      *
      * @param {HTMLCanvasElement} canvasElement
+     * @param {Document} documentProvider
      */
-    constructor(canvasElement) {
+    constructor(canvasElement, documentProvider) {
         super();
         this.#canvas = canvasElement;
         this.#previousFrame = new Map();
 
         if(this.#canvas.getContext)
         {
-            this.#bufferCanvas = document.createElement("canvas");
+            this.#bufferCanvas = documentProvider.createElement("canvas");
             this.#bufferCtx = this.#bufferCanvas.getContext("2d");
             this.ctx = this.#canvas.getContext("2d");
             this.#canvas.style.transform = 'translate3d(0, 0, 0)';
@@ -153,10 +158,18 @@ class CanvasWrapper2D extends CanvasWrapper{
         let key = `${x},${y}`;
 
         //if(!this.#previousFrame.has(key) || this.#previousFrame.get(key) !== color) {
-            this.#bufferCtx.fillStyle = color;
-            this.#bufferCtx.fillRect(x, y, width, height);
-            this.#previousFrame.set(key, color);
+        this.#bufferCtx.fillStyle = color;
+        this.#bufferCtx.fillRect(x, y, width, height);
+        this.#previousFrame.set(key, color);
         //}
+    }
+
+    drawLine(xStart, yStart, xEnd, yEnd, color) {
+        this.#bufferCtx.beginPath();
+        this.#bufferCtx.strokeStyle = color;
+        this.#bufferCtx.moveTo(xStart, yStart);
+        this.#bufferCtx.lineTo(xEnd, yEnd);
+        this.#bufferCtx.stroke();
     }
 
     /**
@@ -169,11 +182,11 @@ class CanvasWrapper2D extends CanvasWrapper{
     drawCircle(x, y, radius, color) {
         let key = `${x},${y}`;
         //if(!this.#previousFrame.has(key) || this.#previousFrame.get(key) !== color) {
-            this.#bufferCtx.beginPath();
-            this.#bufferCtx.arc(x + radius, y + radius, radius, 0, 2 * Math.PI, false);
-            this.#bufferCtx.fillStyle = color;
-            this.#bufferCtx.fill();
-            this.#previousFrame.set(key, color);
+        this.#bufferCtx.beginPath();
+        this.#bufferCtx.arc(x + radius, y + radius, radius, 0, 2 * Math.PI, false);
+        this.#bufferCtx.fillStyle = color;
+        this.#bufferCtx.fill();
+        this.#previousFrame.set(key, color);
         //}
     }
 }
@@ -371,7 +384,7 @@ class CanvasWrapperWebGL extends CanvasWrapper{
     drawCircle(x, y, radius, color) {
         let key = `${x},${y}`;
         if(!this.#previousFrame.has(key) || this.#previousFrame.get(key) !== color) {
-           this.drawRect(x, y, radius * 2, radius * 2, color);
+            this.drawRect(x, y, radius * 2, radius * 2, color);
 
             this.#previousFrame.set(key, color);
         }

@@ -1,29 +1,27 @@
 package generator
 
 import (
+	"github.com/kingmidas74/gonesis-engine/internal/contracts"
+	"github.com/kingmidas74/gonesis-engine/internal/domain/entity"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/errors"
 )
 
 type GridGenerator struct {
 }
 
-func (g GridGenerator) Generate(width, height int) (maze []bool, err error) {
+func (g GridGenerator) Generate(width, height int) (maze []contracts.Cell, err error) {
 	if width <= 0 || height <= 0 {
-		return make([]bool, 0), errors.ErrMazeSizeIncorrect
+		return make([]contracts.Cell, 0), errors.ErrMazeSizeIncorrect
 	}
 
-	maze = make([]bool, width*height)
-	for i := range maze {
-		maze[i] = false
-	}
+	maze = make([]contracts.Cell, width*height)
 
-	for y := 0; y < height; y = y + 2 {
-		for x := 0; x < width; x = x + 2 {
-			maze[y*width+x] = true
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			c := entity.NewCell(x, y)
+			maze[y*width+x] = c
 		}
 	}
-
-	maze[0] = true
 
 	return maze, nil
 }

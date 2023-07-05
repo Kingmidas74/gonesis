@@ -3,7 +3,6 @@ package maze
 import (
 	"github.com/kingmidas74/gonesis-engine/internal/contracts"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/errors"
-	"math/rand"
 )
 
 type Builder[G contracts.MazeGenerator] struct {
@@ -52,20 +51,20 @@ func (b *Builder[G]) Build() (contracts.Maze, error) {
 	if b.width*b.height < b.requiredEmptyCells {
 		return nil, errors.ErrFreeRequirementIncorrect
 	}
-
-	filledCells := make([]int, 0)
-	for i, c := range maze {
-		if !c {
-			filledCells = append(filledCells, i)
+	/*
+		filledCells := make([]int, 0)
+		for i, c := range maze {
+			if !c.IsEmpty() {
+				filledCells = append(filledCells, i)
+			}
 		}
-	}
 
-	for emptyCellCount := b.width*b.height - len(filledCells); emptyCellCount < b.requiredEmptyCells; emptyCellCount++ {
-		randIndex := rand.Intn(len(filledCells))
-		cellIndex := filledCells[rand.Intn(len(filledCells))]
-		filledCells = append(filledCells[:randIndex], filledCells[randIndex+1:]...)
-		maze[cellIndex] = true
-	}
-
+		for emptyCellCount := b.width*b.height - len(filledCells); emptyCellCount < b.requiredEmptyCells; emptyCellCount++ {
+			randIndex := rand.Intn(len(filledCells))
+			cellIndex := filledCells[rand.Intn(len(filledCells))]
+			filledCells = append(filledCells[:randIndex], filledCells[randIndex+1:]...)
+			maze[cellIndex] = true
+		}
+	*/
 	return newMaze(b.width, b.height, maze), nil
 }

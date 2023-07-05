@@ -10,8 +10,6 @@ type World struct {
 	contracts.Terrain
 	commands   []contracts.Command
 	currentDay int
-
-	_agents []contracts.Agent
 }
 
 func New(terrain contracts.Terrain, commands []contracts.Command) *World {
@@ -19,18 +17,7 @@ func New(terrain contracts.Terrain, commands []contracts.Command) *World {
 		Terrain:    terrain,
 		commands:   commands,
 		currentDay: 0,
-		_agents:    make([]contracts.Agent, 0, terrain.Width()*terrain.Height()),
 	}
-}
-
-func (w *World) Agents() []contracts.Agent {
-	w._agents = w._agents[:0]
-	for _, cell := range w.Cells() {
-		if cell.IsAgent() {
-			w._agents = append(w._agents, cell.Agent())
-		}
-	}
-	return w._agents
 }
 
 func (w *World) Width() int {
@@ -49,7 +36,13 @@ func (w *World) Command(commandIdentifier int) contracts.Command {
 }
 
 func (w *World) Next(config *configuration.Configuration) error {
-	return w.runDay(config)
+	if err := w.runDay(config); err != nil {
+		panic(err.Error())
+		return err
+	}
+
+	w.currentDay++
+	return nil
 }
 
 func (w *World) CurrentDay() int {
@@ -57,59 +50,43 @@ func (w *World) CurrentDay() int {
 }
 
 func (w *World) runDay(config *configuration.Configuration) error {
-	errors := make(chan error)
-	done := make(chan bool)
-
-	//var wg sync.WaitGroup
+	handledAgents := make(map[string]struct{})
+	livingAgentsCount := 0
 
 	for _, cell := range w.Cells() {
 		if !cell.IsAgent() {
 			continue
 		}
-		//wg.Add(1)
 
-		func(cell contracts.Cell) {
-			//defer wg.Done()
+		agent := cell.Agent()
+		if _, ok := handledAgents[agent.ID()]; ok {
+			continue
+		}
 
-			agent := cell.Agent()
+		if err := agent.NextDay(w, w.Command); err != nil {
+			return err
+		}
 
-			if err := agent.NextDay(w, w.Command, config); err != nil {
-				errors <- err
-				return
-			}
+		if !agent.IsAlive() {
+			cell.RemoveAgent()
+			continue
+		}
 
-			if !agent.IsAlive() {
-				cell.RemoveAgent()
-				return
-			}
+		children := agent.CreateChildren(w, config)
+		for _, child := range children {
+			handledAgents[child.ID()] = struct{}{}
+		}
+		handledAgents[agent.ID()] = struct{}{}
 
-			_ = agent.CreateChildren(w, config)
-
-		}(cell)
+		livingAgentsCount++
 	}
 
-	func() {
-		//wg.Wait()
-		close(done)
-	}()
-
-	select {
-	case <-done:
-		livingAgentsCount := 0
-		for _, cell := range w.Cells() {
-			if cell.IsAgent() && cell.Agent().IsAlive() {
-				livingAgentsCount++
-			}
-		}
-		if int(livingAgentsCount) > len(w.Cells()) {
-			panic(fmt.Errorf("too many agents: current %v, max %v", livingAgentsCount, w.Width()*w.Height()))
-			return fmt.Errorf("too many agents: current %v, max %v", livingAgentsCount, w.Width()*w.Height())
-		}
-		w.currentDay++
-		return nil
-	case err := <-errors:
-		return err
+	if livingAgentsCount > len(w.Cells()) {
+		return fmt.Errorf("too many agents: current %v, max %v", livingAgentsCount, w.Width()*w.Height())
 	}
+
+	return nil
+
 	/*livingAgentsCount := 0
 	for _, cell := range w.Cells() {
 		if !cell.IsAgent() {

@@ -23,6 +23,7 @@ const Colors = Object.freeze({
     BROWN:  "hsla(30, 60%, 60%, 1.0)",
     PURPLE: "hsla(279, 60%, 60%, 1.0)",
     DARK:   "hsla(0, 0%, 0%, 1.0)",
+    WHITE:  "hsla(0, 0%, 100%, 1.0)",
     YELLOW: "hsla(60, 0%, 100%, 1.0)"
 });
 
@@ -54,8 +55,10 @@ class WorldConfiguration {
                     MazeType = MazeGenerators.Empty,
                     Topology = Topologies.Moore,
                     MazeColor = Colors.DARK,
+                    EmptyColor = Colors.WHITE,
                     OneAgentTypeMode = false,
                     Ratio = new TerrainRatio(),
+                    Seed = (Date.now() * 1000000).toString()
                 } = {}) {
         /**
          * The ratio of the world.
@@ -86,11 +89,24 @@ class WorldConfiguration {
         this.MazeColor = MazeColor;
 
         /**
+         * The color of the empty cells.
+         * @type {string}
+         */
+        this.EmptyColor = EmptyColor;
+
+        /**
          * Whether to use only one agent type.
          * @type {boolean}
          * @default false
          */
         this.OneAgentTypeMode = OneAgentTypeMode;
+
+        /**
+         * The seed for the random number generator.
+         * @type {string}
+         * @default (Date.now() * 1000000).toString()
+         */
+        this.Seed = Seed;
     }
 }
 
@@ -103,7 +119,7 @@ class AgentConfiguration {
                     InitialEnergy = 20,
                     ReproductionEnergyCost = 20,
                     ReproductionChance = .5,
-                    MutationChance = .5,
+                    MutationChance = 1,
                     BrainVolume = 64,
                 } = {}) {
         /**
@@ -171,7 +187,7 @@ class Configuration {
      * Creates an instance of Settings.
      */
     constructor({
-                    isPlayable = true,
+                    isPlayable = false,
                     drawRequired = true,
                     worldConfiguration = new WorldConfiguration(),
                     plantConfiguration = new AgentConfiguration({

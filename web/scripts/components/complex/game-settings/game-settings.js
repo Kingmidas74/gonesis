@@ -2,7 +2,7 @@ import {
     Configuration,
     TerrainRatio,
     Topologies
-} from "../../../application/configuration/configuration.js";
+} from '../../../configuration/configuration.js';
 
 export class GAME_SETTINGS extends HTMLElement {
 
@@ -19,25 +19,26 @@ export class GAME_SETTINGS extends HTMLElement {
     constructor() {
         super();
 
-        this.#shadow = this.attachShadow({ mode: "open" });
+        this.#shadow = this.attachShadow({ mode: 'open' });
         this.#shadow.addEventListener('click', this.#onClickHandler);
         this.#shadow.addEventListener('change', this.#onChangeHandler);
 
-        this.#template = this.initializeTemplateParser()
+        this.#template = this.#initializeTemplateParser()
             .then((templateContent) => {
-                const template = GAME_SETTINGS.documentProvider.createElement("template");
+                const template = GAME_SETTINGS.documentProvider.createElement('template');
                 template.innerHTML = GAME_SETTINGS.templateParser?.parse(templateContent);
                 this.#shadow.appendChild(template.content.cloneNode(true));
 
                 this.#controls = {
-                    plantSettings: this.#shadow.getElementById("plantSettings"),
-                    herbivoreSettings: this.#shadow.getElementById("herbivoreSettings"),
-                    carnivoreSettings: this.#shadow.getElementById("carnivoreSettings"),
-                    omnivoreSettings: this.#shadow.getElementById("omnivoreSettings"),
-                    saveBtn: this.#shadow.getElementById("saveBtn"),
-                    oneAgentTypeMode: this.#shadow.getElementById("oneAgentTypeMode"),
+                    plantSettings: this.#shadow.getElementById('plantSettings'),
+                    herbivoreSettings: this.#shadow.getElementById('herbivoreSettings'),
+                    carnivoreSettings: this.#shadow.getElementById('carnivoreSettings'),
+                    omnivoreSettings: this.#shadow.getElementById('omnivoreSettings'),
+                    saveBtn: this.#shadow.getElementById('saveBtn'),
+                    oneAgentTypeMode: this.#shadow.getElementById('oneAgentTypeMode'),
                     terrainSettings: this.#shadow.getElementById('terrain-settings'),
                     topologyTypes: this.#shadow.getElementById('topology-types'),
+                    seedGenerator: this.#shadow.getElementById('seed-generator'),
                 }
             })
             .catch((err) => {
@@ -45,7 +46,7 @@ export class GAME_SETTINGS extends HTMLElement {
             });
     }
 
-    async initializeTemplateParser() {
+    async #initializeTemplateParser() {
         const [cssResponse, htmlResponse] = await Promise.all([
             GAME_SETTINGS.windowProvider.fetch(
                 new URL(GAME_SETTINGS.stylePath, new URL(import.meta.url)).href
@@ -58,7 +59,7 @@ export class GAME_SETTINGS extends HTMLElement {
             cssResponse.text(),
             htmlResponse.text(),
         ]);
-        const style = GAME_SETTINGS.documentProvider.createElement("style");
+        const style = GAME_SETTINGS.documentProvider.createElement('style');
         style.textContent = styleContent;
         this.#shadow.append(style);
         return templateContent;
@@ -68,12 +69,11 @@ export class GAME_SETTINGS extends HTMLElement {
      * Set config data
      * @param {Configuration} config
      */
-    set config(config) {
+    set configuration(config) {
         if (!this.isConnected) {
             this.#pendingData = config;
             return;
         }
-
         if(!config) {
             return
         }
@@ -106,13 +106,14 @@ export class GAME_SETTINGS extends HTMLElement {
      * Get config data
      * @returns {Configuration}
      */
-    get config() {
+    get configuration() {
         const result = new Configuration({
             worldConfiguration: {
                 MazeType: this.#controls.terrainSettings.mazeType,
                 Topology: this.#controls.topologyTypes.value,
                 OneAgentTypeMode: this.#controls.oneAgentTypeMode.value,
                 Ratio: new TerrainRatio({CellSize: parseInt(this.#controls.terrainSettings.size)}),
+                Seed: this.#controls.seedGenerator.value,
             },
             plantConfiguration: this.#controls.plantSettings.config,
             herbivoreConfiguration: this.#controls.herbivoreSettings.config,

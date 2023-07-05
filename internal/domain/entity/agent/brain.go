@@ -4,6 +4,7 @@ import (
 	"github.com/kingmidas74/gonesis-engine/internal/contracts"
 	"github.com/kingmidas74/gonesis-engine/internal/util"
 	"math"
+	"math/rand"
 )
 
 type Brain struct {
@@ -39,7 +40,7 @@ func (b *Brain) IncreaseAddress(delta int) {
 func (b *Brain) SetAddress(address int) {
 	if len(b.subroutineStack) > 0 {
 		sub := b.subroutineStack[len(b.subroutineStack)-1]
-		b.address = b.mod(address, sub.count) + sub.start
+		b.address = b.mod(b.mod(address, sub.count)+sub.start, len(b.commands))
 		return
 	}
 	b.address = b.mod(address, len(b.commands))
@@ -68,7 +69,7 @@ func (b *Brain) mod(address, length int) int {
 func generateDefaultCommandsSequence(sequenceLength int) []int {
 	commands := make([]int, sequenceLength)
 	for i := 0; i < sequenceLength; i++ {
-		commands[i] = 0
+		commands[i] = rand.Intn(sequenceLength)
 	}
 	return commands
 }

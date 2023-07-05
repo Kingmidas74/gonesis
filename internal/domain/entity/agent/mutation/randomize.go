@@ -16,7 +16,9 @@ func (b RandomizeMutation) MutationType() enum.MutationType {
 }
 
 func (b RandomizeMutation) Mutate(subject contracts.Agent) (contracts.Brain, error) {
-	if rand.Float64() < subject.MutationChance() {
+	rf := rand.Float64()
+
+	if rf >= subject.MutationChance() {
 		return subject, nil
 	}
 
@@ -25,8 +27,9 @@ func (b RandomizeMutation) Mutate(subject contracts.Agent) (contracts.Brain, err
 		return subject, nil
 	}
 
-	randCommandIndex := rand.Intn(len(commands))
+	randCommandIndex := subject.Address() // rand.Intn(len(commands))
 	randNewCommand := rand.Intn(len(commands))
 	commands[randCommandIndex] = randNewCommand
+
 	return agent.NewBrainWithCommands(commands), nil
 }

@@ -11,4 +11,5 @@ type Terrain interface {
 	Height() int
 	SetCellType(x, y int, cell enum.CellType)
 	EmptyCells() []Cell
+	CanMoveTo(currentCell, targetCell Cell) bool
 }

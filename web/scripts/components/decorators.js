@@ -17,6 +17,13 @@ export function Component({
         OriginalClass.logger = logger;
         OriginalClass.templateParser = templateParser;
         OriginalClass.jsonProvider = json;
+        OriginalClass.debounce = (func, wait) => {
+            let timeout;
+            return (...args) => {
+                OriginalClass.windowProvider.clearTimeout(timeout);
+                timeout = OriginalClass.windowProvider.setTimeout(() => func.apply(this, args), wait);
+            };
+        }
         return OriginalClass;
     };
 }

@@ -1,4 +1,4 @@
-import {Colors, AgentConfiguration, Topologies} from "../../../application/configuration/configuration.js";
+import {Colors, AgentConfiguration, Topologies} from "../../../configuration/configuration.js";
 
 export class AGENT_SETTINGS extends HTMLElement {
 

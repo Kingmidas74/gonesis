@@ -3,6 +3,8 @@ package configuration
 import (
 	"encoding/json"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
+	"strconv"
+	"time"
 )
 
 const (
@@ -17,9 +19,16 @@ const (
 	defaultMutationChance         = .1
 )
 
+type Ratio struct {
+	Width  int `json:"Width"`
+	Height int `json:"Height"`
+}
+
 type WorldConfiguration struct {
 	MazeType enum.MazeType     `json:"MazeType"`
 	Topology enum.TopologyType `json:"Topology"`
+	Seed     string            `json:"Seed"`
+	Ratio    Ratio             `json:"Ratio"`
 }
 
 type AgentConfiguration struct {
@@ -48,6 +57,7 @@ func NewConfiguration() *Configuration {
 		WorldConfiguration: WorldConfiguration{
 			MazeType: enum.MazeTypeEmpty,
 			Topology: enum.TopologyTypeNeumann,
+			Seed:     strconv.FormatInt(time.Now().UnixNano(), 10),
 		},
 		PlantConfiguration: AgentConfiguration{
 			MaxEnergy:              defaultMaxEnergy,

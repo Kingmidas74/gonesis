@@ -3,5 +3,5 @@ package contracts
 type Maze interface {
 	Width() int
 	Height() int
-	Content() []bool
+	Content() []Cell
 }

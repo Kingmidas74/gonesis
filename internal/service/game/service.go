@@ -21,7 +21,7 @@ import (
 	"github.com/kingmidas74/gonesis-engine/internal/domain/entity/world"
 )
 
-func (s *Service) InitWorld(width, height int) (contracts.World, error) {
+func (s *Service) InitWorld() (contracts.World, error) {
 	mazeBuilder, err := s.getMazeBuilder()
 	if err != nil {
 		return nil, err
@@ -33,8 +33,8 @@ func (s *Service) InitWorld(width, height int) (contracts.World, error) {
 		s.config.DecomposerConfiguration.InitialCount +
 		s.config.OmnivoreConfiguration.InitialCount
 
-	m, err := mazeBuilder.SetWidth(width).
-		SetHeight(height).
+	m, err := mazeBuilder.SetWidth(s.config.WorldConfiguration.Ratio.Width).
+		SetHeight(s.config.WorldConfiguration.Ratio.Height).
 		SetRequiredEmptyCells(requiredEmptyCells).
 		Build()
 	if err != nil {
@@ -243,8 +243,8 @@ func (s *Service) Next() (contracts.World, error) {
 func (s *Service) getAvailableCommands() []contracts.Command {
 	return []contracts.Command{
 		commands.NewPhotosynthesisCommand(),
-		commands.NewMoveCommand(),
 		commands.NewEatCommand(),
+		commands.NewMoveCommand(),
 		commands.NewCallSubroutineCommand(),
 		commands.NewEndSubroutineCommand(),
 	}

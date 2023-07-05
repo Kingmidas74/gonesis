@@ -1,7 +1,3 @@
-import {Engine} from "../../../application/engine/engine.js";
-import {AgentConfiguration, WorldConfiguration, Configuration} from "../../../application/configuration/configuration.js";
-import {Application} from "../../../application/application.js";
-
 export class BRAIN_VIEW extends HTMLElement {
 
     #shadow;

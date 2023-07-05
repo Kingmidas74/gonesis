@@ -1,37 +1,44 @@
 package generator
 
 import (
+	"github.com/kingmidas74/gonesis-engine/internal/contracts"
+	"github.com/kingmidas74/gonesis-engine/internal/domain/entity"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/errors"
 	"github.com/kingmidas74/gonesis-engine/internal/util"
 )
 
-type BinaryGenerator struct {
-	gridGenerator GridGenerator
-}
+type BinaryGenerator struct{}
 
-func (g BinaryGenerator) Generate(width, height int) (maze []bool, err error) {
+func (g BinaryGenerator) Generate(width, height int) (maze []contracts.Cell, err error) {
 	if width <= 0 || height <= 0 {
-		return make([]bool, 0), errors.ErrMazeSizeIncorrect
+		return nil, errors.ErrMazeSizeIncorrect
 	}
 
-	maze, err = g.gridGenerator.Generate(width, height)
-	if err != nil {
-		return nil, err
+	// Initialize maze with all walls present
+	maze = make([]contracts.Cell, width*height)
+	for i := range maze {
+		maze[i] = entity.NewCell(0, 0)
 	}
 
-	for y := 0; y < height; y = y + 2 {
-		for x := 0; x < width; x = x + 2 {
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			maze[y*width+x].SetX(x)
+			maze[y*width+x].SetY(y)
 
 			if y == 0 {
 				if x+1 < width {
-					maze[y*width+x+1] = true
+					maze[y*width+x].SetEastWall(false)
+					maze[y*width+x+1].SetWestWall(false)
+					continue
 				}
-				continue
 			}
 
 			direction := util.RandomIntBetween(0, 1)
 			if direction == 0 {
-				maze[(y-1)*width+x] = true
+				if y > 0 {
+					maze[y*width+x].SetNorthWall(false)
+					maze[(y-1)*width+x].SetSouthWall(false)
+				}
 				continue
 			}
 
@@ -39,11 +46,10 @@ func (g BinaryGenerator) Generate(width, height int) (maze []bool, err error) {
 				continue
 			}
 
-			maze[y*width+x+1] = true
+			maze[y*width+x].SetEastWall(false)
+			maze[y*width+x+1].SetWestWall(false)
 		}
 	}
-
-	maze[0] = true
 
 	return maze, nil
 }

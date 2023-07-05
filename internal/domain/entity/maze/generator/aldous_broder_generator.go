@@ -1,70 +1,69 @@
 package generator
 
 import (
+	"github.com/kingmidas74/gonesis-engine/internal/contracts"
+	"github.com/kingmidas74/gonesis-engine/internal/domain/entity"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/errors"
 	"github.com/kingmidas74/gonesis-engine/internal/util"
 )
 
-type AldousBroderGenerator struct {
-	gridGenerator GridGenerator
-}
+type AldousBroderGenerator struct{}
 
-func (g AldousBroderGenerator) Generate(width, height int) (maze []bool, err error) {
+func (g AldousBroderGenerator) Generate(width, height int) (maze []contracts.Cell, err error) {
 	if width <= 0 || height <= 0 {
-		return make([]bool, 0), errors.ErrMazeSizeIncorrect
+		return nil, errors.ErrMazeSizeIncorrect
 	}
 
-	maze, err = g.gridGenerator.Generate(width, height)
-	if err != nil {
-		return nil, err
-	}
-
+	// Initialize maze with all walls present
+	maze = make([]contracts.Cell, width*height)
 	for i := range maze {
-		maze[i] = false
+		maze[i] = entity.NewCell(0, 0)
 	}
 
-	actors := make([]int, 0)
-
-	actorsCount := 7
-
-	for i := 0; i < actorsCount; i++ {
-		actors = append(actors, 0)
-		actors = append(actors, 0)
+	directions := []struct {
+		dx, dy int
+	}{
+		{0, -1}, // North
+		{1, 0},  // East
+		{0, 1},  // South
+		{-1, 0}, // West
 	}
 
-	directions := make(map[int][4]int)
-	directions[0] = [4]int{0, -2, 0, 1}
-	directions[1] = [4]int{2, 0, -1, 0}
-	directions[2] = [4]int{0, 2, 0, -1}
-	directions[3] = [4]int{-2, 0, 1, 0}
+	// Choose a random cell
+	x, y := util.RandomIntBetween(0, width-1), util.RandomIntBetween(0, height-1)
+	unvisited := width*height - 1
 
-	isFinished := false
+	for unvisited > 0 {
+		direction := directions[util.RandomIntBetween(0, len(directions)-1)]
+		newX, newY := x+direction.dx, y+direction.dy
 
-	for !isFinished {
-		for i := 0; i < actorsCount; i++ {
+		if newX >= 0 && newX < width && newY >= 0 && newY < height {
+			index := newY*width + newX
+			maze[index].SetX(newX)
+			maze[index].SetY(newY)
+			oldIndex := y*width + x
 
-			direction := directions[util.RandomIntBetween(0, 3)]
-
-			if actors[i*2]+direction[0] >= 0 && actors[i*2]+direction[0] < width && actors[i*2+1]+direction[1] >= 0 && actors[i*2+1]+direction[1] < height {
-
-				actors[i*2] += direction[0]
-				actors[i*2+1] += direction[1]
-
-				if maze[actors[i*2+1]*width+actors[i*2]] == false {
-					maze[actors[i*2+1]*width+actors[i*2]] = true
-					maze[(actors[i*2+1]+direction[3])*width+actors[i*2]+direction[2]] = true
+			hasAllWalls := maze[index].NorthWall() && maze[index].EastWall() && maze[index].SouthWall() && maze[index].WestWall()
+			if hasAllWalls {
+				switch {
+				case direction.dx > 0:
+					maze[oldIndex].SetEastWall(false)
+					maze[index].SetWestWall(false)
+				case direction.dx < 0:
+					maze[oldIndex].SetWestWall(false)
+					maze[index].SetEastWall(false)
+				case direction.dy > 0:
+					maze[oldIndex].SetSouthWall(false)
+					maze[index].SetNorthWall(false)
+				case direction.dy < 0:
+					maze[oldIndex].SetNorthWall(false)
+					maze[index].SetSouthWall(false)
 				}
+				unvisited--
 			}
-		}
-
-		isFinished = true
-		for y := 0; y < height; y = y + 2 {
-			for x := 0; x < width; x = x + 2 {
-				isFinished = isFinished && maze[y*width+x]
-			}
+			x, y = newX, newY
 		}
 	}
-	maze[0] = true
 
 	return maze, nil
 }

@@ -11,10 +11,11 @@ type Agent interface {
 	AgentNature
 	Brain
 
+	ID() string
 	AgentType() enum.AgentType
 	Generation() int
 
-	NextDay(world Terrain, command func(commandIdentifier int) Command, config *configuration.Configuration) error
+	NextDay(world Terrain, command func(commandIdentifier int) Command) error
 	Kill(world Terrain)
 	IsAlive() bool
 	CreateChildren(world Terrain, config *configuration.Configuration) []Agent

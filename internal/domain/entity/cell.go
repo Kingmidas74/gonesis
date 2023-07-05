@@ -1,8 +1,6 @@
 package entity
 
 import (
-	"sync"
-
 	"github.com/kingmidas74/gonesis-engine/internal/contracts"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
 )
@@ -10,61 +8,59 @@ import (
 type Cell struct {
 	Coords
 
-	mu sync.Mutex
-
 	cellType enum.CellType
 	energy   int
 
 	agent contracts.Agent
+
+	northWall bool
+	southWall bool
+	westWall  bool
+	eastWall  bool
 }
 
-func NewCell(x, y int, cellType enum.CellType) *Cell {
+func NewCell(x, y int) *Cell {
 	return &Cell{
 		Coords:   Coords{x: x, y: y},
-		cellType: cellType,
+		cellType: enum.CellTypeEmpty,
 		energy:   0,
+
+		northWall: true,
+		southWall: true,
+		westWall:  true,
+		eastWall:  true,
 	}
 }
 
 func (c *Cell) CellType() enum.CellType {
-	c.mu.Lock()
-	defer c.mu.Unlock()
 	return c.cellType
 }
 
 func (c *Cell) SetCellType(cellType enum.CellType) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
 	c.cellType = cellType
 }
 
 func (c *Cell) Energy() int {
-	c.mu.Lock()
-	defer c.mu.Unlock()
 	return c.energy
 }
 
 func (c *Cell) IncreaseEnergy(delta int) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
 	c.energy += delta
 }
 
 func (c *Cell) DecreaseEnergy(delta int) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
 	c.energy -= delta
 }
 
 func (c *Cell) Agent() contracts.Agent {
-	c.mu.Lock()
-	defer c.mu.Unlock()
 	return c.agent
 }
 
 func (c *Cell) SetAgent(a contracts.Agent) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
+	if c.agent != nil {
+		panic("cell already has an agent")
+	}
+
 	c.cellType = enum.CellTypeAgent
 	c.agent = a
 	a.SetX(c.X())
@@ -72,27 +68,46 @@ func (c *Cell) SetAgent(a contracts.Agent) {
 }
 
 func (c *Cell) RemoveAgent() {
-	c.mu.Lock()
-	defer c.mu.Unlock()
 	c.cellType = enum.CellTypeEmpty
 	c.agent = nil
 }
 
 func (c *Cell) IsEmpty() bool {
-	c.mu.Lock()
-	defer c.mu.Unlock()
 	return c.cellType == enum.CellTypeEmpty
 }
+
 func (c *Cell) IsAgent() bool {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	return c.cellType == enum.CellTypeAgent
+	return c.cellType == enum.CellTypeAgent && c.agent != nil
 }
 
-func (c *Cell) Lock() {
-	c.mu.Lock()
+func (c *Cell) NorthWall() bool {
+	return c.northWall
 }
 
-func (c *Cell) Unlock() {
-	c.mu.Unlock()
+func (c *Cell) SetNorthWall(flag bool) {
+	c.northWall = flag
+}
+
+func (c *Cell) SouthWall() bool {
+	return c.southWall
+}
+
+func (c *Cell) SetSouthWall(flag bool) {
+	c.southWall = flag
+}
+
+func (c *Cell) WestWall() bool {
+	return c.westWall
+}
+
+func (c *Cell) SetWestWall(flag bool) {
+	c.westWall = flag
+}
+
+func (c *Cell) EastWall() bool {
+	return c.eastWall
+}
+
+func (c *Cell) SetEastWall(flag bool) {
+	c.eastWall = flag
 }

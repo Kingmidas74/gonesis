@@ -9,8 +9,15 @@ type World struct {
 }
 
 type Cell struct {
-	CellType string `json:"cellType"`
-	Energy   int    `json:"energy"`
+	CellType  string `json:"cellType"`
+	Energy    int    `json:"energy"`
+	Agent     *Agent `json:"agent"`
+	X         int    `json:"x"`
+	Y         int    `json:"y"`
+	NorthWall bool   `json:"northWall"`
+	SouthWall bool   `json:"southWall"`
+	WestWall  bool   `json:"westWall"`
+	EastWall  bool   `json:"eastWall"`
 }
 
 type Agent struct {

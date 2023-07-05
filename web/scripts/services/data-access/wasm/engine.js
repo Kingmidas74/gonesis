@@ -1,7 +1,8 @@
-import {Either} from "../monads/either.js";
+import {Either} from "../../../monads/either.js";
+import {IDataClient} from "../../../contracts/data-client.interface.js";
 
 /** WebAssembly Go instance */
-class Engine {
+class Engine extends IDataClient {
 
     /**
      * @type {Go} Go instance
@@ -14,16 +15,15 @@ class Engine {
     #wasmFile
 
     /**
-     * @type {Window}
-     * @private
-     */
-    #windowProvider
-
-    /**
      * @type {JSON} Json provider
      * @private
      */
-    #jsonProvider
+    #JSONProvider
+
+    /**
+     * @type {Window} Window provider
+     */
+    #windowProvider
 
     /**
      * The flag that indicates whether the engine is initialized
@@ -34,15 +34,17 @@ class Engine {
 
     /**
      * Creates an instance of Engine.
-     * @param {string} wasmFile Name of wasm file
-     * @param {Window} windowProvider Object implements window interface
-     * @param {JSON} jsonProvider Object implements JSON interface
+     * @param { string } wasmFile Name of wasm file
+     * @param { Window } windowProvider Object implements window interface
+     * @param { JSON } JSONProvider Object implements JSON interface
      */
-    constructor(wasmFile, windowProvider, jsonProvider) {
+    constructor(wasmFile, windowProvider, JSONProvider) {
+        super();
+
         this.#wasmFile = new URL(wasmFile, new URL(import.meta.url)).href;
-        this.#go = new Go();
+        this.#go = new windowProvider.Go();
         this.#windowProvider = windowProvider;
-        this.#jsonProvider = jsonProvider
+        this.#JSONProvider = JSONProvider
     }
 
     /**
@@ -54,17 +56,18 @@ class Engine {
             return new Promise(resolve => resolve())
         }
         const result = await this.#windowProvider.WebAssembly.instantiateStreaming(fetch(this.#wasmFile), this.#go.importObject)
-        this.#go.run(result.instance).then(_ => this.#isInitialized = true);
+        this.#go.run(result.instance).then();
+        this.#isInitialized=true;
     }
 
     /**
      * Initialize world
-     * @param {Configuration} configuration Configuration of the world
+     * @param {ConfigurationProvider} configurationProvider Configuration (provider) of the world
      * @returns {Either<World, Error>} World instance
      */
-    initWorld(configuration) {
-        const response = this.#windowProvider.initWorld(configuration.WorldConfiguration.Ratio.Width, configuration.WorldConfiguration.Ratio.Height, this.#jsonProvider.stringify(configuration), "1687351067538000000")
-        return this.#parseResponse(response)
+    initWorld(configurationProvider) {
+        const response = this.#windowProvider.initWorld(this.#JSONProvider.stringify(configurationProvider.getInstance()))
+        return this.#parseResponse(response);
     }
 
     /**
@@ -85,14 +88,13 @@ class Engine {
     #parseResponse(response) {
         try {
 
-            const parsedResponse = this.#jsonProvider.parse(response)
+            const parsedResponse = this.#JSONProvider.parse(response)
             if (parsedResponse.code !== 0) {
                 return Either.exception(new Error(parsedResponse.message))
             }
 
-            return Either.value(this.#jsonProvider.parse(parsedResponse.message))
+            return Either.value(this.#JSONProvider.parse(parsedResponse.message))
         } catch (e) {
-            console.log(response)
             return Either.exception(e)
         }
 
