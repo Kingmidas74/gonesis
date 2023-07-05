@@ -1,6 +1,8 @@
-import {Application} from "../../../application/application.js";
-import {Configuration, TerrainCellSizes} from "../../../application/configuration/configuration.js";
-import {Either} from "../../../application/monads/either.js";
+import {Configuration, TerrainCellSizes} from "../../../configuration/configuration.js";
+import {Either} from "../../../monads/either.js";
+import {CellFactory} from "./cell.factory.js";
+import {CanvasWrapper2D} from "./canvas-wrapper.js";
+import {CellType} from "../../../domain/enum.js";
 
 export class GAME_VIEW extends HTMLElement {
 
@@ -12,13 +14,15 @@ export class GAME_VIEW extends HTMLElement {
 
     #isGenerated = false;
 
-    /**
-     * @type {Application}
-     */
-    #application;
-
     #width = 0;
     #height = 0;
+
+    #cellFactory;
+    #canvasWrapper;
+
+    #cells;
+
+    #canvas;
 
     constructor() {
         super();
@@ -30,44 +34,53 @@ export class GAME_VIEW extends HTMLElement {
                 const template = GAME_VIEW.documentProvider.createElement("template");
                 template.innerHTML = GAME_VIEW.templateParser?.parse(templateContent);
                 this.#shadow.appendChild(template.content.cloneNode(true));
+                return this.#setup();
             })
-            .then(this.#setup)
-            .then(this.generateGame)
             .catch((err) => {
                 GAME_VIEW.logger.error(err);
             });
-        GAME_VIEW.windowProvider.addEventListener('resize', this.#windowResizeListener);
     }
 
-    #windowResizeListener = async () => {
-        const { width, height } = this.#adjustCanvasSize();
-        this.#application.configurationProvider.getInstance().WorldConfiguration.Ratio.Width = width;
-        this.#application.configurationProvider.getInstance().WorldConfiguration.Ratio.Height = height;
-        await this.generateGame();
+    #setup = () => {
+        return new Promise((resolve, reject) => {
+            GAME_VIEW.windowProvider.setTimeout(async () => {
+                this.#canvas = this.#shadow.querySelector("canvas");
+                resolve();
+            }, 1)
+        })
     }
+
+    #clickHandler = async (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+
+        const rect = this.#canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        this.dispatchEvent(new CustomEvent("click", { detail: { x: x, y: y } }));
+    }
+
+    #windowResizeListener = GAME_VIEW.debounce(async () => {
+        await this.generateGame();
+        this.dispatchEvent(new CustomEvent("resize", { detail: { width: this.#width, height: this.#height } }));
+    }, 250)
 
     #adjustCanvasSize = () => {
+        if (!this.#canvas) return;
 
         const gcd = (a, b) => (b === 0 ? a : gcd(b, a % b));
-
         const lcm = (a, b) => (a * b) / gcd(a, b);
-
         const lcmOfArray = (arr) => arr.reduce((a, b) => lcm(a, b));
 
         const lsmRatio = lcmOfArray(Object.values(TerrainCellSizes));
 
-        const canvas = this.#shadow.querySelector('canvas');
-        if (!canvas) return;
         const parentWidth = this.offsetWidth;
         const widthToSet = parentWidth - (parentWidth % lsmRatio);
-        canvas.style.width = `${widthToSet}px`;
+        this.#canvas.style.width = `${widthToSet}px`;
 
         const parentHeight = this.offsetHeight;
         const heightToSet = parentHeight - (parentHeight % lsmRatio);
-        canvas.style.height = `${heightToSet}px`;
-
-        this.#width = widthToSet;
-        this.#height = heightToSet;
+        this.#canvas.style.height = `${heightToSet}px`;
 
         return { width: widthToSet, height: heightToSet};
     }
@@ -91,19 +104,6 @@ export class GAME_VIEW extends HTMLElement {
         return templateContent;
     }
 
-    #setup = () => {
-        return new Promise((resolve, reject) => {
-            GAME_VIEW.windowProvider.setTimeout(async () => {
-                const {width, height} = this.#adjustCanvasSize();
-                this.#application = new Application();
-                await this.#application.configure(GAME_VIEW.windowProvider, GAME_VIEW.documentProvider, this.#shadow.querySelector("canvas"), "engine.wasm")
-                this.#application.configurationProvider.getInstance().WorldConfiguration.Ratio.Width = width;
-                this.#application.configurationProvider.getInstance().WorldConfiguration.Ratio.Height = height;
-                resolve();
-            }, 1)
-        })
-    }
-
     connectedCallback() {
         if (this.#pendingData) {
             this.data = this.#pendingData;
@@ -112,112 +112,73 @@ export class GAME_VIEW extends HTMLElement {
     }
 
     /**
-     * Next step of the game.
-     * @returns {Promise<void>}
-     */
-    async nextStep() {
-        try {
-            if(!this.#isGenerated) {
-                (await this.generateGame())
-            }
-            await this.#application.game.step();
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
-    /**
-     * Plays the game.
-     * @returns {Promise<void>}
-     */
-    async playGame() {
-        if(!this.#isGenerated) {
-            (await this.generateGame())
-                .orElse(error => {
-                    this.dispatchEvent(new GAME_VIEW.windowProvider.CustomEvent('over', {
-                        detail: { value: error }
-                    }))
-                })
-        }
-
-        this.#application.configurationProvider.getInstance().Playable = true;
-        this.dispatchEvent(new GAME_VIEW.windowProvider.CustomEvent('start'))
-        const desiredFPS = 10;
-        const timeStep = 1000 / desiredFPS;
-        let lastTime = GAME_VIEW.windowProvider.performance.now();
-
-        const loop = async (currentTime) => {
-            const deltaTime = currentTime - lastTime;
-
-            if(deltaTime >= timeStep) {
-                if(!this.#application.configurationProvider.getInstance().Playable) {
-                    return;
-                }
-                lastTime = currentTime - (deltaTime % timeStep);
-                (await this.#application.game.step())
-                    .map(worldInstance => {
-                        if(this.#application.game.livingAgentsCount(worldInstance) === 0 ||
-                            (!this.#application.configurationProvider.getInstance().WorldConfiguration.OneAgentTypeMode &&
-                                this.#application.game.isOnlyOneAgentTypeAlive(worldInstance))) {
-                            this.dispatchEvent(new GAME_VIEW.windowProvider.CustomEvent('finish', {
-                                detail: {value: worldInstance}
-                            }))
-                            this.pauseGame();
-                        } else {
-                            this.dispatchEvent(new GAME_VIEW.windowProvider.CustomEvent('update', {
-                                detail: {value: worldInstance}
-                            }))
-                        }
-                        return worldInstance;
-                    }).orElse(_ => {
-                        this.pauseGame();
-                    })
-            }
-            GAME_VIEW.windowProvider.requestAnimationFrame(loop);
-        }
-        GAME_VIEW.windowProvider.requestAnimationFrame(loop);
-    }
-
-    /**
-     * Pauses the game.
-     * @returns {void}
-     */
-    pauseGame() {
-        this.#application.configurationProvider.getInstance().Playable = false;
-    }
-
-    /**
      * Generates a new world.
      * @returns {Promise<Either<World, Error>>}
      */
     generateGame = async () => {
-        this.pauseGame();
         const {width, height} = this.#adjustCanvasSize()
-        this.#application.configurationProvider.getInstance().WorldConfiguration.Ratio.Width = width / this.#application.configurationProvider.getInstance().WorldConfiguration.Ratio.CellSize;
-        this.#application.configurationProvider.getInstance().WorldConfiguration.Ratio.Height = height / this.#application.configurationProvider.getInstance().WorldConfiguration.Ratio.CellSize;
-        return (await this.#application.game.init())
-            .map((world) => {
-                this.#isGenerated = true;
-                return world;
-            })
+        this.#canvasWrapper.init(width, height);
+        this.#width = width;
+        this.#height = height;
+    }
+
+    get width() {
+        return this.#width;
+    }
+
+    get height() {
+        return this.#height;
     }
 
     /**
-     * Updates the settings of the game.
-     * @param {Configuration} settings
+     * Configures the view with the given configuration provider.
+     * @param {ConfigurationProvider} provider
      */
-    updateSettings(settings) {
-        this.#application.configurationProvider.updateConfiguration(settings);
-    }
+    set configurationProvider(provider) {
+        return this.#template.then(async () => {
+            const {width, height} = this.#adjustCanvasSize();
 
-    /**
-     * @returns {Promise<Configuration>}
-     */
-    get config() {
-        return this.#template.then(() => this.#application.configurationProvider.getInstance());
+            this.#width = width;
+            this.#height = height;
+
+            this.#canvasWrapper = new CanvasWrapper2D(this.#canvas, GAME_VIEW.documentProvider);
+            this.#cellFactory = new CellFactory(provider, this.#canvasWrapper)
+
+            await this.generateGame()
+
+            GAME_VIEW.windowProvider.addEventListener('resize', this.#windowResizeListener);
+
+            //this.#canvas.removeEventListener('click', this.#clickHandler);
+            this.#canvas.addEventListener('click', this.#clickHandler);
+        })
     }
 
     disconnectedCallback() {
         GAME_VIEW.windowProvider.removeEventListener('resize', this.#windowResizeListener);
+    }
+
+    /**
+     * Update the world with the given world data.
+     * @param {World} worldInstance - The world data in object format.
+     * @private
+     * @returns {void}
+     */
+    update(worldInstance) {
+        const width = worldInstance.width;
+        const height = worldInstance.height;
+
+        for (let row = 0; row < height; row++) {
+            for (let col = 0; col < width; col++) {
+                if (worldInstance.cells[row*width+col].cellType === CellType.EMPTY) {
+                    this.#cellFactory.createEmpty(worldInstance.cells[row*width+col]).draw();
+                    continue
+                }
+                if (worldInstance.cells[row*width+col].cellType === CellType.AGENT) {
+                    this.#cellFactory.createAgent(worldInstance.cells[row*width+col]).draw();
+                }
+            }
+        }
+
+        this.#canvasWrapper.render();
     }
 }

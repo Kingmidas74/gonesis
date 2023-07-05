@@ -4,6 +4,7 @@ import { RADIO_GROUP_TOGGLE } from "./basic/radio-group-toggle/radio-group-toggl
 import { COLOR_PICKER } from "./basic/color-picker/color-picker.js";
 import { RANGE_SLIDER } from "./basic/range-slider/range-slider.js";
 import { CUSTOM_CHECKBOX } from "./basic/custom-checkbox/custom-checkbox.js";
+import { SEED_GENERATOR } from "./basic/seed-generator/seed-generator.js";
 
 import { TERRAIN_SETTINGS } from "./complex/terrain-settings/terrain-settings.js";
 import { AGENT_SETTINGS } from "./complex/agent-settings/agent-settings.js";
@@ -58,6 +59,12 @@ const initializeComponents = (window, document, logger = console) => {
             component: CUSTOM_CHECKBOX,
             templatePath: "./custom-checkbox.html",
             stylePath: "./custom-checkbox.css",
+        },
+        {
+            name: "app-seed-generator",
+            component: SEED_GENERATOR,
+            templatePath: "./seed-generator.html",
+            stylePath: "./seed-generator.css",
         },
         {
             name: "app-terrain-settings",
