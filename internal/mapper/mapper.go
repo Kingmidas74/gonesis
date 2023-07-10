@@ -40,16 +40,3 @@ func NewWorld(world contracts.World) model.World {
 		CurrentDay: world.CurrentDay(),
 	}
 }
-
-func NewAgent(a contracts.Agent) model.Agent {
-	return model.Agent{
-		X:         a.X(),
-		Y:         a.Y(),
-		Energy:    a.Energy(),
-		AgentType: a.AgentType().String(),
-
-		Brain: model.Brain{
-			Commands: a.Commands(),
-		},
-	}
-}
