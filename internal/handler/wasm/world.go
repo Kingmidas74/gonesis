@@ -27,9 +27,9 @@ func (h *Handler) InitWorld() js.Func {
 
 		rand.Seed(seed)
 
-		h.gameService.UpdateConfiguration(config)
+		h.worldService.UpdateConfiguration(config)
 
-		world, err := h.gameService.InitWorld()
+		world, err := h.worldService.Init()
 		if err != nil {
 			return h.serializeResponse(1, err.Error())
 		}
@@ -40,7 +40,7 @@ func (h *Handler) InitWorld() js.Func {
 
 func (h *Handler) UpdateWorld() js.Func {
 	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		world, err := h.gameService.Next()
+		world, err := h.worldService.Update()
 		if err != nil {
 			return h.serializeResponse(1, err.Error())
 		}

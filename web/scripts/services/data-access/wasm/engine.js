@@ -75,7 +75,7 @@ class Engine extends IDataClient {
      * @returns {Either<World, Error>} World instance
      */
     step() {
-        const response = this.#windowProvider.step()
+        const response = this.#windowProvider.updateWorld()
         return this.#parseResponse(response)
     }
 

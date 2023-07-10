@@ -2,15 +2,15 @@ package wasm
 
 import (
 	"github.com/kingmidas74/gonesis-engine/internal/domain/configuration"
-	"github.com/kingmidas74/gonesis-engine/internal/service/game"
+	"github.com/kingmidas74/gonesis-engine/internal/service/world"
 )
 
 type Handler struct {
-	gameService *game.Service
+	worldService world.Service
 }
 
 func New() (*Handler, error) {
 	return &Handler{
-		gameService: game.New(configuration.NewConfiguration()),
+		worldService: world.New(configuration.NewConfiguration()),
 	}, nil
 }

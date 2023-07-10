@@ -1,4 +1,4 @@
-package game
+package world
 
 import (
 	"encoding/json"
@@ -22,7 +22,7 @@ import (
 	"github.com/kingmidas74/gonesis-engine/internal/domain/entity/world"
 )
 
-func (s *Service) InitWorld() (contracts.World, error) {
+func (s *srv) Init() (contracts.World, error) {
 	mazeBuilder, err := s.getMazeBuilder()
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func (s *Service) InitWorld() (contracts.World, error) {
 		return nil, err
 	}
 
-	agents, err := s.generateAgents(requiredEmptyCells)
+	agents, err := s.generateAgents()
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +72,7 @@ func (s *Service) InitWorld() (contracts.World, error) {
 	return s.world, nil
 }
 
-func (s *Service) Next() (contracts.World, error) {
+func (s *srv) Update() (contracts.World, error) {
 	if s.world == nil {
 		c, _ := json.Marshal(*s.config)
 		panic(string(c))
@@ -81,12 +81,12 @@ func (s *Service) Next() (contracts.World, error) {
 	return s.world, err
 }
 
-func (s *Service) UpdateConfiguration(config *configuration.Configuration) error {
+func (s *srv) UpdateConfiguration(config *configuration.Configuration) error {
 	s.config = config
 	return nil
 }
 
-func (s *Service) getMazeBuilder() (contracts.MazeBuilder, error) {
+func (s *srv) getMazeBuilder() (contracts.MazeBuilder, error) {
 	switch s.config.WorldConfiguration.MazeType {
 	case enum.MazeTypeBorder:
 		return maze.NewMazeBuilder[generator.BorderGenerator](), nil
@@ -104,7 +104,7 @@ func (s *Service) getMazeBuilder() (contracts.MazeBuilder, error) {
 		return nil, errors.ErrMazeTypeNotSupported
 	}
 }
-func (s *Service) getTerrain(m contracts.Maze) (contracts.Terrain, error) {
+func (s *srv) getTerrain(m contracts.Maze) (contracts.Terrain, error) {
 	switch s.config.WorldConfiguration.Topology {
 	case enum.TopologyTypeMoore:
 		return terrain.NewTerrain[topology.MooreTopology](m), nil
@@ -115,7 +115,7 @@ func (s *Service) getTerrain(m contracts.Maze) (contracts.Terrain, error) {
 	}
 }
 
-func (s *Service) generatePlants() ([]contracts.Agent, error) {
+func (s *srv) generatePlants() ([]contracts.Agent, error) {
 	reproductionSystem, err := s.getReproductionSystem(s.config.PlantConfiguration.ReproductionType)
 	if err != nil {
 		return nil, err
@@ -131,7 +131,7 @@ func (s *Service) generatePlants() ([]contracts.Agent, error) {
 	return plants, nil
 }
 
-func (s *Service) generateHerbivores() ([]contracts.Agent, error) {
+func (s *srv) generateHerbivores() ([]contracts.Agent, error) {
 	reproductionSystem, err := s.getReproductionSystem(s.config.OmnivoreConfiguration.ReproductionType)
 	if err != nil {
 		return nil, err
@@ -147,7 +147,7 @@ func (s *Service) generateHerbivores() ([]contracts.Agent, error) {
 	return herbivores, nil
 }
 
-func (s *Service) generateCarnivores() ([]contracts.Agent, error) {
+func (s *srv) generateCarnivores() ([]contracts.Agent, error) {
 	reproductionSystem, err := s.getReproductionSystem(s.config.OmnivoreConfiguration.ReproductionType)
 	if err != nil {
 		return nil, err
@@ -163,7 +163,7 @@ func (s *Service) generateCarnivores() ([]contracts.Agent, error) {
 	return carnivores, nil
 }
 
-func (s *Service) generateDecomposers() ([]contracts.Agent, error) {
+func (s *srv) generateDecomposers() ([]contracts.Agent, error) {
 	reproductionSystem, err := s.getReproductionSystem(s.config.OmnivoreConfiguration.ReproductionType)
 	if err != nil {
 		return nil, err
@@ -179,7 +179,7 @@ func (s *Service) generateDecomposers() ([]contracts.Agent, error) {
 	return decomposers, nil
 }
 
-func (s *Service) generateOmnivores() ([]contracts.Agent, error) {
+func (s *srv) generateOmnivores() ([]contracts.Agent, error) {
 	reproductionSystem, err := s.getReproductionSystem(s.config.OmnivoreConfiguration.ReproductionType)
 	if err != nil {
 		return nil, err
@@ -195,7 +195,7 @@ func (s *Service) generateOmnivores() ([]contracts.Agent, error) {
 	return omnivores, nil
 }
 
-func (s *Service) getReproductionSystem(reproductionSystemType enum.ReproductionSystemType) (contracts.ReproductionSystem, error) {
+func (s *srv) getReproductionSystem(reproductionSystemType enum.ReproductionSystemType) (contracts.ReproductionSystem, error) {
 	switch reproductionSystemType {
 	case enum.ReproductionSystemTypeBudding:
 		return &reproduction.BuddingReproduction{
@@ -207,7 +207,7 @@ func (s *Service) getReproductionSystem(reproductionSystemType enum.Reproduction
 	}
 }
 
-func (s *Service) generateAgents(agentsCount int) ([]contracts.Agent, error) {
+func (s *srv) generateAgents() ([]contracts.Agent, error) {
 	agents := make([]contracts.Agent, 0)
 
 	plants, err := s.generatePlants()
@@ -243,7 +243,7 @@ func (s *Service) generateAgents(agentsCount int) ([]contracts.Agent, error) {
 	return agents, nil
 }
 
-func (s *Service) getAvailableCommands() []contracts.Command {
+func (s *srv) getAvailableCommands() []contracts.Command {
 	return []contracts.Command{
 		commands.NewPhotosynthesisCommand(),
 		commands.NewEatCommand(),

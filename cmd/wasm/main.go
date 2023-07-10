@@ -15,7 +15,7 @@ func main() {
 	WasmHandler, _ = wasm.New()
 
 	js.Global().Set("initWorld", initWorld())
-	js.Global().Set("step", step())
+	js.Global().Set("updateWorld", updateWorld())
 
 	<-make(chan bool)
 }
@@ -24,6 +24,6 @@ func initWorld() js.Func {
 	return WasmHandler.InitWorld()
 }
 
-func step() js.Func {
+func updateWorld() js.Func {
 	return WasmHandler.UpdateWorld()
 }
