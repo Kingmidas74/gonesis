@@ -1,11 +1,10 @@
 package model
 
 type World struct {
-	Width      int     `json:"width"`
-	Height     int     `json:"height"`
-	Cells      []Cell  `json:"cells"`
-	Agents     []Agent `json:"agents"`
-	CurrentDay int     `json:"currentDay"`
+	Width      int    `json:"width"`
+	Height     int    `json:"height"`
+	Cells      []Cell `json:"cells"`
+	CurrentDay int    `json:"currentDay"`
 }
 
 type Cell struct {
