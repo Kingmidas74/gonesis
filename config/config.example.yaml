@@ -1,0 +1,3 @@
+# This is the main configuration object
+host:
+  # port: the port for the connection, by default it's '9091'

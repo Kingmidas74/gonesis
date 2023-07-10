@@ -1,14 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"net/http"
-	"os"
-	"path/filepath"
 
 	"go.uber.org/zap"
-	"golang.org/x/net/http2"
+
+	"github.com/kingmidas74/gonesis-engine/internal/app"
+	"github.com/kingmidas74/gonesis-engine/internal/config"
 )
 
 func main() {
@@ -19,41 +17,24 @@ func main() {
 	zap.ReplaceGlobals(logger)
 	defer logger.Sync()
 
-	cwd, err := os.Getwd()
+	cfg, err := config.New()
 	if err != nil {
-		fmt.Println("Failed to get current working directory:", err)
+		zap.L().Error("Failed to load configuration", zap.Error(err))
 		return
 	}
 
-	assetsDir := filepath.Join(cwd, "web")
-	fmt.Println("Serving files from:", assetsDir)
-
-	fs := http.FileServer(http.Dir(assetsDir))
-
-	http.Handle("/", noCache(fs))
-
-	srv := &http.Server{
-		Addr:    ":9091",
-		Handler: http.FileServer(http.Dir(assetsDir)),
-	}
-
-	if err := http2.ConfigureServer(srv, &http2.Server{}); err != nil {
-		fmt.Println("Failed to configure server:", err)
-		return
-	}
-
-	err = srv.ListenAndServe()
+	a, err := app.New(cfg, logger)
 	if err != nil {
-		fmt.Println("Failed to start server:", err)
-		return
+		logger.Fatal(err.Error())
 	}
-}
 
-func noCache(h http.Handler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0")
-		w.Header().Set("Pragma", "no-cache")
-		w.Header().Set("Expires", "0")
-		h.ServeHTTP(w, r)
+	err = a.Init()
+	if err != nil {
+		logger.Fatal(err.Error())
+	}
+
+	err = a.Run()
+	if err != nil {
+		logger.Fatal(err.Error())
 	}
 }

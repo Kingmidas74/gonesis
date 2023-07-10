@@ -2,6 +2,7 @@ package game
 
 import (
 	"encoding/json"
+	"github.com/kingmidas74/gonesis-engine/internal/domain/configuration"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/entity/agent/mutation"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/entity/agent/reproduction"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
@@ -69,6 +70,20 @@ func (s *Service) InitWorld() (contracts.World, error) {
 
 	s.world = world.New(terra, s.getAvailableCommands())
 	return s.world, nil
+}
+
+func (s *Service) Next() (contracts.World, error) {
+	if s.world == nil {
+		c, _ := json.Marshal(*s.config)
+		panic(string(c))
+	}
+	err := s.world.Next(s.config)
+	return s.world, err
+}
+
+func (s *Service) UpdateConfiguration(config *configuration.Configuration) error {
+	s.config = config
+	return nil
 }
 
 func (s *Service) getMazeBuilder() (contracts.MazeBuilder, error) {
@@ -226,18 +241,6 @@ func (s *Service) generateAgents(agentsCount int) ([]contracts.Agent, error) {
 	agents = append(agents, omnivores...)
 
 	return agents, nil
-}
-
-func (s *Service) Next() (contracts.World, error) {
-	if s.world == nil {
-		c, _ := json.Marshal(*s.config)
-		panic(string(c))
-	}
-	err := s.world.Next(s.config)
-	if err != nil {
-		return nil, err
-	}
-	return s.world, nil
 }
 
 func (s *Service) getAvailableCommands() []contracts.Command {
