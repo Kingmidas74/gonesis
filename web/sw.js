@@ -25,12 +25,14 @@ const urlsToCache = [
     'scripts/application/game/world-manager.js',
 ];
 
+/*
 self.addEventListener('install', event => {
     event.waitUntil((async () => {
         const cache = await caches.open(CACHE_NAME);
         await cache.addAll(urlsToCache);
     })());
 });
+*/
 
 self.addEventListener('fetch', event => {
     // only cache GET requests

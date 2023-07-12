@@ -4,6 +4,7 @@ package wasm
 
 import (
 	"encoding/json"
+	"github.com/kingmidas74/gonesis-engine/internal/domain/configuration"
 
 	"github.com/kingmidas74/gonesis-engine/internal/contracts"
 	"github.com/kingmidas74/gonesis-engine/internal/mapper"
@@ -30,4 +31,10 @@ func (h *Handler) serializeResponse(code int, message string) string {
 		return err.Error()
 	}
 	return string(r)
+}
+
+func (h *Handler) deserializeConfiguration(configJson string) (*configuration.Configuration, error) {
+	config := configuration.NewConfiguration()
+	err := config.FromJson(configJson)
+	return config, err
 }

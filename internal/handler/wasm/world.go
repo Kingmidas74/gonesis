@@ -7,15 +7,15 @@ import (
 	"strconv"
 	"syscall/js"
 
-	"github.com/kingmidas74/gonesis-engine/internal/domain/configuration"
+	"github.com/kingmidas74/gonesis-engine/internal/contracts"
+	"github.com/kingmidas74/gonesis-engine/internal/domain/commands"
 )
 
 func (h *Handler) InitWorld() js.Func {
 	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		configJson := args[0].String()
 
-		config := configuration.NewConfiguration()
-		err := config.FromJson(configJson)
+		config, err := h.deserializeConfiguration(configJson)
 		if err != nil {
 			return h.serializeResponse(1, err.Error())
 		}
@@ -27,9 +27,40 @@ func (h *Handler) InitWorld() js.Func {
 
 		rand.Seed(seed)
 
-		h.worldService.UpdateConfiguration(config)
-
-		world, err := h.worldService.Init()
+		world, err := h.worldService.Init(config, []contracts.Command{
+			commands.NewPhotosynthesisCommand(),
+			commands.NewEatCommand(),
+			commands.NewMoveCommand(),
+			commands.NewPhotosynthesisCommand(),
+			commands.NewEatCommand(),
+			commands.NewMoveCommand(),
+			commands.NewPhotosynthesisCommand(),
+			commands.NewEatCommand(),
+			commands.NewMoveCommand(),
+			commands.NewPhotosynthesisCommand(),
+			commands.NewEatCommand(),
+			commands.NewMoveCommand(),
+			commands.NewPhotosynthesisCommand(),
+			commands.NewEatCommand(),
+			commands.NewMoveCommand(),
+			commands.NewPhotosynthesisCommand(),
+			commands.NewEatCommand(),
+			commands.NewMoveCommand(),
+			commands.NewPhotosynthesisCommand(),
+			commands.NewEatCommand(),
+			commands.NewMoveCommand(),
+			commands.NewPhotosynthesisCommand(),
+			commands.NewEatCommand(),
+			commands.NewMoveCommand(),
+			commands.NewPhotosynthesisCommand(),
+			commands.NewEatCommand(),
+			commands.NewMoveCommand(),
+			commands.NewPhotosynthesisCommand(),
+			commands.NewEatCommand(),
+			commands.NewMoveCommand(),
+			commands.NewCallSubroutineCommand(),
+			commands.NewEndSubroutineCommand(),
+		})
 		if err != nil {
 			return h.serializeResponse(1, err.Error())
 		}
@@ -40,7 +71,14 @@ func (h *Handler) InitWorld() js.Func {
 
 func (h *Handler) UpdateWorld() js.Func {
 	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		world, err := h.worldService.Update()
+		configJson := args[0].String()
+
+		config, err := h.deserializeConfiguration(configJson)
+		if err != nil {
+			return h.serializeResponse(1, err.Error())
+		}
+
+		world, err := h.worldService.Update(config)
 		if err != nil {
 			return h.serializeResponse(1, err.Error())
 		}

@@ -14,7 +14,11 @@ class IDataClient {
         throw new Error("Not implemented");
     }
 
-    async step() {
+    /**
+     * @param {ConfigurationProvider} configurationProvider
+     * @return {Promise<void>}
+     */
+    async step(configurationProvider) {
         throw new Error("Not implemented");
     }
 

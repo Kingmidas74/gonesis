@@ -224,18 +224,21 @@ class CanvasWrapperWebGL extends CanvasWrapper{
      */
     constructor(canvas) {
         super();
-        const actualCanvasWidth = canvas.offsetWidth;
-        const actualCanvasHeight = canvas.offsetHeight;
-        canvas.width = actualCanvasWidth;
-        canvas.height = actualCanvasHeight;
         this.#canvas = canvas;
 
         const gl = this.#canvas.getContext("webgl");
         if (!gl) {
             throw new Error("WebGL not supported");
         }
-        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
         this.#context = gl;
+    }
+
+    init = (width, height) => {
+        this.#canvas.width = width;
+        this.#canvas.height = height;
+
+        this.#context.viewport(0, 0, this.#context.canvas.width, this.#context.canvas.height);
 
         // Initialize a simple shader program
         const vsSource = `
@@ -306,14 +309,6 @@ class CanvasWrapperWebGL extends CanvasWrapper{
     }
 
     /**
-     * Gets the canvas context.
-     * @returns {CanvasRenderingContext2D} The canvas context.
-     */
-    get context() {
-        return this.ctx;
-    }
-
-    /**
      * Clear the canvas.
      */
     clear() {
@@ -328,8 +323,11 @@ class CanvasWrapperWebGL extends CanvasWrapper{
      * @param {number} width - The width of the rectangle.
      * @param {number} height - The height of the rectangle.
      * @param {string} color - The color of the rectangle in RGBA format.
+     * @return {never}
      */
     drawRect(x, y, width, height, color) {
+        width-=2;
+        height-=2;
         const gl = this.#context;
         // Convert the color from RGB to 0.0-1.0
         const {
@@ -376,18 +374,87 @@ class CanvasWrapperWebGL extends CanvasWrapper{
 
     /**
      * Draws a circle.
-     * @param x
-     * @param y
-     * @param radius
+     * @param xStart
+     * @param yStart
+     * @param xEnd
+     * @param yEnd
      * @param color
      */
-    drawCircle(x, y, radius, color) {
-        let key = `${x},${y}`;
-        if(!this.#previousFrame.has(key) || this.#previousFrame.get(key) !== color) {
-            this.drawRect(x, y, radius * 2, radius * 2, color);
+    drawLine(xStart, yStart, xEnd, yEnd, color) {
+        const gl = this.#context;
+        // Convert the color from RGB to 0.0-1.0
+        const { r, g, b, a } = this.#hslaToHex(color);
+        const colors = [r, g, b, a];
 
-            this.#previousFrame.set(key, color);
+        const positions = [
+            xStart, yStart,
+            xEnd, yEnd,
+        ];
+
+        // Convert pixel positions to clip space
+        for (let i = 0; i < positions.length; i += 2) {
+            positions[i] = 2 * positions[i] / this.#canvas.width - 1;
+            positions[i + 1] = 1 - 2 * positions[i + 1] / this.#canvas.height;
         }
+
+        const positionBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+
+        gl.useProgram(this.#shaderProgram);
+
+        gl.enableVertexAttribArray(this.#positionAttributeLocation);
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        gl.vertexAttribPointer(this.#positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+
+        gl.uniform4fv(this.#colorUniformLocation, colors);
+
+        gl.drawArrays(gl.LINES, 0, 2);
+    }
+
+    drawCircle(x, y, radius, color) {
+        radius-=2;
+        x-=4;
+        y-=4;
+        const segments = 100; // increase for a more precise circle
+        const positions = new Array(segments * 2);
+        const angleIncrement = Math.PI * 2 / segments;
+
+        for (let i = 0; i < segments; ++i) {
+            positions[2 * i] = x + radius * Math.cos(i * angleIncrement);
+            positions[2 * i + 1] = y + radius * Math.sin(i * angleIncrement);
+        }
+
+        // Convert pixel positions to clip space
+        for (let i = 0; i < positions.length; i += 2) {
+            positions[i] = 2 * (positions[i] - radius) / this.#canvas.width - 1;
+            positions[i + 1] = 1 - 2 * (positions[i + 1] - radius) / this.#canvas.height;
+        }
+
+        const { r, g, b, a } = this.#hslaToHex(color);
+        const colors = [r, g, b, a];
+
+        const positionBuffer = this.#context.createBuffer();
+        this.#context.bindBuffer(this.#context.ARRAY_BUFFER, positionBuffer);
+        this.#context.bufferData(this.#context.ARRAY_BUFFER, new Float32Array(positions), this.#context.STATIC_DRAW);
+
+        this.#context.useProgram(this.#shaderProgram);
+
+        this.#context.enableVertexAttribArray(this.#positionAttributeLocation);
+        this.#context.bindBuffer(this.#context.ARRAY_BUFFER, positionBuffer);
+        this.#context.vertexAttribPointer(this.#positionAttributeLocation, 2, this.#context.FLOAT, false, 0, 0);
+
+        this.#context.uniform4fv(this.#colorUniformLocation, colors);
+
+        this.#context.drawArrays(this.#context.TRIANGLE_FAN, 0, segments);
+    }
+
+
+    /**
+     * Renders the buffer canvas to the main canvas.
+     */
+    render() {
+
     }
 
     #hslaToHex = (hsla) => {
@@ -426,4 +493,112 @@ class CanvasWrapperWebGL extends CanvasWrapper{
     }
 
 }
-export {CanvasWrapper2D, CanvasWrapperWebGL};
+
+class WebGLWrapper extends CanvasWrapper{
+    /**
+     * @type {HTMLCanvasElement}
+     * @private
+     */
+    #canvas;
+
+    /**
+     * @type {WebGLRenderingContext}
+     * @private
+     */
+    #gl;
+
+    /**
+     *
+     * @param {HTMLCanvasElement} canvasElement
+     */
+    constructor(canvasElement) {
+        super();
+        this.#canvas = canvasElement;
+
+        if (this.#canvas.getContext) {
+            this.#gl = this.#canvas.getContext("webgl");
+            if (!this.#gl) {
+                console.error("Unable to initialize WebGL. Your browser or machine may not support it.");
+                return;
+            }
+        }
+    }
+
+    /**
+     * Initialize WebGL
+     * @param {number} width
+     * @param {number} height
+     */
+    init = (width, height) => {
+        this.#canvas.width = width;
+        this.#canvas.height = height;
+        this.#gl.viewport(0, 0, this.#gl.canvas.width, this.#gl.canvas.height);
+    }
+
+    /**
+     * Gets the width of the WebGL canvas element.
+     * @returns {number} The width of the WebGL canvas.
+     */
+    get width() {
+        return this.#canvas.width;
+    }
+
+    /**
+     * Gets the height of the WebGL canvas element.
+     * @returns {number} The height of the WebGL canvas.
+     */
+    get height() {
+        return this.#canvas.height;
+    }
+
+    /**
+     * Clears the WebGL screen.
+     */
+    clearScreen() {
+        this.#gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
+        this.#gl.clearDepth(1.0);                 // Clear everything
+        this.#gl.enable(this.#gl.DEPTH_TEST);           // Enable depth testing
+        this.#gl.depthFunc(this.#gl.LEQUAL);            // Near things obscure far things
+        this.#gl.clear(this.#gl.COLOR_BUFFER_BIT | this.#gl.DEPTH_BUFFER_BIT);
+    }
+
+    /**
+     * Create shader program
+     * @param {string} vsSource - vertex shader source
+     * @param {string} fsSource - fragment shader source
+     * @returns {WebGLProgram} program
+     */
+    initShaderProgram(vsSource, fsSource) {
+        const vertexShader = this.loadShader(this.#gl.VERTEX_SHADER, vsSource);
+        const fragmentShader = this.loadShader(this.#gl.FRAGMENT_SHADER, fsSource);
+        const shaderProgram = this.#gl.createProgram();
+        this.#gl.attachShader(shaderProgram, vertexShader);
+        this.#gl.attachShader(shaderProgram, fragmentShader);
+        this.#gl.linkProgram(shaderProgram);
+        if (!this.#gl.getProgramParameter(shaderProgram, this.#gl.LINK_STATUS)) {
+            alert('Unable to initialize the shader program: ' + this.#gl.getProgramInfoLog(shaderProgram));
+            return null;
+        }
+        return shaderProgram;
+    }
+
+    /**
+     * creates a shader of the given type, uploads the source and compiles it.
+     * @param {number} type
+     * @param {string} source
+     * @returns {WebGLShader}
+     */
+    loadShader(type, source) {
+        const shader = this.#gl.createShader(type);
+        this.#gl.shaderSource(shader, source);
+        this.#gl.compileShader(shader);
+        if (!this.#gl.getShaderParameter(shader, this.#gl.COMPILE_STATUS)) {
+            alert('An error occurred compiling the shaders: ' + this.#gl.getShaderInfoLog(shader));
+            this.#gl.deleteShader(shader);
+            return null;
+        }
+        return shader;
+    }
+}
+
+export {CanvasWrapper2D, CanvasWrapperWebGL, WebGLWrapper};
