@@ -1,7 +1,7 @@
-import {Configuration, TerrainCellSizes} from "../../../configuration/configuration.js";
+import {TerrainCellSizes} from "../../../configuration/configuration.js";
 import {Either} from "../../../monads/either.js";
 import {CellFactory} from "./cell.factory.js";
-import {CanvasWrapper2D} from "./canvas-wrapper.js";
+import {CanvasWrapper2D, CanvasWrapperWebGL} from "./canvas-wrapper.js";
 import {CellType} from "../../../domain/enum.js";
 
 export class GAME_VIEW extends HTMLElement {
@@ -12,15 +12,11 @@ export class GAME_VIEW extends HTMLElement {
 
     #pendingData;
 
-    #isGenerated = false;
-
     #width = 0;
     #height = 0;
 
     #cellFactory;
     #canvasWrapper;
-
-    #cells;
 
     #canvas;
 
@@ -42,7 +38,7 @@ export class GAME_VIEW extends HTMLElement {
     }
 
     #setup = () => {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             GAME_VIEW.windowProvider.setTimeout(async () => {
                 this.#canvas = this.#shadow.querySelector("canvas");
                 resolve();

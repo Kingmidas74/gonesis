@@ -22,19 +22,20 @@ class Game extends IGame {
 
     /**
      * Initialize game's world
-     * @param {Configuration} configuration
+     * @param {ConfigurationProvider} configurationProvider
      * @returns {Promise<Either<World, Error>>} void if world is initialized successfully, error otherwise
      */
-    async initWorld(configuration) {
-        return await this.#dataClient.initWorld(configuration);
+    async initWorld(configurationProvider) {
+        return await this.#dataClient.initWorld(configurationProvider);
     }
 
     /**
      * Step game
+     * @param {ConfigurationProvider} configurationProvider
      * @returns {Promise<Either<World, Error>>}
      */
-    async step() {
-        return await this.#dataClient.step();
+    async step(configurationProvider) {
+        return await this.#dataClient.step(configurationProvider);
     }
 
     /**

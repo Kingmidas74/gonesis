@@ -72,10 +72,11 @@ class Engine extends IDataClient {
 
     /**
      * Step of the game
+     * @param {ConfigurationProvider} configurationProvider Configuration (provider) of the world
      * @returns {Either<World, Error>} World instance
      */
-    step() {
-        const response = this.#windowProvider.updateWorld()
+    step(configurationProvider) {
+        const response = this.#windowProvider.updateWorld(this.#JSONProvider.stringify(configurationProvider.getInstance()))
         return this.#parseResponse(response)
     }
 

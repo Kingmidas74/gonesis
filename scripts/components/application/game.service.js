@@ -109,7 +109,7 @@ class ApplicationGameService {
             return Either.exception(new Error('Game is not generated yet'));
         }
 
-        return (await this.#gameService.step())
+        return (await this.#gameService.step(this.#configurationProvider))
             .map(worldInstance => {
                 this.#lastWorldInstance = worldInstance;
                 return worldInstance;

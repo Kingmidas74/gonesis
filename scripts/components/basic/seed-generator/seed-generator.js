@@ -53,7 +53,7 @@ export class SEED_GENERATOR extends HTMLElement {
         }
 
         this.#template
-            .then((templateContent) => {
+            .then((_) => {
                 this.#render(value);
             })
             .catch((err) => {
@@ -90,6 +90,7 @@ export class SEED_GENERATOR extends HTMLElement {
         const template = SEED_GENERATOR.documentProvider.createElement("template");
         template.innerHTML = SEED_GENERATOR.templateParser?.parse(this.#templateContent, {
             value: data?.value || SEED_GENERATOR.windowProvider.Date.now() * 1000000,
+            title: this.getAttribute('data-title'),
         });
         this.#shadow.appendChild(template.content.cloneNode(true));
     }

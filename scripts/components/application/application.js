@@ -51,7 +51,7 @@ export class APPLICATION extends HTMLElement {
         template.innerHTML = APPLICATION.templateParser?.parse(templateContent, {
             title: this.getAttribute('data-title'),
             brainSlotAvailable: false,
-            chartSlotAvailable: false,
+            chartSlotAvailable: !!APPLICATION.windowProvider.Chart,
             gameSlotAvailable: true,
         });
         this.#shadow.appendChild(template.content.cloneNode(true));
@@ -110,6 +110,7 @@ export class APPLICATION extends HTMLElement {
 
         this.#applicationGameService.addEventListener('update', (e) => {
             this.#controls.gameView.update(e.detail.value);
+            this.#controls.chartView.update(e.detail.value);
         });
 
         this.#applicationGameService.addEventListener('finish', (e) => {
@@ -141,6 +142,7 @@ export class APPLICATION extends HTMLElement {
         this.#applicationGameService.configure(dataClient);
 
         this.#controls.gameView.configurationProvider = this.#applicationGameService.configurationProvider;
+        this.#controls.chartView.configurationProvider = this.#applicationGameService.configurationProvider;
         this.#controls.gameSettings.configuration = this.#applicationGameService.configurationProvider.getInstance();
     }
 
