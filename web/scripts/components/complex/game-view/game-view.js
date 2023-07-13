@@ -12,15 +12,11 @@ export class GAME_VIEW extends HTMLElement {
 
     #pendingData;
 
-    #isGenerated = false;
-
     #width = 0;
     #height = 0;
 
     #cellFactory;
     #canvasWrapper;
-
-    #cells;
 
     #canvas;
 
@@ -42,7 +38,7 @@ export class GAME_VIEW extends HTMLElement {
     }
 
     #setup = () => {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             GAME_VIEW.windowProvider.setTimeout(async () => {
                 this.#canvas = this.#shadow.querySelector("canvas");
                 resolve();
@@ -141,7 +137,7 @@ export class GAME_VIEW extends HTMLElement {
             this.#width = width;
             this.#height = height;
 
-            this.#canvasWrapper = new CanvasWrapperWebGL(this.#canvas);
+            this.#canvasWrapper = new CanvasWrapper2D(this.#canvas, GAME_VIEW.documentProvider);
             this.#cellFactory = new CellFactory(provider, this.#canvasWrapper)
 
             await this.generateGame()

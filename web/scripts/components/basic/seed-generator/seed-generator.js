@@ -53,7 +53,7 @@ export class SEED_GENERATOR extends HTMLElement {
         }
 
         this.#template
-            .then((templateContent) => {
+            .then((_) => {
                 this.#render(value);
             })
             .catch((err) => {

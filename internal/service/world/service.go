@@ -36,6 +36,7 @@ func (s *srv) Init(config *configuration.Configuration, availableCommands []cont
 		return nil, err
 	}
 
+	// Place agents on the map
 	emptyCells := terra.EmptyCells()
 	pickedCellIndexes := make([]int, 0)
 	for i := 0; i < len(agents); i++ {
