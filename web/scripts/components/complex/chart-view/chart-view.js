@@ -12,7 +12,7 @@ export class CHART_VIEW extends HTMLElement {
     #myChart;
     #datasets = []
 
-    #config
+    #configurationProvider;
 
     constructor() {
         super();
@@ -58,7 +58,6 @@ export class CHART_VIEW extends HTMLElement {
                         label: value,
                         data: [],
                         fill: false,
-                        tension: 0.1
                     }));
 
                 let ctx = this.shadowRoot.querySelector('canvas').getContext('2d');
@@ -72,22 +71,11 @@ export class CHART_VIEW extends HTMLElement {
                         datasets: this.#datasets
                     },
                     options: {
-
-                        responsive:true,
-                        interaction: {
-                            intersect: false,
-                        },
-                        plugins: {
-                            zoom: {
-                                zoom: {
-                                    wheel: {
-                                        enabled: false,
-                                    },
-                                    pinch: {
-                                        enabled: true
-                                    },
-                                    mode: 'x',
-                                }
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                suggestedMax: 100  // Or whatever maximum value suits your data
                             }
                         }
                     }
@@ -100,7 +88,7 @@ export class CHART_VIEW extends HTMLElement {
     /**
      * @param {World} worldInstance
      */
-    updateData(worldInstance) {
+    update(worldInstance) {
         if(!CHART_VIEW.windowProvider.Chart) {
             return
         }
@@ -138,16 +126,16 @@ export class CHART_VIEW extends HTMLElement {
 
     /**
     * Set config data
-    * @param {Configuration} config
+    * @param {ConfigurationProvider} configurationProvider
     */
-    set config(config)
+    set configurationProvider(configurationProvider)
     {
         if (!this.isConnected) {
-            this.#pendingData = config;
+            this.#pendingData = configurationProvider;
             return
         }
 
-        this.#config = config;
+        this.#configurationProvider = configurationProvider;
     }
 
     clean() {
@@ -158,15 +146,16 @@ export class CHART_VIEW extends HTMLElement {
     }
 
     #getAgentTypeColor = (agentType) => {
+        const config = this.#configurationProvider.getInstance();
         switch (agentType) {
             case AgentType.PLANT:
-                return this.#config.PlantConfiguration.Color;
+                return config.PlantConfiguration.Color;
             case AgentType.HERBIVORE:
-                return this.#config.HerbivoreConfiguration.Color;
+                return config.HerbivoreConfiguration.Color;
             case AgentType.CARNIVORE:
-                return this.#config.CarnivoreConfiguration.Color;
+                return config.CarnivoreConfiguration.Color;
             case AgentType.OMNIVORE:
-                return this.#config.OmnivoreConfiguration.Color;
+                return config.OmnivoreConfiguration.Color;
             default:
                 return "rgb(75, 192, 192)";
         }
