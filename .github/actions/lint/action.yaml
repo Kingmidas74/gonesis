@@ -1,0 +1,16 @@
+name: 'Lint (Golang)'
+description: 'Lint the golang part codebase'
+
+inputs:
+  linter-version:
+    description: 'Version of golangci-lint to use'
+    required: false
+    default: '1.53'
+
+runs:
+  using: "composite"
+  steps:
+    - name: golangci-lint
+      uses: golangci/golangci-lint-action@v3
+      with:
+        version: v${{ inputs.linter-version }}

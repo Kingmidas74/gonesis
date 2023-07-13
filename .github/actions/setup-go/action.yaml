@@ -1,0 +1,16 @@
+name: 'Setup Go'
+description: 'Setup Go for the workflow'
+
+inputs:
+  go-version:
+    description: 'Version of golang to use'
+    required: false
+    default: '1.20'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: ${{ inputs.go-version }}

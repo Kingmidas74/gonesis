@@ -8,6 +8,5 @@ func (m Middleware) NoCache(next http.Handler) http.Handler {
 		w.Header().Set("Pragma", "no-cache")
 		w.Header().Set("Expires", "0")
 		next.ServeHTTP(w, r)
-		return
 	})
 }

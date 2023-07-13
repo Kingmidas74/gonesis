@@ -37,7 +37,6 @@ func (w *World) Command(commandIdentifier int) contracts.Command {
 
 func (w *World) Next(config *configuration.Configuration) error {
 	if err := w.runDay(config); err != nil {
-		panic(err.Error())
 		return err
 	}
 

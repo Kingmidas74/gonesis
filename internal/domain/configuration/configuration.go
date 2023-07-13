@@ -131,10 +131,10 @@ func NewAgentConfiguration() *AgentConfiguration {
 	}
 }
 
-func (c *AgentConfiguration) FromJson(jsonString string) error {
+func (c *AgentConfiguration) FromJSON(jsonString string) error {
 	return json.Unmarshal([]byte(jsonString), c)
 }
 
-func (c *Configuration) FromJson(jsonString string) error {
+func (c *Configuration) FromJSON(jsonString string) error {
 	return json.Unmarshal([]byte(jsonString), c)
 }

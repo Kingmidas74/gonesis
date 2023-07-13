@@ -15,7 +15,11 @@ func main() {
 		log.Fatal(err.Error())
 	}
 	zap.ReplaceGlobals(logger)
-	defer logger.Sync()
+	defer func(logger *zap.Logger) {
+		if err = logger.Sync(); err != nil {
+			log.Fatal(err.Error())
+		}
+	}(logger)
 
 	cfg, err := config.New()
 	if err != nil {

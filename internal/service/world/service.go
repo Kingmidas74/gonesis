@@ -1,17 +1,17 @@
 package world
 
 import (
-	"github.com/kingmidas74/gonesis-engine/internal/domain/configuration"
-	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
-	"github.com/kingmidas74/gonesis-engine/internal/domain/errors"
 	"math/rand"
 
 	"golang.org/x/exp/slices"
 
 	"github.com/kingmidas74/gonesis-engine/internal/contracts"
+	"github.com/kingmidas74/gonesis-engine/internal/domain/configuration"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/entity/terrain"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/entity/terrain/topology"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/entity/world"
+	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
+	"github.com/kingmidas74/gonesis-engine/internal/domain/errors"
 )
 
 func (s *srv) Init(config *configuration.Configuration, availableCommands []contracts.Command) (contracts.World, error) {
@@ -21,7 +21,11 @@ func (s *srv) Init(config *configuration.Configuration, availableCommands []cont
 		config.DecomposerConfiguration.InitialCount +
 		config.OmnivoreConfiguration.InitialCount
 
-	m, err := s.mazeService.Generate(config.WorldConfiguration.MazeType, config.WorldConfiguration.Ratio.Width, config.WorldConfiguration.Ratio.Height, requiredEmptyCells)
+	m, err := s.mazeService.Generate(
+		config.WorldConfiguration.MazeType,
+		config.WorldConfiguration.Ratio.Width,
+		config.WorldConfiguration.Ratio.Height,
+		requiredEmptyCells)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +76,8 @@ func (s *srv) getTerrain(m contracts.Maze) (contracts.Terrain, error) {
 		return terrain.NewTerrain[topology.MooreTopology](m), nil
 	case enum.TopologyTypeNeumann:
 		return terrain.NewTerrain[topology.NeumannTopology](m), nil
+	case enum.TopologyTypeUndefined:
 	default:
-		return nil, errors.ErrTopologyTypeNotSupported
 	}
+	return nil, errors.ErrTopologyTypeNotSupported
 }

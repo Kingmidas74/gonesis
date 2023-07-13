@@ -35,6 +35,6 @@ func (h *Handler) serializeResponse(code int, message string) string {
 
 func (h *Handler) deserializeConfiguration(configJson string) (*configuration.Configuration, error) {
 	config := configuration.NewConfiguration()
-	err := config.FromJson(configJson)
+	err := config.FromJSON(configJson)
 	return config, err
 }

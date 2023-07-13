@@ -51,9 +51,9 @@ func (app *App) FxProvides(ff ...func() fx.Option) {
 }
 
 func (app *App) Init() error {
+	timeout := time.Minute * 10
 	app.fxOptions = fx.Options(
-		// stop timeout: program gives this time to background tasks to complete their work before terminate everything and stop
-		fx.StopTimeout(time.Minute*10),
+		fx.StopTimeout(timeout),
 		app.fxOptions,
 		fx.NopLogger,
 

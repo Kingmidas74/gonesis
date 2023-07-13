@@ -78,10 +78,10 @@ func (b *Brain) KeepAddress(from, count int) {
 	if len(b.subroutineStack) > 1 {
 		return
 	}
-	count = len(b.commands) / 4
+	quarter := len(b.commands) / 4
 	sub := subroutine{
 		start:         from,
-		count:         count,
+		count:         quarter,
 		returnAddress: b.address,
 	}
 	b.subroutineStack = append(b.subroutineStack, sub)
@@ -110,5 +110,5 @@ func (b *Brain) Equals(other contracts.Brain) (difference int) {
 			difference++
 		}
 	}
-	return
+	return difference
 }

@@ -2,7 +2,7 @@ package http
 
 import (
 	"context"
-	"github.com/go-chi/chi/v5"
+	"errors"
 	"net/http"
 	"os"
 	"os/signal"
@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-chi/chi/v5"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 	"golang.org/x/net/http2"
@@ -17,6 +18,8 @@ import (
 	"github.com/kingmidas74/gonesis-engine/internal/env"
 	"github.com/kingmidas74/gonesis-engine/internal/handler/http/middleware/no_cache"
 )
+
+const secondsInMinute = 60
 
 type Params struct {
 	fx.In
@@ -50,12 +53,12 @@ func NewServer(params Params) *Server {
 	srv := &http.Server{
 		Addr:         strings.Join([]string{":", params.Env.Host.Port}, ""),
 		Handler:      r,
-		ReadTimeout:  60 * time.Second,
-		WriteTimeout: 60 * time.Second,
-		IdleTimeout:  60 * time.Second,
+		ReadTimeout:  secondsInMinute * time.Second,
+		WriteTimeout: secondsInMinute * time.Second,
+		IdleTimeout:  secondsInMinute * time.Second,
 	}
 
-	if err := http2.ConfigureServer(srv, &http2.Server{}); err != nil {
+	if err = http2.ConfigureServer(srv, &http2.Server{}); err != nil {
 		zap.L().Error("Failed to configure HTTP/2 server", zap.Error(err))
 		return nil
 	}
@@ -65,7 +68,7 @@ func NewServer(params Params) *Server {
 
 func (srv *Server) Start() {
 	go func() {
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			zap.L().Fatal("Could not listen on", zap.String("addr", srv.Addr), zap.Error(err))
 		}
 	}()
@@ -78,7 +81,8 @@ func (srv *Server) GracefulShutdown() {
 
 	signal.Notify(quit, os.Interrupt)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	var ctxTimeout = secondsInMinute * time.Second / 2
+	ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
 	defer cancel()
 
 	srv.SetKeepAlivesEnabled(false)

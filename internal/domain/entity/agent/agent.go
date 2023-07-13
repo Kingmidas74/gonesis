@@ -19,8 +19,6 @@ type Agent struct {
 	id         string
 	energy     int
 	generation int
-
-	config *configuration.Configuration
 }
 
 func NewAgent(nature contracts.AgentNature) contracts.Agent {
