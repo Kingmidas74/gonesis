@@ -10,7 +10,7 @@ permissions:
 env:
   WEB_ARTIFACTS_NAME: web-artifacts
   GITHUB_PAGES_BRANCH: online
-  GO_VERSION: 1.19
+  GO_VERSION: '1.20'
 
 jobs:
   build:
