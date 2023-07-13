@@ -3,14 +3,14 @@ name: 'Publish Web'
 on:
   workflow_dispatch:
   pull_request:
-
-permissions:
-  contents: read
+    branches:
+      - main
 
 env:
   WEB_ARTIFACTS_NAME: web-artifacts
   GITHUB_PAGES_BRANCH: online
   GO_VERSION: '1.20'
+  LINTER_VERSION: '1.53'
 
 jobs:
   build:
