@@ -11,8 +11,6 @@ runs:
   using: "composite"
   steps:
     - name: golangci-lint
-      env:
-        GOROOT: "/go"
       uses: golangci/golangci-lint-action@v3
       with:
         version: v${{ inputs.linter-version }}
