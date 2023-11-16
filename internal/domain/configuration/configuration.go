@@ -2,9 +2,10 @@ package configuration
 
 import (
 	"encoding/json"
-	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
 	"strconv"
 	"time"
+
+	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
 )
 
 const (
@@ -12,7 +13,7 @@ const (
 	defaultBrainSize              = 64
 	defaultEnergy                 = 20
 	defaultCount                  = 0
-	defaultDailyCommands          = 1
+	defaultDailyCommands          = 2
 	defaultReproductionSystemType = enum.ReproductionSystemTypeBudding
 	defaultReproductionEnergyCost = 20
 	defaultReproductionChance     = .5

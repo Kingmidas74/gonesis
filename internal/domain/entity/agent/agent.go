@@ -22,13 +22,15 @@ type Agent struct {
 }
 
 func NewAgent(nature contracts.AgentNature) contracts.Agent {
-	return &Agent{
+	result := &Agent{
 		Brain:       NewBrain(nature.BrainVolume()),
 		AgentNature: nature,
 		energy:      nature.InitialEnergy(),
 		generation:  0,
 		id:          uuid.New().String(),
 	}
+
+	return result
 }
 
 func NewAgentWithBrain(nature contracts.AgentNature, brain contracts.Brain, generation int) contracts.Agent {
@@ -54,14 +56,15 @@ func (a *Agent) IsAlive() bool {
 }
 
 // TODO: replace findCommandPredicate with []contracts.Command
-func (a *Agent) NextDay(terra contracts.Terrain, findCommandPredicate func(int) contracts.Command) error {
-	for step := 0; a.IsAlive() && step < a.MaxEnergy(); step++ {
+func (a *Agent) NextDay(terra contracts.Terrain) error {
+	for step := 0; a.IsAlive() && step < a.MaxDailyCommandCount(); step++ {
 		commandIdentifier := a.Command(nil)
-		command := findCommandPredicate(commandIdentifier)
+		command := a.FindCommand(commandIdentifier)
 		if command == nil {
 			a.IncreaseAddress(commandIdentifier)
 			continue
 		}
+
 		delta := command.Handle(a, terra) //DOUBLE BECAUSE OF NOT COPY?
 		a.IncreaseAddress(delta)
 		if command.IsInterrupt() {

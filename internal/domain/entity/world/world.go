@@ -8,14 +8,12 @@ import (
 
 type World struct {
 	contracts.Terrain
-	commands   []contracts.Command
 	currentDay int
 }
 
-func New(terrain contracts.Terrain, commands []contracts.Command) *World {
+func New(terrain contracts.Terrain) *World {
 	return &World{
 		Terrain:    terrain,
-		commands:   commands,
 		currentDay: 0,
 	}
 }
@@ -26,13 +24,6 @@ func (w *World) Width() int {
 
 func (w *World) Height() int {
 	return w.Terrain.Height()
-}
-
-func (w *World) Command(commandIdentifier int) contracts.Command {
-	if commandIdentifier < 0 || commandIdentifier >= len(w.commands) {
-		return nil
-	}
-	return w.commands[commandIdentifier]
 }
 
 func (w *World) Next(config *configuration.Configuration) error {
@@ -62,7 +53,7 @@ func (w *World) runDay(config *configuration.Configuration) error {
 			continue
 		}
 
-		if err := agent.NextDay(w, w.Command); err != nil {
+		if err := agent.NextDay(w); err != nil {
 			return err
 		}
 

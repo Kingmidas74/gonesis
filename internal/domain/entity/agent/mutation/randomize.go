@@ -26,10 +26,14 @@ func (b RandomizeMutation) Mutate(subject contracts.Agent) (contracts.Brain, err
 	if len(commands) == 0 {
 		return subject, nil
 	}
+	currentAddress := subject.Address()
 
 	randCommandIndex := subject.Address() // rand.Intn(len(commands))
 	randNewCommand := rand.Intn(len(commands))
 	commands[randCommandIndex] = randNewCommand
 
-	return agent.NewBrainWithCommands(commands), nil
+	child := agent.NewBrainWithCommands(commands)
+	child.SetAddress(currentAddress)
+
+	return child, nil
 }

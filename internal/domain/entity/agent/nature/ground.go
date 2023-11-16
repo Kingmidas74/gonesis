@@ -9,11 +9,18 @@ import (
 type Ground struct {
 	contracts.ReproductionSystem
 
-	config *configuration.Configuration
+	config            *configuration.Configuration
+	availableCommands []contracts.Command
 }
 
-func (a *Ground) Configure(config *configuration.Configuration) {
+func (a *Ground) Configure(config *configuration.Configuration, availableCommands []contracts.Command) error {
 	a.config = config
+	a.availableCommands = availableCommands
+	return nil
+}
+
+func (a *Ground) FindCommand(commandIdentifier int) contracts.Command {
+	return nil
 }
 
 func (a *Ground) AgentType() enum.AgentType {
@@ -46,4 +53,8 @@ func (a *Ground) ReproductionChance() float64 {
 
 func (a *Ground) MutationChance() float64 {
 	return 0
+}
+
+func (a *Ground) AvailableFood() map[enum.AgentType]int {
+	return map[enum.AgentType]int{}
 }

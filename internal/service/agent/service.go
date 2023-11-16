@@ -2,6 +2,7 @@ package agent
 
 import (
 	"github.com/kingmidas74/gonesis-engine/internal/contracts"
+	"github.com/kingmidas74/gonesis-engine/internal/domain/commands"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/configuration"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/entity/agent"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/entity/agent/mutation"
@@ -48,6 +49,13 @@ func (s *srv) Generate(config *configuration.Configuration) ([]contracts.Agent, 
 }
 
 func (s *srv) GeneratePlants(config *configuration.Configuration) ([]contracts.Agent, error) {
+	availableCommands := []contracts.Command{
+		commands.NewPhotosynthesisCommand(),
+		commands.NewPhotosynthesisCommand(),
+		commands.NewPhotosynthesisCommand(),
+		commands.NewPhotosynthesisCommand(),
+	}
+
 	reproductionSystem, err := s.getReproductionSystem(config.PlantConfiguration.ReproductionType)
 	if err != nil {
 		return nil, err
@@ -56,7 +64,11 @@ func (s *srv) GeneratePlants(config *configuration.Configuration) ([]contracts.A
 	plantNature := &nature.Plant{
 		ReproductionSystem: reproductionSystem,
 	}
-	plantNature.Configure(config)
+
+	if err := plantNature.Configure(config, availableCommands); err != nil {
+		return nil, err
+	}
+
 	for i := 0; i < config.PlantConfiguration.InitialCount; i++ {
 		plants[i] = agent.NewAgent(plantNature)
 	}
@@ -64,6 +76,30 @@ func (s *srv) GeneratePlants(config *configuration.Configuration) ([]contracts.A
 }
 
 func (s *srv) GenerateHerbivores(config *configuration.Configuration) ([]contracts.Agent, error) {
+	availableCommands := []contracts.Command{
+		commands.NewMoveCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewMoveCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewMoveCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+	}
+
 	reproductionSystem, err := s.getReproductionSystem(config.OmnivoreConfiguration.ReproductionType)
 	if err != nil {
 		return nil, err
@@ -72,7 +108,11 @@ func (s *srv) GenerateHerbivores(config *configuration.Configuration) ([]contrac
 	herbivoreNature := &nature.Herbivore{
 		ReproductionSystem: reproductionSystem,
 	}
-	herbivoreNature.Configure(config)
+
+	if err := herbivoreNature.Configure(config, availableCommands); err != nil {
+		return nil, err
+	}
+
 	for i := 0; i < config.HerbivoreConfiguration.InitialCount; i++ {
 		herbivores[i] = agent.NewAgent(herbivoreNature)
 	}
@@ -80,6 +120,30 @@ func (s *srv) GenerateHerbivores(config *configuration.Configuration) ([]contrac
 }
 
 func (s *srv) GenerateCarnivores(config *configuration.Configuration) ([]contracts.Agent, error) {
+	availableCommands := []contracts.Command{
+		commands.NewMoveCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewMoveCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewMoveCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+	}
+
 	reproductionSystem, err := s.getReproductionSystem(config.OmnivoreConfiguration.ReproductionType)
 	if err != nil {
 		return nil, err
@@ -89,7 +153,11 @@ func (s *srv) GenerateCarnivores(config *configuration.Configuration) ([]contrac
 	carnivoreNature := &nature.Carnivore{
 		ReproductionSystem: reproductionSystem,
 	}
-	carnivoreNature.Configure(config)
+
+	if err := carnivoreNature.Configure(config, availableCommands); err != nil {
+		return nil, err
+	}
+
 	for i := 0; i < config.CarnivoreConfiguration.InitialCount; i++ {
 		carnivores[i] = agent.NewAgent(carnivoreNature)
 	}
@@ -97,6 +165,8 @@ func (s *srv) GenerateCarnivores(config *configuration.Configuration) ([]contrac
 }
 
 func (s *srv) GenerateDecomposers(config *configuration.Configuration) ([]contracts.Agent, error) {
+	var availableCommands []contracts.Command
+
 	reproductionSystem, err := s.getReproductionSystem(config.OmnivoreConfiguration.ReproductionType)
 	if err != nil {
 		return nil, err
@@ -105,7 +175,11 @@ func (s *srv) GenerateDecomposers(config *configuration.Configuration) ([]contra
 	decomposerNature := &nature.Decomposer{
 		ReproductionSystem: reproductionSystem,
 	}
-	decomposerNature.Configure(config)
+
+	if err := decomposerNature.Configure(config, availableCommands); err != nil {
+		return nil, err
+	}
+
 	for i := 0; i < config.DecomposerConfiguration.InitialCount; i++ {
 		decomposers[i] = agent.NewAgent(decomposerNature)
 	}
@@ -113,6 +187,30 @@ func (s *srv) GenerateDecomposers(config *configuration.Configuration) ([]contra
 }
 
 func (s *srv) GenerateOmnivores(config *configuration.Configuration) ([]contracts.Agent, error) {
+	availableCommands := []contracts.Command{
+		commands.NewMoveCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewMoveCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewMoveCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+		commands.NewEatCommand(),
+	}
+
 	reproductionSystem, err := s.getReproductionSystem(config.OmnivoreConfiguration.ReproductionType)
 	if err != nil {
 		return nil, err
@@ -121,7 +219,11 @@ func (s *srv) GenerateOmnivores(config *configuration.Configuration) ([]contract
 	omnivoreNature := &nature.Omnivore{
 		ReproductionSystem: reproductionSystem,
 	}
-	omnivoreNature.Configure(config)
+
+	if err := omnivoreNature.Configure(config, availableCommands); err != nil {
+		return nil, err
+	}
+
 	for i := 0; i < config.OmnivoreConfiguration.InitialCount; i++ {
 		omnivores[i] = agent.NewAgent(omnivoreNature)
 	}

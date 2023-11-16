@@ -14,7 +14,7 @@ import (
 	"github.com/kingmidas74/gonesis-engine/internal/domain/errors"
 )
 
-func (s *srv) Init(config *configuration.Configuration, availableCommands []contracts.Command) (contracts.World, error) {
+func (s *srv) Init(config *configuration.Configuration) (contracts.World, error) {
 	requiredEmptyCells := config.PlantConfiguration.InitialCount +
 		config.HerbivoreConfiguration.InitialCount +
 		config.CarnivoreConfiguration.InitialCount +
@@ -57,7 +57,7 @@ func (s *srv) Init(config *configuration.Configuration, availableCommands []cont
 		emptyCell.SetAgent(agents[i])
 	}
 
-	s.world = world.New(terra, availableCommands)
+	s.world = world.New(terra)
 	return s.world, nil
 }
 

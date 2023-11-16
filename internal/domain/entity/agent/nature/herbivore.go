@@ -1,6 +1,8 @@
 package nature
 
 import (
+	"errors"
+
 	"github.com/kingmidas74/gonesis-engine/internal/contracts"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/configuration"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
@@ -9,11 +11,26 @@ import (
 type Herbivore struct {
 	contracts.ReproductionSystem
 
-	config *configuration.Configuration
+	config            *configuration.Configuration
+	availableCommands []contracts.Command
 }
 
-func (a *Herbivore) Configure(config *configuration.Configuration) {
+func (a *Herbivore) Configure(config *configuration.Configuration, availableCommands []contracts.Command) error {
+	for i := range availableCommands {
+		if !availableCommands[i].IsAvailable(a) {
+			return errors.New("command not available")
+		}
+	}
 	a.config = config
+	a.availableCommands = availableCommands
+	return nil
+}
+
+func (a *Herbivore) FindCommand(commandIdentifier int) contracts.Command {
+	if commandIdentifier < 0 || commandIdentifier >= len(a.availableCommands) {
+		return nil
+	}
+	return a.availableCommands[commandIdentifier]
 }
 
 func (a *Herbivore) AgentType() enum.AgentType {
@@ -46,4 +63,10 @@ func (a *Herbivore) ReproductionChance() float64 {
 
 func (a *Herbivore) MutationChance() float64 {
 	return a.config.HerbivoreConfiguration.MutationChance
+}
+
+func (a *Herbivore) AvailableFood() map[enum.AgentType]int {
+	return map[enum.AgentType]int{
+		enum.AgentTypePlant: 16,
+	}
 }

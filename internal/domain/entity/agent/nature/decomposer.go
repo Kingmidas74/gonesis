@@ -1,6 +1,8 @@
 package nature
 
 import (
+	"errors"
+
 	"github.com/kingmidas74/gonesis-engine/internal/contracts"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/configuration"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
@@ -9,11 +11,26 @@ import (
 type Decomposer struct {
 	contracts.ReproductionSystem
 
-	config *configuration.Configuration
+	config            *configuration.Configuration
+	availableCommands []contracts.Command
 }
 
-func (a *Decomposer) Configure(config *configuration.Configuration) {
+func (a *Decomposer) Configure(config *configuration.Configuration, availableCommands []contracts.Command) error {
+	for i := range availableCommands {
+		if !availableCommands[i].IsAvailable(a) {
+			return errors.New("command not available")
+		}
+	}
 	a.config = config
+	a.availableCommands = availableCommands
+	return nil
+}
+
+func (a *Decomposer) FindCommand(commandIdentifier int) contracts.Command {
+	if commandIdentifier < 0 || commandIdentifier >= len(a.availableCommands) {
+		return nil
+	}
+	return a.availableCommands[commandIdentifier]
 }
 
 func (a *Decomposer) AgentType() enum.AgentType {
@@ -46,4 +63,8 @@ func (a *Decomposer) ReproductionChance() float64 {
 
 func (a *Decomposer) MutationChance() float64 {
 	return a.config.DecomposerConfiguration.MutationChance
+}
+
+func (a *Decomposer) AvailableFood() map[enum.AgentType]int {
+	return map[enum.AgentType]int{}
 }

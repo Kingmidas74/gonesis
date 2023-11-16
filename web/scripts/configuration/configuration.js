@@ -112,15 +112,15 @@ class WorldConfiguration {
 
 class AgentConfiguration {
     constructor({
-                    MaxEnergy = 100,
+                    MaxEnergy = 60,
                     InitialCount = 0,
                     Color = Colors.GREEN,
                     ReproductionType = ReproductionTypes.Budding,
                     InitialEnergy = 20,
-                    ReproductionEnergyCost = 20,
-                    ReproductionChance = .5,
+                    ReproductionEnergyCost = 30,
+                    ReproductionChance = 1,
                     MutationChance = 1,
-                    BrainVolume = 64,
+                    BrainVolume = 32,
                 } = {}) {
         /**
          * The maximum energy an agent can have.
@@ -191,24 +191,42 @@ class Configuration {
                     drawRequired = true,
                     worldConfiguration = new WorldConfiguration(),
                     plantConfiguration = new AgentConfiguration({
-                        InitialCount: 10,
+                        InitialCount: 128,
                         Color: Colors.GREEN,
+                        InitialEnergy:100,
+                        ReproductionEnergyCost: 50,
+                        MaxEnergy: 200,
                     }),
                     herbivoreConfiguration = new AgentConfiguration({
-                        InitialCount: 20,
+                        InitialCount: 64,
                         Color: Colors.BLUE,
+                        BrainVolume: 32,
+                        InitialEnergy:100,
+                        ReproductionEnergyCost: 20,
+                        MaxEnergy: 200,
                     }),
                     carnivoreConfiguration = new AgentConfiguration({
-                        InitialCount: 40,
+                        InitialCount: 64,
                         Color: Colors.RED,
+                        BrainVolume: 32,
+                        InitialEnergy:100,
+                        ReproductionEnergyCost: 20,
+                        MaxEnergy: 200,
                     }),
                     decomposerConfiguration = new AgentConfiguration({
                         InitialCount: 0,
                         Color: Colors.BROWN,
+                        InitialEnergy:100,
+                        ReproductionEnergyCost: 20,
+                        MaxEnergy: 200,
                     }),
                     omnivoreConfiguration = new AgentConfiguration({
-                        InitialCount: 10,
+                        InitialCount: 16,
                         Color: Colors.PURPLE,
+                        BrainVolume: 64,
+                        InitialEnergy:100,
+                        ReproductionEnergyCost: 20,
+                        MaxEnergy: 200,
                     }),
                 } = {}) {
 

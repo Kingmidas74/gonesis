@@ -7,33 +7,21 @@ import (
 
 type MoveCommand struct {
 	isInterrupt bool
+	available   []enum.AgentType
 }
 
 func NewMoveCommand() *MoveCommand {
 	return &MoveCommand{
 		isInterrupt: true,
+		available:   []enum.AgentType{enum.AgentTypeHerbivore, enum.AgentTypeCarnivore, enum.AgentTypeOmnivore},
 	}
-}
-
-func (c *MoveCommand) Handle(agent contracts.Agent, terra contracts.Terrain) int {
-	switch agent.AgentType() {
-	case enum.AgentTypeHerbivore:
-		return c.handleHerbivore(agent, terra)
-	case enum.AgentTypeCarnivore:
-		return c.handleHerbivore(agent, terra)
-	case enum.AgentTypePlant:
-		return c.handlePlant(agent, terra)
-	case enum.AgentTypeOmnivore:
-		return c.handleHerbivore(agent, terra)
-	}
-	return 1
 }
 
 func (c *MoveCommand) IsInterrupt() bool {
 	return c.isInterrupt
 }
 
-func (c *MoveCommand) handleHerbivore(agent contracts.Agent, terra contracts.Terrain) int {
+func (c *MoveCommand) Handle(agent contracts.Agent, terra contracts.Terrain) int {
 	whereAddress := agent.Address() + 1
 	direction := agent.Command(&whereAddress)
 	targetCell := terra.GetNeighbor(agent.X(), agent.Y(), direction)
@@ -53,6 +41,11 @@ func (c *MoveCommand) handleHerbivore(agent contracts.Agent, terra contracts.Ter
 	return delta
 }
 
-func (c *MoveCommand) handlePlant(agent contracts.Agent, terra contracts.Terrain) int {
-	return 1
+func (c *MoveCommand) IsAvailable(agent contracts.AgentNature) bool {
+	for i := range c.available {
+		if c.available[i] == agent.AgentType() {
+			return true
+		}
+	}
+	return false
 }

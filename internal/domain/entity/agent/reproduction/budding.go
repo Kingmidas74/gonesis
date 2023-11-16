@@ -38,7 +38,7 @@ func (b BuddingReproduction) Reproduce(parents []contracts.Agent) ([]contracts.A
 		return children, err
 	}
 
-	parent.DecreaseEnergy(parent.ReproductionEnergyCost())
+	//parent.DecreaseEnergy(parent.ReproductionEnergyCost())
 	child := agent.NewAgentWithBrain(parent, brain, parent.Generation()+1)
 	return append(children, child), nil
 }

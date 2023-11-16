@@ -8,9 +8,11 @@ import (
 type AgentNature interface {
 	ReproductionSystem
 
-	Configure(config *configuration.Configuration)
+	Configure(config *configuration.Configuration, availableCommands []Command) error
+	FindCommand(commandIdentifier int) Command
 
 	AgentType() enum.AgentType
+	AvailableFood() map[enum.AgentType]int
 	MaxEnergy() int
 	MaxDailyCommandCount() int
 	InitialEnergy() int

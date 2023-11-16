@@ -6,9 +6,6 @@ import (
 	"math/rand"
 	"strconv"
 	"syscall/js"
-
-	"github.com/kingmidas74/gonesis-engine/internal/contracts"
-	"github.com/kingmidas74/gonesis-engine/internal/domain/commands"
 )
 
 func (h *Handler) InitWorld() js.Func {
@@ -27,40 +24,7 @@ func (h *Handler) InitWorld() js.Func {
 
 		rand.Seed(seed)
 
-		world, err := h.worldService.Init(config, []contracts.Command{
-			commands.NewPhotosynthesisCommand(),
-			commands.NewEatCommand(),
-			commands.NewMoveCommand(),
-			commands.NewPhotosynthesisCommand(),
-			commands.NewEatCommand(),
-			commands.NewMoveCommand(),
-			commands.NewPhotosynthesisCommand(),
-			commands.NewEatCommand(),
-			commands.NewMoveCommand(),
-			commands.NewPhotosynthesisCommand(),
-			commands.NewEatCommand(),
-			commands.NewMoveCommand(),
-			commands.NewPhotosynthesisCommand(),
-			commands.NewEatCommand(),
-			commands.NewMoveCommand(),
-			commands.NewPhotosynthesisCommand(),
-			commands.NewEatCommand(),
-			commands.NewMoveCommand(),
-			commands.NewPhotosynthesisCommand(),
-			commands.NewEatCommand(),
-			commands.NewMoveCommand(),
-			commands.NewPhotosynthesisCommand(),
-			commands.NewEatCommand(),
-			commands.NewMoveCommand(),
-			commands.NewPhotosynthesisCommand(),
-			commands.NewEatCommand(),
-			commands.NewMoveCommand(),
-			commands.NewPhotosynthesisCommand(),
-			commands.NewEatCommand(),
-			commands.NewMoveCommand(),
-			commands.NewCallSubroutineCommand(),
-			commands.NewEndSubroutineCommand(),
-		})
+		world, err := h.worldService.Init(config)
 		if err != nil {
 			return h.serializeResponse(1, err.Error())
 		}
