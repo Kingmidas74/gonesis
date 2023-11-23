@@ -18,6 +18,7 @@ const (
 	defaultReproductionEnergyCost = 20
 	defaultReproductionChance     = .5
 	defaultMutationChance         = .1
+	defaultInfinityReproduction   = 4
 )
 
 type Ratio struct {
@@ -42,6 +43,7 @@ type AgentConfiguration struct {
 	ReproductionEnergyCost int                         `json:"ReproductionEnergyCost"`
 	ReproductionChance     float64                     `json:"ReproductionChance"`
 	MutationChance         float64                     `json:"MutationChance"`
+	InfinityReproduction   int                         `json:"InfinityReproduction"`
 }
 
 type Configuration struct {
@@ -70,6 +72,7 @@ func NewConfiguration() *Configuration {
 			ReproductionEnergyCost: defaultReproductionEnergyCost,
 			ReproductionChance:     defaultReproductionChance,
 			MutationChance:         defaultMutationChance,
+			InfinityReproduction:   defaultInfinityReproduction,
 		},
 		HerbivoreConfiguration: AgentConfiguration{
 			MaxEnergy:              defaultMaxEnergy,
