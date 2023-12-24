@@ -7,16 +7,24 @@ import (
 
 type Params struct {
 	AgentService agent.Service
+
+	MazeGeneratorCollection MazeGeneratorCollection
 }
 
 type srv struct {
 	world contract.World
 
-	agentService agent.Service
+	agentService            agent.Service
+	mazeGeneratorCollection MazeGeneratorCollection
 }
 
 func New(params Params) Service {
 	return &srv{
-		agentService: params.AgentService,
+		agentService:            params.AgentService,
+		mazeGeneratorCollection: params.MazeGeneratorCollection,
 	}
+}
+
+type MazeGeneratorCollection interface {
+	Get(mazeType contract.MazeType) (contract.MazeGenerator, error)
 }
