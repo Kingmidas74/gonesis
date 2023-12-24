@@ -1,16 +1,19 @@
 package wasm
 
 import (
-	"github.com/kingmidas74/gonesis-engine/internal/domain/configuration"
 	"github.com/kingmidas74/gonesis-engine/internal/service/world"
 )
+
+type Params struct {
+	WorldService world.Service
+}
 
 type Handler struct {
 	worldService world.Service
 }
 
-func New() (*Handler, error) {
+func New(params Params) (*Handler, error) {
 	return &Handler{
-		worldService: world.New(configuration.NewConfiguration()),
+		worldService: params.WorldService,
 	}, nil
 }

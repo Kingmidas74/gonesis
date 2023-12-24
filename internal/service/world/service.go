@@ -1,83 +1,68 @@
 package world
 
 import (
-	"math/rand"
-
-	"golang.org/x/exp/slices"
-
-	"github.com/kingmidas74/gonesis-engine/internal/contracts"
 	"github.com/kingmidas74/gonesis-engine/internal/domain/configuration"
-	"github.com/kingmidas74/gonesis-engine/internal/domain/entity/terrain"
-	"github.com/kingmidas74/gonesis-engine/internal/domain/entity/terrain/topology"
-	"github.com/kingmidas74/gonesis-engine/internal/domain/entity/world"
-	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
-	"github.com/kingmidas74/gonesis-engine/internal/domain/errors"
+	contract "github.com/kingmidas74/gonesis-engine/internal/domain/contract"
+	"github.com/kingmidas74/gonesis-engine/internal/domain/entity/cell"
+	"github.com/kingmidas74/gonesis-engine/pkg/graph_maze/empty"
+	"github.com/kingmidas74/gonesis-engine/pkg/graph_topology/neumann"
 )
 
-func (s *srv) Init(config *configuration.Configuration) (contracts.World, error) {
-	requiredEmptyCells := config.PlantConfiguration.InitialCount +
-		config.HerbivoreConfiguration.InitialCount +
-		config.CarnivoreConfiguration.InitialCount +
-		config.DecomposerConfiguration.InitialCount +
-		config.OmnivoreConfiguration.InitialCount
-
-	m, err := s.mazeService.Generate(
-		config.WorldConfiguration.MazeType,
-		config.WorldConfiguration.Ratio.Width,
-		config.WorldConfiguration.Ratio.Height,
-		requiredEmptyCells)
+func (s *srv) Init(config *configuration.Configuration) (contract.World, error) {
+	ng := neumann.New[cell.Cell]()
+	g, err := ng.Generate(config.WorldConfiguration.Ratio.Width, config.WorldConfiguration.Ratio.Height)
 	if err != nil {
 		return nil, err
 	}
 
-	terra, err := s.getTerrain(m)
-	if err != nil {
-		return nil, err
-	}
+	mg := empty.New[cell.Cell, neumann.VertexID]()
+	mg.Generate(g, g.FindVertex(neumann.VertexID{X: 0, Y: 0}))
 
-	agents, err := s.agentService.Generate(config)
-	if err != nil {
-		return nil, err
-	}
-
-	// Place agents on the map
-	emptyCells := terra.EmptyCells()
-	pickedCellIndexes := make([]int, 0)
-	for i := 0; i < len(agents); i++ {
-		targetIndex := rand.Intn(len(emptyCells))
-		if slices.Contains(pickedCellIndexes, targetIndex) {
-			i--
-			continue
+	/*
+		cells, err := empty.New().Generate(config.WorldConfiguration.Ratio.Width, config.WorldConfiguration.Ratio.Height)
+		if err != nil {
+			return nil, err
 		}
-		pickedCellIndexes = append(pickedCellIndexes, targetIndex)
-		emptyCell := emptyCells[targetIndex]
-		if agents[i] == nil {
-			panic("agent is nil")
-		}
-		emptyCell.SetAgent(agents[i])
-	}
 
-	s.world = world.New(terra)
+		terrainCells := make([]contract.Cell, len(cells))
+		for i, c := range cells {
+			terrainCells[i] = cell.New(c.X(), c.Y(), cell.WallInfo{
+				North: c.NorthWall(),
+				East:  c.EastWall(),
+				South: c.SouthWall(),
+				West:  c.WestWall(),
+			})
+		}
+
+		topology := moore.New()
+		terra := terrain.New(terrain.MazeInfo{
+			Width:  config.WorldConfiguration.Ratio.Width,
+			Height: config.WorldConfiguration.Ratio.Height,
+			Cells:  terrainCells,
+		}, terrain.WithTopology(topology))
+
+		agents, err := s.agentService.Generate(config)
+		if err != nil {
+			return nil, err
+		}
+
+		w := world.New(world.WithTerrain(terra))
+
+		err = w.PlaceAgents(agents)
+		if err != nil {
+			return nil, err
+		}
+
+		s.world = w
+		return w, nil
+
+	*/
+}
+
+func (s *srv) Update(config *configuration.Configuration) (contract.World, error) {
+	err := s.world.Next()
+	if err != nil {
+		return nil, err
+	}
 	return s.world, nil
-}
-
-func (s *srv) Update(config *configuration.Configuration) (contracts.World, error) {
-	if s.world == nil {
-		return nil, ErrWorldIsNotInitialize
-	}
-
-	err := s.world.Next(config)
-	return s.world, err
-}
-
-func (s *srv) getTerrain(m contracts.Maze) (contracts.Terrain, error) {
-	switch s.config.WorldConfiguration.Topology {
-	case enum.TopologyTypeMoore:
-		return terrain.NewTerrain[topology.MooreTopology](m), nil
-	case enum.TopologyTypeNeumann:
-		return terrain.NewTerrain[topology.NeumannTopology](m), nil
-	case enum.TopologyTypeUndefined:
-	default:
-	}
-	return nil, errors.ErrTopologyTypeNotSupported
 }

@@ -165,13 +165,11 @@ export class GAME_VIEW extends HTMLElement {
 
         for (let row = 0; row < height; row++) {
             for (let col = 0; col < width; col++) {
-                if (worldInstance.cells[row*width+col].cellType === CellType.EMPTY) {
-                    this.#cellFactory.createEmpty(worldInstance.cells[row*width+col]).draw();
+                if (worldInstance.cells[row*width+col].agent) {
+                    this.#cellFactory.createAgent(worldInstance.cells[row*width+col]).draw();
                     continue
                 }
-                if (worldInstance.cells[row*width+col].cellType === CellType.AGENT) {
-                    this.#cellFactory.createAgent(worldInstance.cells[row*width+col]).draw();
-                }
+                this.#cellFactory.createEmpty(worldInstance.cells[row*width+col]).draw();
             }
         }
 

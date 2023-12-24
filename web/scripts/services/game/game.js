@@ -45,8 +45,9 @@ class Game extends IGame {
     calculateGeneration(worldInstance) {
         let maxGeneration = 0;
         for (const c of worldInstance.cells) {
-            if (c?.a?.generation > maxGeneration) {
-                maxGeneration = c?.a?.generation;
+            //console.log(c?.agent?.generation, maxGeneration,"maxGeneration",c)
+            if (c?.agent?.generation > maxGeneration) {
+                maxGeneration = c?.agent?.generation;
             }
         }
         return maxGeneration;
@@ -65,7 +66,7 @@ class Game extends IGame {
      * @return {number} count of living agents
      */
     livingAgentsCount(worldInstance) {
-        return worldInstance.cells.filter(c => c.cellType === CellType.AGENT && c.agent?.energy > 0).length;
+        return worldInstance.cells.filter(c => c.agent?.energy > 0).length;
     }
 
     isOnlyOneAgentTypeAlive(worldInstance) {

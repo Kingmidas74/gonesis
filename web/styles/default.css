@@ -1,6 +1,6 @@
 :root {
     --font-size: 16px;
-    --font-family: "Forum", serif;
+    --font-family: system-ui, sans-serif;
 
     --gap: 1rem;
 }

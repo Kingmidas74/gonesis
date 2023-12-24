@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/kingmidas74/gonesis-engine/internal/domain/enum"
+	"github.com/kingmidas74/gonesis-engine/internal/domain/contract"
 )
 
 const (
@@ -14,7 +14,7 @@ const (
 	defaultEnergy                 = 20
 	defaultCount                  = 0
 	defaultDailyCommands          = 2
-	defaultReproductionSystemType = enum.ReproductionSystemTypeBudding
+	defaultReproductionSystemType = contract.ReproductionSystemTypeBudding
 	defaultReproductionEnergyCost = 20
 	defaultReproductionChance     = .5
 	defaultMutationChance         = .1
@@ -27,23 +27,23 @@ type Ratio struct {
 }
 
 type WorldConfiguration struct {
-	MazeType enum.MazeType     `json:"MazeType"`
-	Topology enum.TopologyType `json:"Topology"`
-	Seed     string            `json:"Seed"`
-	Ratio    Ratio             `json:"Ratio"`
+	MazeType contract.MazeType     `json:"MazeType"`
+	Topology contract.TopologyType `json:"Topology"`
+	Seed     string                `json:"Seed"`
+	Ratio    Ratio                 `json:"Ratio"`
 }
 
 type AgentConfiguration struct {
-	MaxEnergy              int                         `json:"MaxEnergy"`
-	InitialCount           int                         `json:"InitialCount"`
-	MaxDailyCommandCount   int                         `json:"MaxDailyCommandCount"`
-	InitialEnergy          int                         `json:"InitialEnergy"`
-	BrainVolume            int                         `json:"BrainVolume"`
-	ReproductionType       enum.ReproductionSystemType `json:"ReproductionType"`
-	ReproductionEnergyCost int                         `json:"ReproductionEnergyCost"`
-	ReproductionChance     float64                     `json:"ReproductionChance"`
-	MutationChance         float64                     `json:"MutationChance"`
-	InfinityReproduction   int                         `json:"InfinityReproduction"`
+	MaxEnergy              int                             `json:"MaxEnergy"`
+	InitialCount           int                             `json:"InitialCount"`
+	MaxDailyCommandCount   int                             `json:"MaxDailyCommandCount"`
+	InitialEnergy          int                             `json:"InitialEnergy"`
+	BrainVolume            int                             `json:"BrainVolume"`
+	ReproductionType       contract.ReproductionSystemType `json:"ReproductionType"`
+	ReproductionEnergyCost int                             `json:"ReproductionEnergyCost"`
+	ReproductionChance     float64                         `json:"ReproductionChance"`
+	MutationChance         float64                         `json:"MutationChance"`
+	InfinityReproduction   int                             `json:"InfinityReproduction"`
 }
 
 type Configuration struct {
@@ -58,8 +58,8 @@ type Configuration struct {
 func NewConfiguration() *Configuration {
 	return &Configuration{
 		WorldConfiguration: WorldConfiguration{
-			MazeType: enum.MazeTypeEmpty,
-			Topology: enum.TopologyTypeNeumann,
+			MazeType: contract.MazeTypeEmpty,
+			Topology: contract.TopologyTypeNeumann,
 			Seed:     strconv.FormatInt(time.Now().UnixNano(), 10),
 		},
 		PlantConfiguration: AgentConfiguration{

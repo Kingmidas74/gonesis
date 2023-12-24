@@ -193,8 +193,8 @@ class Configuration {
                     plantConfiguration = new AgentConfiguration({
                         InitialCount: 128,
                         Color: Colors.GREEN,
-                        InitialEnergy:100,
-                        ReproductionEnergyCost: 50,
+                        InitialEnergy:30,
+                        ReproductionEnergyCost: 35,
                         MaxEnergy: 200,
                     }),
                     herbivoreConfiguration = new AgentConfiguration({
@@ -202,7 +202,7 @@ class Configuration {
                         Color: Colors.BLUE,
                         BrainVolume: 32,
                         InitialEnergy:100,
-                        ReproductionEnergyCost: 20,
+                        ReproductionEnergyCost: 110,
                         MaxEnergy: 200,
                     }),
                     carnivoreConfiguration = new AgentConfiguration({
@@ -210,14 +210,14 @@ class Configuration {
                         Color: Colors.RED,
                         BrainVolume: 32,
                         InitialEnergy:100,
-                        ReproductionEnergyCost: 20,
+                        ReproductionEnergyCost: 110,
                         MaxEnergy: 200,
                     }),
                     decomposerConfiguration = new AgentConfiguration({
                         InitialCount: 0,
                         Color: Colors.BROWN,
                         InitialEnergy:100,
-                        ReproductionEnergyCost: 20,
+                        ReproductionEnergyCost: 110,
                         MaxEnergy: 200,
                     }),
                     omnivoreConfiguration = new AgentConfiguration({
@@ -225,7 +225,7 @@ class Configuration {
                         Color: Colors.PURPLE,
                         BrainVolume: 64,
                         InitialEnergy:100,
-                        ReproductionEnergyCost: 20,
+                        ReproductionEnergyCost: 110,
                         MaxEnergy: 200,
                     }),
                 } = {}) {

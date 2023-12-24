@@ -67,7 +67,8 @@ class Engine extends IDataClient {
      */
     initWorld(configurationProvider) {
         const response = this.#windowProvider.initWorld(this.#JSONProvider.stringify(configurationProvider.getInstance()))
-        return this.#parseResponse(response);
+        let r = this.#parseResponse(response);
+        return r
     }
 
     /**

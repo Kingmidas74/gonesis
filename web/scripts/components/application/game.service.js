@@ -172,6 +172,10 @@ class ApplicationGameService {
     #raiseError = (error) => {
         console.error(error);
     }
+
+    generation() {
+        return this.#gameService.calculateGeneration(this.#lastWorldInstance);
+    }
 }
 
 export { ApplicationGameService }

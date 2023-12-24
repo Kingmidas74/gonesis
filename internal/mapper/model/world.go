@@ -8,7 +8,6 @@ type World struct {
 }
 
 type Cell struct {
-	CellType  string `json:"cellType"`
 	Energy    int    `json:"energy"`
 	Agent     *Agent `json:"agent"`
 	X         int    `json:"x"`
